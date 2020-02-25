@@ -1,0 +1,2240 @@
+<?xml version="1.0"?>
+<Form Name="WashSendLegalClientForm" Title="Северный луч. Отправка писем" Width="1075" Height="560" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+  <Parameters>
+    <Parameter Name="ToFolder">False</Parameter>
+  </Parameters>
+
+
+  <Appearance>
+    <Colors>
+      <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+      <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+
+  <DataConnections>
+
+    <DataConnection Name="ClientConfirmDiscountSetFalseSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">ClientId</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ConfirmedDiscount">
+          <Value>False</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ClientConfirmDiscountUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="ClientConfirmDiscountSetTrueSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">ClientId</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ConfirmedDiscount">
+          <Value>True</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ClientConfirmDiscountUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="ClientOrganizationSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">ClientId</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="OrganizationId">
+          <Value>
+            <Object Name="OrganizationIdVariable" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ClientReportOrganizationUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="AllClientConfirmDiscountSetFalseSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ConfirmedDiscount">
+          <Value>False</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="AllClientConfirmDiscountUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="AllClientConfirmDiscountSetTrueSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ConfirmedDiscount">
+          <Value>True</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="AllClientConfirmDiscountUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="AllClientOrganizationSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OrganizationId">
+          <Value>
+            <Object Name="OrganizationComboBox" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="AllClientSetOrganizationUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="ReportChoiseDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+      <Workflow Name="Wash" />
+      <DatabaseTable Name="ReportDatabaseTable" />
+      <Parameters>
+        <Parameter NativeName="ClientId">
+          <Column Name="ClientId" />
+        </Parameter>
+        <Parameter NativeName="Choise">
+          <Column Name="Choise" />
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ClientChoiseUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="AllClientChoiseSetFalseSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="Choise">
+          <Value>False</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="AllClientChoiseUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="ReportAllNonCashPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportAllNonCashSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ClientId" />
+          <Field Name="ClientTitle" />
+          <Field Name="Discount" />
+          <Field Name="Summ" />
+          <Field Name="EmailReportDate" />
+          <Field Name="AppliedDiscount" />
+          <Field Name="TotalSumm" />
+          <Field Name="Prefix" />
+          <Field Name="INN" />
+          <Field Name="ContractNumber" />
+          <Field Name="ContractDate" />
+          <Field Name="Choise" />
+          <Field Name="OrganizationId" />
+          <Field Name="OrganizationTitle" />
+          <Field Name="NullConfirm" />
+          <Field Name="OrganizationNullConfirm" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate" RefreshQuery="False">
+            <Value>
+              <Object Name="StartDateVariable" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="EndDate" RefreshQuery="True">
+            <Value>
+              <Object Name="EndDateVariable" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+      <ManualLoad>True</ManualLoad>
+    </DataConnection>
+
+    <DataConnection Name="ClientAddressesPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ClientAddressesSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Address" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="ClientId">
+            <Value>
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowCellValueByColumnName">
+                  <Parameters>
+                    <Parameter Name="ColumnName">ClientId</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="OrganizationPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="OrganizationSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="OrganizationId" />
+          <Field Name="Title" Type="FormatField" FormatString="   {0}">
+            <Field NativeName="Title" />
+          </Field>
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportNonCashSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="OrderDate" />
+          <Field Name="OrderId" />
+          <Field Name="OrderType" />
+          <Field Name="Car" />
+          <Field Name="Category" />
+          <Field Name="Works" />
+          <Field Name="Summ" />
+          <Field Name="NonCash" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate" RefreshQuery="False">
+            <Value>
+              <Object Name="StartDateVariable" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="EndDate" RefreshQuery="False">
+            <Value>
+              <Object Name="EndDateVariable" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="ClientId" RefreshQuery="False">
+            <Value>
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowCellValueByColumnName">
+                  <Parameters>
+                    <Parameter Name="ColumnName">ClientId</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="EmailSendSettingPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="EmailSendSettingSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="EmailSendSettingId" />
+          <Field Name="ServerAddress" />
+          <Field Name="ServerPort" />
+          <Field Name="EmailAddress" />
+          <Field Name="EmailPassword" />
+          <Field Name="Subject" />
+          <Field Name="Header" />
+          <Field Name="Text" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportDateSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">ClientId</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ClientReportDateUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+
+  </DataConnections>
+
+
+  <Conditions>
+    <Condition Name="FormLoadedCondition" Type="FormLoadedCondition" Assembly="Conditions" />
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    <Condition Name="HasWashEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderType" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>wash</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="HasTireEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderType" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>tire</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="HasTireTruckEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderType" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>tire_truck</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="HasChoiseEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="Column">
+              <Parameters>
+                <Parameter Name="ColumnName">Choise</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="HasNullEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ReportAllNonCashPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="NullConfirm" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="HasNullOrganizationEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ReportAllNonCashPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrganizationNullConfirm" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="OrganizationAfanasievEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrganizationId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>1</Item>
+      </Items>
+    </Condition>
+
+
+    <Condition Name="TableIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="RowsCount" />
+          </Object>
+        </Item>
+        <Item>0</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ReportDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+      <Table Name="ReportDatabaseTable" />
+    </Condition>
+
+    <Condition Name="LastRowSelectedEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+        <Item>
+          <Formula>
+            <Minus DataType="IntegerDataType">
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="RowsCount" />
+                </Object>
+              </Item>
+              <Item>1</Item>
+            </Minus>
+          </Formula>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="SelectedRowIndexChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="SelectedRowIndex0EqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+        <Item>0</Item>
+      </Items>
+      <DataType Type="IntegerDataType" />
+    </Condition>
+
+    <Condition Name="EmailSendEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="EmailSendCommand" />
+        </Item>
+        <Item>0</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ReportDatabaseTableChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportDatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+        <Item>-1</Item>
+      </Items>
+      <DataType Type="IntegerDataType" />
+    </Condition>
+
+    <Condition Name="EmptyFolderCondition" Type="EmptyFolderCondition" Assembly="NorthernRay">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="SelectFolderDialogShowCommand" Parameter="Path" />
+        </Item>
+      </Items>
+    </Condition>
+
+  </Conditions>
+
+
+  <Commands>
+    <Command Name="SelectFolderDialogShowCommand" Type="FolderDialogShowCommand" Assembly="Commands">
+      <ShowNewFolderButton>True</ShowNewFolderButton>
+      <Title>Выбор папки для сохранения отчетов</Title>
+    </Command>
+
+    <Command Name="NonEmptyFolderMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Внимание</Caption>
+      <Text>Папка, в которую вы хотите сформировать файлы, не пуста. Укажите другую папку.</Text>
+      <Icon Type="Information" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+    <Command Name="ReportExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <String Format="Templates\PrintableReport{0}NonCashWithStamp.rtf">
+          <Items>
+            <Item>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="OrganizationAfanasievEqualCondition" />
+                  </When>
+                  <Then />
+                </Case>
+                <Case>Devald</Case>
+              </Switch>
+            </Item>
+          </Items>
+        </String>
+      </TemplateFileName>
+      <Print>False</Print>
+      <Open>False</Open>
+      <Parameters>
+        <Parameter Name="StartDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="StartDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="EndDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="EndDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ClientTitle">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientTitle</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="Date">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy HH:mm">
+            <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderDate" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Car">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Car" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Category">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Category" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Works">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Works" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Summ">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Summ" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="NonCash">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="NonCash" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ResultSumm">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">Summ</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportExportToRtf2Command" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <String Format="Templates\PrintableReport{0}NonCash.rtf">
+          <Items>
+            <Item>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="OrganizationAfanasievEqualCondition" />
+                  </When>
+                  <Then />
+                </Case>
+                <Case>Devald</Case>
+              </Switch>
+            </Item>
+          </Items>
+        </String>
+      </TemplateFileName>
+      <Print>False</Print>
+      <Open>False</Open>
+
+      <Ask>False</Ask>
+      <ExportFileName>
+        <String Format="{0}\{1} - Отчёт.rtf">
+          <Items>
+            <Item>
+              <Command Name="SelectFolderDialogShowCommand" Parameter="Path" />
+            </Item>
+            <Item>
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowCellValueByColumnName">
+                  <Parameters>
+                    <Parameter Name="ColumnName">ClientTitle</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Item>
+          </Items>
+        </String>
+      </ExportFileName>
+
+      <Parameters>
+        <Parameter Name="StartDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="StartDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="EndDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="EndDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ClientTitle">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientTitle</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="Date">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy HH:mm">
+            <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderDate" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Car">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Car" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Category">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Category" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Works">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Works" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Summ">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Summ" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="NonCash">
+          <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="NonCash" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ResultSumm">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">Summ</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AccountExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <String Format="Templates\PrintableAccount{0}WithStamp.rtf">
+          <Items>
+            <Item>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="OrganizationAfanasievEqualCondition" />
+                  </When>
+                  <Then />
+                </Case>
+                <Case>Devald</Case>
+              </Switch>
+            </Item>
+          </Items>
+        </String>
+      </TemplateFileName>
+      <Print>False</Print>
+      <Open>False</Open>
+      <Parameters>
+        <Parameter Name="AccountNumber">
+          <String Format="С{0}/{1}/{2}">
+            <Items>
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="SelectedRowCellValueByColumnName">
+                    <Parameters>
+                      <Parameter Name="ColumnName">Prefix</Parameter>
+                    </Parameters>
+                  </Property>
+                </Object>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="dd">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="MM">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+            </Items>
+          </String>
+        </Parameter>
+        <Parameter Name="AccountDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="EndDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ClientName">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientTitle</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="ClientINN">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">INN</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="WorkName">
+          <Switch>
+            <Case>
+              <When>
+                <And>
+                  <Condition Name="HasWashEqualCondition" />
+                  <Or>
+                    <Condition Name="HasTireEqualCondition" />
+                    <Condition Name="HasTireTruckEqualCondition" />
+                  </Or>
+                </And>
+              </When>
+              <Then>Мойка и шиномонтаж</Then>
+            </Case>
+            <Case>
+              <When>
+                <Condition Name="HasWashEqualCondition" />
+              </When>
+              <Then>Мойка</Then>
+            </Case>
+            <Case>Шиномонтаж</Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="OrderNumber">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ContractNumber</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="DateStart">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="StartDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="DateEnd">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="EndDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Summ">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">TotalSumm</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="SummSymbol">
+          <DataTypeFormat Type="DoubleDataType" Format="InWordsMoneyRoubles">
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">TotalSumm</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </DataTypeFormat>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AccountExportToRtf2Command" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <String Format="Templates\PrintableAccount{0}.rtf">
+          <Items>
+            <Item>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="OrganizationAfanasievEqualCondition" />
+                  </When>
+                  <Then />
+                </Case>
+                <Case>Devald</Case>
+              </Switch>
+            </Item>
+          </Items>
+        </String>
+      </TemplateFileName>
+      <Print>False</Print>
+      <Open>False</Open>
+
+      <Ask>False</Ask>
+      <ExportFileName>
+        <String Format="{0}\{1} - Счёт.rtf">
+          <Items>
+            <Item>
+              <Command Name="SelectFolderDialogShowCommand" Parameter="Path" />
+            </Item>
+            <Item>
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowCellValueByColumnName">
+                  <Parameters>
+                    <Parameter Name="ColumnName">ClientTitle</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Item>
+          </Items>
+        </String>
+      </ExportFileName>
+
+      <Parameters>
+        <Parameter Name="AccountNumber">
+          <String Format="С{0}/{1}/{2}">
+            <Items>
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="SelectedRowCellValueByColumnName">
+                    <Parameters>
+                      <Parameter Name="ColumnName">Prefix</Parameter>
+                    </Parameters>
+                  </Property>
+                </Object>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="dd">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="MM">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+            </Items>
+          </String>
+        </Parameter>
+        <Parameter Name="AccountDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="EndDateVariable" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ClientName">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientTitle</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="ClientINN">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">INN</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="WorkName">
+          <Switch>
+            <Case>
+              <When>
+                <And>
+                  <Condition Name="HasWashEqualCondition" />
+                  <Or>
+                    <Condition Name="HasTireEqualCondition" />
+                    <Condition Name="HasTireTruckEqualCondition" />
+                  </Or>
+                </And>
+              </When>
+              <Then>Мойка и шиномонтаж</Then>
+            </Case>
+            <Case>
+              <When>
+                <Condition Name="HasWashEqualCondition" />
+              </When>
+              <Then>Мойка</Then>
+            </Case>
+            <Case>Шиномонтаж</Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="OrderNumber">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ContractNumber</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="DateStart">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="StartDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="DateEnd">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="EndDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Summ">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">TotalSumm</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="SummSymbol">
+          <DataTypeFormat Type="DoubleDataType" Format="InWordsMoneyRoubles">
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">TotalSumm</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </DataTypeFormat>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportNonCashFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportNonCash.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="StartDate">
+          <Object Name="StartDateVariable" />
+        </Parameter>
+        <Parameter Name="EndDate">
+          <Object Name="EndDateVariable" />
+        </Parameter>
+        <Parameter Name="ClientId">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ActExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <String Format="Templates\PrintableAct{0}.rtf">
+          <Items>
+            <Item>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="OrganizationAfanasievEqualCondition" />
+                  </When>
+                  <Then />
+                </Case>
+                <Case>Devald</Case>
+              </Switch>
+            </Item>
+          </Items>
+        </String>
+      </TemplateFileName>
+      <Print>False</Print>
+      <Open>False</Open>
+      <Ask>False</Ask>
+      <ExportFileName>
+        <String Format="{0}\{1} - Акт.rtf">
+          <Items>
+            <Item>
+              <Command Name="SelectFolderDialogShowCommand" Parameter="Path" />
+            </Item>
+            <Item>
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowCellValueByColumnName">
+                  <Parameters>
+                    <Parameter Name="ColumnName">ClientTitle</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Item>
+          </Items>
+        </String>
+      </ExportFileName>
+      <Parameters>
+        <Parameter Name="ActNumber">
+          <String Format="А{0}/{1}/{2}">
+            <Items>
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="SelectedRowCellValueByColumnName">
+                    <Parameters>
+                      <Parameter Name="ColumnName">Prefix</Parameter>
+                    </Parameters>
+                  </Property>
+                </Object>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="dd">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+              <Item>
+                <DataTypeFormat Type="DateTimeDataType" Format="MM">
+                  <Object Name="EndDateVariable" />
+                </DataTypeFormat>
+              </Item>
+            </Items>
+          </String>
+        </Parameter>
+        <Parameter Name="ActDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <Object Name="EndDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ClientName">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ClientTitle</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="ClientINN">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">INN</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="WorkName">
+          <Switch>
+            <Case>
+              <When>
+                <And>
+                  <Condition Name="HasWashEqualCondition" />
+                  <Or>
+                    <Condition Name="HasTireEqualCondition" />
+                    <Condition Name="HasTireTruckEqualCondition" />
+                  </Or>
+                </And>
+              </When>
+              <Then>Мойка и шиномонтаж</Then>
+            </Case>
+            <Case>
+              <When>
+                <Condition Name="HasWashEqualCondition" />
+              </When>
+              <Then>Мойка</Then>
+            </Case>
+            <Case>Шиномонтаж</Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="OrderNumber">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">ContractNumber</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="DateStart">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="StartDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="DateEnd">
+          <DataTypeFormat Type="DateTimeDataType" Format="dd.MM.yyyy">
+            <Object Name="EndDateTimePicker" />
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Summ">
+          <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">TotalSumm</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="SummSymbol">
+          <DataTypeFormat Type="DoubleDataType" Format="InWordsMoneyRoubles">
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">TotalSumm</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </DataTypeFormat>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ClientConfirmDiscountSetFalseSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ClientConfirmDiscountSetFalseSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ClientConfirmDiscountSetTrueSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ClientConfirmDiscountSetTrueSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ClientOrganizationSetSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ClientOrganizationSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="AllClientConfirmDiscountSetFalseSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="AllClientConfirmDiscountSetFalseSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="AllClientConfirmDiscountSetTrueSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="AllClientConfirmDiscountSetTrueSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="AllClientChoiseSetFalseSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="AllClientChoiseSetFalseSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="AllClientOrganizationSetSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="AllClientOrganizationSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ClientChoiseSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ReportChoiseDatabaseTableSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ReportDatabaseTableSelect1RowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+        <Property Name="SelectedRowIndex">0</Property>
+      </Object>
+    </Command>
+
+    <Command Name="ReportDatabaseTableSelectNextRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+        <Property Name="SelectedRowIndex">
+          <Formula>
+            <Plus DataType="IntegerDataType">
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="SelectedRowIndex" />
+                </Object>
+              </Item>
+              <Item>1</Item>
+            </Plus>
+          </Formula>
+        </Property>
+      </Object>
+    </Command>
+
+    <Command Name="ChoiseFalseValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+        <Property Name="UpdateColumnCellsValues">
+          <Parameters>
+            <Parameter Name="RowsIndices">
+              <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="SelectedRowIndex" />
+              </Object>
+            </Parameter>
+            <Parameter Name="ColumnName">Choise</Parameter>
+            <Parameter Name="Value">False</Parameter>
+          </Parameters>
+        </Property>
+      </Object>
+    </Command>
+
+    <Command Name="SendEmailAndSelectNextSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands>
+        <If>
+          <When>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">Choise</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </When>
+          <Then>
+            <Command Name="SendSequentialCommand" />
+          </Then>
+        </If>
+        <If>
+          <When>
+            <Not>
+              <Condition Name="LastRowSelectedEqualCondition" />
+            </Not>
+          </When>
+          <Then>
+            <Command Name="ReportDatabaseTableSelectNextRowValueSetCommand" />
+          </Then>
+          <Else>
+            <Command Name="SendVariableFalseValueSetCommand" />
+            <If>
+              <When>
+                <Condition Name="HasChoiseEqualCondition" />
+              </When>
+              <Then>
+                <Command Name="EmailNotSendMessageBoxCommand" />
+              </Then>
+              <Else>
+                <Command Name="EmailSendMessageBoxCommand" />
+              </Else>
+            </If>
+          </Else>
+        </If>
+      </Commands>
+    </Command>
+
+    <Command Name="SaveEmailAndSelectNextSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands>
+        <If>
+          <When>
+            <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">Choise</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </When>
+          <Then>
+            <Command Name="SaveSequentialCommand" />
+          </Then>
+        </If>
+
+        <If>
+          <When>
+            <Not>
+              <Condition Name="LastRowSelectedEqualCondition" />
+            </Not>
+          </When>
+          <Then>
+            <Command Name="ReportDatabaseTableSelectNextRowValueSetCommand" />
+          </Then>
+          <Else>
+            <Command Name="SendVariableFalseValueSetCommand" />
+            <If>
+              <When>
+                <Condition Name="HasChoiseEqualCondition" />
+              </When>
+              <Then>
+                <Command Name="SaveFailedMessageBoxCommand" />
+              </Then>
+              <Else>
+                <Command Name="SaveSuccessMessageBoxCommand" />
+              </Else>
+            </If>
+          </Else>
+        </If>
+      </Commands>
+    </Command>
+
+    <Command Name="SendSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands>
+        <Command Name="ReportPrimaryDataConnectionRefreshCommand" />
+        <Command Name="ClientAddressesDataConnectionRefreshCommand" />
+        <Command Name="ReportExportToRtfCommand" />
+        <Command Name="AccountExportToRtfCommand" />
+        <Command Name="EmailSendCommand" />
+        <If>
+          <When>
+            <Condition Name="EmailSendEqualCondition" />
+          </When>
+          <Then>
+            <Command Name="ReportDateSaveCommand" />
+            <Command Name="ChoiseFalseValueSetCommand" />
+          </Then>
+        </If>
+      </Commands>
+    </Command>
+
+    <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands>
+        <Command Name="ReportPrimaryDataConnectionRefreshCommand" />
+        <Command Name="ClientAddressesDataConnectionRefreshCommand" />
+        <Command Name="ReportExportToRtf2Command" />
+        <Command Name="AccountExportToRtf2Command" />
+        <Command Name="ActExportToRtfCommand" />
+        <Command Name="ChoiseFalseValueSetCommand" />
+      </Commands>
+    </Command>
+
+    <Command Name="EmailSendCommand" Type="EmailSendCommand" Assembly="Commands">
+      <AuthorSmtpServerAddress>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="ServerAddress" />
+          </Fields>
+        </DataConnection>
+      </AuthorSmtpServerAddress>
+      <AuthorSmtpServerPort>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="ServerPort" />
+          </Fields>
+        </DataConnection>
+      </AuthorSmtpServerPort>
+      <AuthorEmailAddress>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="EmailAddress" />
+          </Fields>
+        </DataConnection>
+      </AuthorEmailAddress>
+      <AuthorEmailPassword>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="EmailPassword" />
+          </Fields>
+        </DataConnection>
+      </AuthorEmailPassword>
+      <Subject>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Subject" />
+          </Fields>
+        </DataConnection>
+      </Subject>
+      <Files>
+        <Structure Type="List">
+          <Item>
+            <Command Name="AccountExportToRtfCommand" />
+          </Item>
+          <Item>
+            <Command Name="ReportExportToRtfCommand" />
+          </Item>
+        </Structure>
+      </Files>
+      <AuthorName>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Header" />
+          </Fields>
+        </DataConnection>
+      </AuthorName>
+      <Text>
+        <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Text" />
+          </Fields>
+        </DataConnection>
+      </Text>
+      <Addressees>
+        <DataConnection SourceDataConnection="ClientAddressesPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Address" />
+          </Fields>
+        </DataConnection>
+      </Addressees>
+    </Command>
+
+    <Command Name="OrganizationIdVariableAfanasievValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="OrganizationIdVariable">1</Object>
+    </Command>
+
+    <Command Name="OrganizationIdVariableDevaldValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="OrganizationIdVariable">2</Object>
+    </Command>
+
+    <Command Name="SendVariableTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SendVariable">True</Object>
+    </Command>
+
+    <Command Name="SendVariableFalseValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SendVariable">False</Object>
+    </Command>
+
+    <Command Name="ClientAddressesDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ClientAddressesPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ReportPrimaryDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ReportPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="StartDateValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="StartDateVariable">
+        <Object Name="StartDateTimePicker" />
+      </Object>
+    </Command>
+
+    <Command Name="EndDateValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="EndDateVariable">
+        <Object Name="EndDateTimePicker" />
+      </Object>
+    </Command>
+
+    <Command Name="ReportIndexPlus1ValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+        <Property Name="SelectedRowIndex">
+          <Formula>
+            <Plus DataType="IntegerDataType">
+              <Item>
+                <Object Name="ReportDatabaseTable" ObjectType="DatabaseTable">
+                  <Property Name="SelectedRowIndex"> </Property>
+                </Object>
+              </Item>
+              <Item>1</Item>
+            </Plus>
+          </Formula>
+        </Property>
+      </Object>
+    </Command>
+
+    <Command Name="QuestionMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Отправка по e-mail</Caption>
+      <Text>Вы действительно хотите отправить счет и подробный отчет клиентам?</Text>
+      <Icon Type="Question" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="EmailSendMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Успех</Caption>
+      <Text>Отчёты успешно отправлены</Text>
+      <Icon Type="Information" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="SaveSuccessMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Успех</Caption>
+      <Text>Отчёты успешно сохранены</Text>
+      <Icon Type="Information" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="EmailNotSendMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Провал</Caption>
+      <Text>Произошла ошибка при отправке отчетов.\rОдин или несколько отчетов не были отправлены.</Text>
+      <Icon Type="Error" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="SaveFailedMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Провал</Caption>
+      <Text>Произошла ошибка при сохранении отчетов.\rОдин или несколько отчетов не были сохранены.</Text>
+      <Icon Type="Error" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="NullConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Для всех клиентов, которым будет произведена отправка, требуется подтверждение или неподтверждение скидки.</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="OrganizationNullConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Для всех клиентов, которым будет произведена отправка, требуется указать отправителя.</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="ReportDateSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ReportDateSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ToFolderIsTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="ToFolder">True</Parameter>
+    </Command>
+
+    <Command Name="ToFolderIsFalseValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="ToFolder">False</Parameter>
+    </Command>
+  </Commands>
+
+
+  <Executions>
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="FormLoadedCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="AllClientConfirmDiscountSetFalseSaveCommand" />
+        <Command Name="AllClientChoiseSetFalseSaveCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="FormClosingCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="ReportDatabaseTableCellDoubleClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ReportNonCashFormShowCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="SelectedRowIndexChangedCondition" />
+          <Object Name="SendVariable" />
+        </And>
+      </ConditionExpression>
+      <Commands>
+        <If>
+          <When>
+            <Parameter Name="ToFolder" />
+          </When>
+          <Then>
+            <Command Name="SaveEmailAndSelectNextSequentialCommand" />
+          </Then>
+          <Else>
+            <Command Name="SendEmailAndSelectNextSequentialCommand" />
+          </Else>
+        </If>
+      </Commands>
+    </Execution>
+
+  </Executions>
+
+
+  <MyObjects>
+
+    <MyObject Name="OrganizationIdVariable" Type="Variable" Assembly="SimpleControls">
+      <Value />
+    </MyObject>
+
+    <MyObject Name="SendVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>False</Value>
+    </MyObject>
+
+    <MyObject Name="StartDateVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>
+        <DateTime Variable="FirstDayOfCurrMonth" />
+      </Value>
+    </MyObject>
+
+    <MyObject Name="EndDateVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>
+        <DateTime Variable="Now" />
+      </Value>
+    </MyObject>
+
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>36</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+        <Top>0</Top>
+        <Left>10</Left>
+        <Height>
+          <Object Name="HeadPanel">
+            <Property Name="Height" />
+          </Object>
+        </Height>
+        <Width>280</Width>
+        <FontStyle>OrderTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Отправка писем</Text>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>36</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>
+        <Formula>
+          <Minus DataType="DoubleDataType">
+            <Item>
+              <Form>
+                <Property Name="Height" />
+              </Form>
+            </Item>
+            <Item>45</Item>
+          </Minus>
+        </Formula>
+      </Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="DateLabel" Type="Label" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>50</Width>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Дата:</Text>
+      </MyObject>
+
+      <MyObject Name="StartDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>60</Left>
+        <Height>25</Height>
+        <Width>150</Width>
+        <NullValue Show="False" />
+        <Value>
+          <DateTime Variable="FirstDayOfCurrMonth" />
+        </Value>
+      </MyObject>
+
+      <MyObject Name="EndDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>215</Left>
+        <Height>25</Height>
+        <Width>150</Width>
+        <NullValue Show="False" />
+        <Value>Now</Value>
+      </MyObject>
+
+      <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>370</Left>
+        <Height>25</Height>
+        <Width>100</Width>
+        <Text>Показать</Text>
+        <Commands>
+          <Command Name="StartDateValueSetCommand" />
+          <Command Name="EndDateValueSetCommand" />
+        </Commands>
+      </MyObject>
+
+      <MyObject Name="ReportDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+        <Top>35</Top>
+        <Left>5</Left>
+        <Height>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>35</Item>
+            </Minus>
+          </Formula>
+        </Height>
+        <Width>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Width" />
+                </Object>
+              </Item>
+              <Item>215</Item>
+            </Minus>
+          </Formula>
+        </Width>
+        <ColumnHeadersHeight Value="44" />
+        <AllowInsert>False</AllowInsert>
+        <AllowUpdate>True</AllowUpdate>
+        <AllowDelete>False</AllowDelete>
+        <AutoSizeColumnsMode Value="AllCells" />
+        <AutoSizeRowsMode Value="AllCells" />
+        <RowHeadersVisible Value="False" />
+        <AllowResizeColumns Value="False" />
+        <AllowResizeRows Value="False" />
+        <SourceDataConnection Name="ReportAllNonCashPrimaryGetDataConnection" />
+        <Columns>
+          <Column Name="ClientId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="Prefix" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="INN" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="ContractNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="ContractDate" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="OrganizationId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="Choise" Type="DatabaseTableColumnCheckBox" Assembly="DatabaseTableColumnControls">
+            <AllowSort Value="False" />
+            <Title />
+          </Column>
+          <Column Name="ClientTitle" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Наименование</Title>
+            <AllowSort Value="False" />
+            <AutoSizeMode Value="Fill" />
+            <ReadOnly>True</ReadOnly>
+          </Column>
+          <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Сумма</Title>
+            <AllowSort Value="False" />
+            <ReadOnly>True</ReadOnly>
+            <Alignment Value="MiddleRight" />
+            <DataType Type="IntegerDataType" Format="N0" />
+          </Column>
+          <Column Name="Discount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Скидка</Title>
+            <AllowSort Value="False" />
+            <ReadOnly>True</ReadOnly>
+            <Alignment Value="MiddleRight" />
+          </Column>
+          <Column Name="AppliedDiscount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Примененная скидка</Title>
+            <AllowSort Value="False" />
+            <ReadOnly>True</ReadOnly>
+            <Alignment Value="MiddleRight" />
+          </Column>
+          <Column Name="TotalSumm" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Итого</Title>
+            <AllowSort Value="False" />
+            <Alignment Value="MiddleRight" />
+            <DataType Type="IntegerDataType" Format="N0" />
+            <ReadOnly>True</ReadOnly>
+          </Column>
+          <Column Name="OrganizationTitle" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>От кого</Title>
+            <Width>120</Width>
+            <AutoSizeMode Value="None" />
+            <AllowSort Value="False" />
+            <ReadOnly>True</ReadOnly>
+          </Column>
+          <Column Name="EmailReportDate" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Дата e-mail</Title>
+            <AllowSort Value="False" />
+            <DataType Type="DateTimeDataType" Format="dd MMM yyyy" />
+            <ReadOnly>True</ReadOnly>
+          </Column>
+        </Columns>
+      </MyObject>
+
+      <MyObject Name="DetailButton" Type="Button" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Width" />
+                </Object>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Подробно...</Text>
+        <Commands>
+          <Command Name="ReportNonCashFormShowCommand" />
+        </Commands>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="ConfirmButton" Type="Button" Assembly="BaseControls">
+        <Top>85</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Применить скидку</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="ClientConfirmDiscountSetTrueSaveCommand" />
+          <Command Name="ReportIndexPlus1ValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="NotConfirmButton" Type="Button" Assembly="BaseControls">
+        <Top>120</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Не применять скидку</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="ClientConfirmDiscountSetFalseSaveCommand" />
+          <Command Name="ReportIndexPlus1ValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="ConfirmAllButton" Type="Button" Assembly="BaseControls">
+        <Top>170</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Применить скидку всем</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="AllClientConfirmDiscountSetTrueSaveCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="TableIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="AfanasievSetButton" Type="Button" Assembly="BaseControls">
+        <Top>220</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   ИП Афанасьев</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="OrganizationIdVariableAfanasievValueSetCommand" />
+          <Command Name="ClientOrganizationSetSaveCommand" />
+          <Command Name="ReportIndexPlus1ValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="TableIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="DevaldSetButton" Type="Button" Assembly="BaseControls">
+        <Top>255</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   ИП Девальд</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="OrganizationIdVariableDevaldValueSetCommand" />
+          <Command Name="ClientOrganizationSetSaveCommand" />
+          <Command Name="ReportIndexPlus1ValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="TableIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="OrganizationAllButton" Type="Button" Assembly="BaseControls">
+        <Top>305</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Установить всем:</Text>
+        <Commands>
+          <Command Name="ClientChoiseSaveCommand" />
+          <Command Name="AllClientOrganizationSetSaveCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="TableIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="OrganizationComboBox" Type="ComboBox" Assembly="BaseControls">
+        <Top>340</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Width>200</Width>
+        <ValueList>
+          <DataConnection SourceDataConnection="OrganizationPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrganizationId" />
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </ValueList>
+        <Value>1</Value>
+        <Enabled>
+          <Not>
+            <Condition Name="TableIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="SendButton" Type="Button" Assembly="BaseControls">
+        <Top>400</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Отправить по e-mail</Text>
+        <Commands>
+          <Command Name="ToFolderIsFalseValueSetCommand" />
+          <Command Name="ClientChoiseSaveCommand" />
+          <If>
+            <When>
+              <Condition Name="HasNullEqualCondition" />
+            </When>
+            <Then>
+              <Command Name="NullConfirmMessageBoxCommand" />
+            </Then>
+            <ElseIf>
+              <When>
+                <Condition Name="HasNullOrganizationEqualCondition" />
+              </When>
+              <Then>
+                <Command Name="OrganizationNullConfirmMessageBoxCommand" />
+              </Then>
+            </ElseIf>
+            <Else>
+              <Command Name="QuestionMessageBoxCommand" />
+              <If>
+                <When>
+                  <Command Name="QuestionMessageBoxCommand" Parameter="Yes" />
+                </When>
+                <Then>
+                  <Command Name="ClientChoiseSaveCommand" />
+                  <Command Name="SendVariableTrueValueSetCommand" />
+                  <If>
+                    <When>
+                      <Condition Name="SelectedRowIndex0EqualCondition" />
+                    </When>
+                    <Then>
+                      <Command Name="SendEmailAndSelectNextSequentialCommand" />
+                    </Then>
+                    <Else>
+                      <Command Name="ReportDatabaseTableSelect1RowValueSetCommand" />
+                    </Else>
+                  </If>
+                </Then>
+              </If>
+            </Else>
+          </If>
+
+        </Commands>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+      </MyObject>
+
+
+      <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+        <Top>435</Top>
+        <Left>
+          <Object Name="DetailButton">
+            <Property Name="Left" />
+          </Object>
+        </Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Сформировать файлы...</Text>
+        <Commands>
+          <Command Name="ToFolderIsTrueValueSetCommand" />
+          <Command Name="SelectFolderDialogShowCommand" />
+          <If>
+            <When>
+              <Condition Name="EmptyFolderCondition" />
+            </When>
+            <Then>
+              <Command Name="ClientChoiseSaveCommand" />
+              <If>
+                <When>
+                  <Condition Name="HasNullEqualCondition" />
+                </When>
+                <Then>
+                  <Command Name="NullConfirmMessageBoxCommand" />
+                </Then>
+                <ElseIf>
+                  <When>
+                    <Condition Name="HasNullOrganizationEqualCondition" />
+                  </When>
+                  <Then>
+                    <Command Name="OrganizationNullConfirmMessageBoxCommand" />
+                  </Then>
+                </ElseIf>
+                <Else>
+                  <Command Name="ClientChoiseSaveCommand" />
+                  <Command Name="SendVariableTrueValueSetCommand" />
+                  <If>
+                    <When>
+                      <Condition Name="SelectedRowIndex0EqualCondition" />
+                    </When>
+                    <Then>
+                      <Command Name="SaveEmailAndSelectNextSequentialCommand" />
+                    </Then>
+                    <Else>
+                      <Command Name="ReportDatabaseTableSelect1RowValueSetCommand" />
+                    </Else>
+                  </If>
+                </Else>
+              </If>
+            </Then>
+            <Else>
+              <Command Name="NonEmptyFolderMessageBoxCommand" />
+            </Else>
+          </If>
+        </Commands>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+      </MyObject>
+
+
+    </MyObject>
+  </MyObjects>
+</Form>

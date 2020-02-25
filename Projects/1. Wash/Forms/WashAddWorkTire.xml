@@ -1,0 +1,452 @@
+<?xml version="1.0"?>
+<Form Name="WashAddWorkTireForm" Title="Северный луч. Работы" Width="550" Height="700" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+    <Parameters>
+        <Parameter Name="OrderId" />
+        <Parameter Name="Updated">False</Parameter>
+    </Parameters>
+
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="WorkPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="WorkTireSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Parameters>
+                    <Parameter NativeName="OrderId">
+                        <Value>
+                            <Parameter Name="OrderId" />
+                        </Value>
+                        <IfNull>0</IfNull>
+                    </Parameter>
+                </Parameters>
+                <Fields>
+                    <Field Name="WorkId" />
+                    <Field Name="Title" />
+                    <Field Name="Price" />
+                    <Field Name="PriceId" />
+                    <Field Name="CategoryId" />
+                    <Field Name="IsChecked" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CategoryPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CategoryTireSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CategoryId" />
+                    <Field Name="Title" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="WorkDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="WorkDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="IsChecked">
+                    <Column Name="IsChecked" />
+                </Parameter>
+                <Parameter NativeName="PriceId">
+                    <Column Name="PriceId" />
+                </Parameter>
+                <Parameter NativeName="OrderId">
+                    <Parameter Name="OrderId" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="OrderWorkTireInsertOrDeleteSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+        
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+    
+        <Condition Name="WorkCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="WorkDatabaseTable" />
+        </Condition>
+        
+        <Condition Name="NotCurrentIsCheckedCondition" Type="NotEqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="WorkDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">IsChecked</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="IsPartCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="WorkDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">Price</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+            </Items>
+        </Condition>
+        
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="WorkSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="WorkDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rВыбрать отмеченные работы перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+            
+        <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="Updated">True</Parameter>
+        </Command>
+        
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands StopOnError="True">
+                <Command Name="WorkSaveCommand" />
+                <Command Name="UpdatedValueSetCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+        
+        <Command Name="CheckedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="WorkDatabaseTable">
+                <Property Name="UpdateRow">
+                    <Parameters>
+                        <Parameter Name="RowIndex">
+                            <Object Name="WorkDatabaseTable">
+                                <Property Name="SelectedRowIndex" />
+                            </Object>
+                        </Parameter>
+                        <Parameter Name="ColumnNames">
+                            <Structure Type="List">
+                                <Item>IsChecked</Item>
+                            </Structure>
+                        </Parameter>
+                        <Parameter Name="Values">
+                            <Structure Type="List">
+                                <Item>
+                                    <Condition Name="NotCurrentIsCheckedCondition" />
+                                </Item>
+                            </Structure>
+                        </Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+        
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveOnCloseMessageBoxCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveSequentialCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                    <And>
+                        <Condition Name="FormClosingCondition" />
+                        <Not>
+                            <Condition Name="FormChangedCondition" />
+                        </Not>
+                    </And>
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="WorkCellDoubleClickCondition" />
+                    <Not>
+                        <Condition Name="IsPartCondition" />
+                    </Not>
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="CheckedValueSetCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>490</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Прайс работ</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>90</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+            
+            <MyObject Name="CategoryFilterLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>0</Left>
+                <Height>25</Height>
+                <Width>120</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Размер диска:</Text>
+            </MyObject>
+
+            <MyObject Name="CategoryFilterComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>125</Left>
+                <Height>25</Height>
+                <Width>200</Width>
+                <NullValue Show="True" Title="[Не выбрано]" />
+                <Change User="False" />
+                <ValueList>
+                    <DataConnection SourceDataConnection="CategoryPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CategoryId" />
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+            </MyObject>
+
+            <MyObject Name="WorkDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Height>570</Height>
+                <Width>540</Width>
+                <AllowInsert>False</AllowInsert>
+                <AllowDelete>False</AllowDelete>
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <ColumnHeadersHeight Value="25" />
+                <SourceDataConnection Name="WorkPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="IsChecked" Type="DatabaseTableColumnCheckBox" Assembly="DatabaseTableColumnControls">
+                        <Title />
+                        <Width>30</Width>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="PriceId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="CategoryId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False" FilterNullValue="True">
+                            <Object Name="CategoryFilterComboBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Работа</Title>
+                        <AutoSizeMode Value="Fill" />
+                        <AllowSort Value="False" />
+                        <ReadOnly>True</ReadOnly>
+                    </Column>
+                    <Column Name="Price" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Цена</Title>
+                        <Width>60</Width>
+                        <ReadOnly>True</ReadOnly>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <DataType Type="IntegerDataType" Format="N0" />
+                    </Column>
+                </Columns>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>650</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>654</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="CloseButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>345</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <Text>Выбрать</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

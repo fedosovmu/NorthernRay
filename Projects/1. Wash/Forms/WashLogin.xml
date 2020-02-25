@@ -1,0 +1,577 @@
+<?xml version="1.0"?>
+<Form Name="WashLogin" Title="Автомойка" Width="400" Height="153" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskForeColor="Red" AsteriskFontStyle="HeadTitleFont">
+  <!--параметры-->
+  <Parameters>
+    <!--признак первичного входа-->
+    <Parameter Name="First">True</Parameter>
+
+    <!--идентификатор пользователя, выбранного по умолчанию-->
+    <Parameter Name="UserId" />
+
+    <!--идентификатор пользователя, запустившего приложение-->
+    <Parameter Name="OriginalUserId" />
+
+    <!--признак изменений, произведенных формой-->
+    <Parameter Name="Updated">False</Parameter>
+  </Parameters>
+
+  <!--визуальные настройки-->
+  <Appearance>
+    <!--цвета-->
+    <Colors>
+      <!--красный-->
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <!--черный-->
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <!--белый-->
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <!--цвет темы: заголовок-->
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <!--цвет темы: основные разделители-->
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <!--цвет темы: внутренние разделители-->
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <!--цвет темы: фон-->
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="255" Alpha="255" />
+
+      <!--серый 200-->
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <!--шрифты-->
+    <FontStyles>
+      <!--шрифт заголовка: жирный Tahoma 12-->
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="12" Bold="True" />
+
+      <!--основной шрифт: Tahoma 8-->
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="8" />
+
+      <!--основной жирный шрифт: жирный Tahoma 8-->
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="8" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+  <!--соединения с данными-->
+  <DataConnections>
+    <!--загрузка: таблица "Пользователи"-->
+    <DataConnection Name="UserPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="LoginUserSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="UserId" />
+          <Field Name="UserName" />
+          <Field Name="UserDomain" />
+          <Field Name="UserFullName" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <!--загрузка: таблица "Пользователи", отфильтрованная по полю со списком "Пользователь"-->
+    <DataConnection Name="ByUserIdUserSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="UserPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="UserId" />
+        <Value>
+          <Object Name="UserComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <!--загрузка: таблица "Последние входившие пользователи"-->
+    <DataConnection Name="LastLoginPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="LastLoginSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="LastUserId" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="OriginalUserId">
+            <Value>
+              <Parameter Name="OriginalUserId" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <!--сохранение: таблица "Последние входившие пользователи" (добавление строки)-->
+    <DataConnection Name="LastLoginInsertSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OriginalUserId">
+          <Value>
+            <Parameter Name="OriginalUserId" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="LastLoginInsertUpdateSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+
+    <!--сохранение: таблица "Последние входившие пользователи" (обновление строки)-->
+    <DataConnection Name="LastLoginUpdateSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="LastUserId">
+          <Value>
+            <Object Name="UserComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="UserId">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="OriginalUserIdIsNullCondition" />
+                </When>
+                <Then>
+                  <Command Name="LastLoginInsertSaveCommand" />
+                </Then>
+              </Case>
+              <Case>
+                <Parameter Name="OriginalUserId" />
+              </Case>
+            </Switch>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="LastLoginUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+  </DataConnections>
+
+  <!--условия-->
+  <Conditions>
+    <!--условие, определяющее момент загрузки формы-->
+    <Condition Name="FormLoadedCondition" Type="FormLoadedCondition" Assembly="Conditions" />
+
+    <!--сравнение значения поля со списком "Пользователь" с невыбранным-->
+    <Condition Name="UserComboBoxIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="UserComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <!--сравнение значения текстового поля "Пароль" с пустым-->
+    <Condition Name="PasswordTextBoxEmptyEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="PasswordTextBox" />
+        </Item>
+        <Item></Item>
+      </Items>
+    </Condition>
+
+    <!--сравнение значения параметра "Первичный вход" со значением "True"-->
+    <Condition Name="FirstTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Parameter Name="First" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <!--сравнение значения параметра "Идентификатор пользователя" с невыбранным-->
+    <Condition Name="UserIdIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Parameter Name="UserId" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <!--сравнение значения параметра "Идентификатор пользователя, запустившего приложение" с невыбранным-->
+    <Condition Name="OriginalUserIdIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Parameter Name="OriginalUserId" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <!--условие, определяющее момент нажатия клавиши "Enter" в текстовом поле "Пароль"-->
+    <Condition Name="PasswordTextBoxKeyPressCondition" Type="KeyPressCondition" Assembly="Conditions">
+      <Object Name="PasswordTextBox" />
+      <Key Code="13" />
+    </Condition>
+
+    <!--сравнение значения результата команды регистрации со значением "Ok"-->
+    <Condition Name="LoginCommandOkEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="LoginCommand" />
+        </Item>
+        <Item>Ok</Item>
+      </Items>
+    </Condition>
+
+    <!--сравнение значения результата команды регистрации со значением "Fail"-->
+    <Condition Name="LoginCommandFailEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="LoginCommand" />
+        </Item>
+        <Item>Fail</Item>
+      </Items>
+    </Condition>
+
+    <!--условие, определяющее момент закрытия формы-->
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+  </Conditions>
+
+  <!--команды-->
+  <Commands>
+    <!--команда регистрации-->
+    <Command Name="LoginCommand" Type="LoginCommand" Assembly="Commands">
+      <UserName>
+        <DataConnection SourceDataConnection="ByUserIdUserSecondaryGetDataConnection">
+          <Fields>
+            <Field Name="UserName" />
+          </Fields>
+        </DataConnection>
+      </UserName>
+      <UserDomain>
+        <DataConnection SourceDataConnection="ByUserIdUserSecondaryGetDataConnection">
+          <Fields>
+            <Field Name="UserDomain" />
+          </Fields>
+        </DataConnection>
+      </UserDomain>
+      <Password>
+        <Object Name="PasswordTextBox" />
+      </Password>
+    </Command>
+
+    <!--команда добавления последнего входившего пользователя-->
+    <Command Name="LastLoginInsertSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="LastLoginInsertSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <!--команда присвоения атрибуту "Прозрачность" формы значения "Прозрачная"-->
+    <Command Name="Opacity0ValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Form>
+        <Property Name="Opacity">0</Property>
+      </Form>
+    </Command>
+
+    <!--команда сохранения последнего входившего пользователя-->
+    <Command Name="LastLoginUpdateSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="LastLoginUpdateSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <!--команда присвоения значению поля "Пароль" пустого значения-->
+    <Command Name="PasswordTextBoxEmptyValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="PasswordTextBox"></Object>
+    </Command>
+
+    <!--команда присвоения признаку изменений, произведенных формой, значения "True"-->
+    <Command Name="UpdatedTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="Updated">True</Parameter>
+    </Command>
+
+    <!--команда открытия формы "Автомойка"-->
+    <Command Name="WashStartFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashStart.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OriginalUserId">
+          <Command Name="LastLoginInsertSaveCommand" />
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <!--команда вызова диалогового окна с информацией о неудачной регистрации-->
+    <Command Name="LoginFailedMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Ошибка регистрации</Caption>
+      <Text>Пароль указан неверно.\rПопробуйте еще раз.</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <!--команда закрытия формы-->
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+  </Commands>
+
+  <!--выполнение действий-->
+  <Executions>
+    <!--регистрация нажатия клавиши "Enter" в текстовом поле "Пароль"-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Not>
+            <Or>
+              <Condition Name="UserComboBoxIsNullCondition" />
+              <Condition Name="PasswordTextBoxEmptyEqualCondition" />
+            </Or>
+          </Not>
+          <Condition Name="PasswordTextBoxKeyPressCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="LastLoginInsertSaveCommand" />
+        <Command Name="LoginCommand" />
+      </Commands>
+    </Execution>
+
+    <!--открытие формы "Автомойка" при успешной регистрации и первичном входе-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="LoginCommandOkEqualCondition" />
+          <Condition Name="FirstTrueEqualCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="Opacity0ValueSetCommand" />
+        <Command Name="LastLoginUpdateSaveCommand" />
+        <Command Name="PasswordTextBoxEmptyValueSetCommand" />
+        <Command Name="WashStartFormShowCommand" />
+        <Command Name="FormCloseCommand"/>
+      </Commands>
+    </Execution>
+
+    <!--закрытие формы при успешной регистрации и вторичном входе-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="LoginCommandOkEqualCondition" />
+          <Not>
+            <Condition Name="FirstTrueEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="LastLoginUpdateSaveCommand" />
+        <Command Name="UpdatedTrueValueSetCommand" />
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+
+    <!--показ диалогового окна с информацией о неудачной регистрации-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="LoginCommandFailEqualCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="LoginFailedMessageBoxCommand" />
+      </Commands>
+    </Execution>
+
+    <!--закрытие формы-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="FormClosingCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+  <!--проверки-->
+  <Checkings>
+    <!--проверка значения поля со списком "Пользователь" на пустоту-->
+    <Checking>
+      <Object Name="UserComboBox" />
+      <ConditionExpression>
+        <Condition Name="UserComboBoxIsNullCondition" />
+      </ConditionExpression>
+      <AsteriskHint>Поле "Пользователь" обязательно для заполнения</AsteriskHint>
+    </Checking>
+
+    <!--проверка значения текстового поля "Пароль" на пустоту-->
+    <Checking>
+      <Object Name="PasswordTextBox" />
+      <ConditionExpression>
+        <Condition Name="PasswordTextBoxEmptyEqualCondition" />
+      </ConditionExpression>
+      <AsteriskHint>Поле "Пароль" обязательно для заполнения</AsteriskHint>
+    </Checking>
+  </Checkings>
+
+  <!--основные объекты формы-->
+  <MyObjects>
+    <!--панель заголовка формы-->
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <!--название формы-->
+      <MyObject Name="FormTitleLabel" Type="Label" Assembly="BaseControls">
+        <Top>10</Top>
+        <Left>10</Left>
+        <Height>27</Height>
+        <Width>390</Width>
+        <FontStyle>HeadTitleFont</FontStyle>
+        <ForeColor>Black</ForeColor>
+        <Text>Северный луч</Text>
+      </MyObject>
+    </MyObject>
+
+    <!--панель-разделитель 1-->
+    <MyObject Name="SeparatePanel1" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <!--панель содержания-->
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>44</Top>
+      <Left>0</Left>
+      <Height>65</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorBack</BackColor>
+      <TabIndex>1</TabIndex>
+
+      <!--надпись "Пользователь"-->
+      <MyObject Name="UserLabel" Type="Label" Assembly="BaseControls">
+        <Top>8</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>100</Width>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Пользователь:</Text>
+      </MyObject>
+
+      <!--поле со списком "Пользователь"-->
+      <MyObject Name="UserComboBox" Type="ComboBox" Assembly="BaseControls">
+        <Top>10</Top>
+        <Left>110</Left>
+        <Width>255</Width>
+        <TabIndex>2</TabIndex>
+        <Sorted>True</Sorted>
+        <EnterText>True</EnterText>
+        <AutoCompleteMode>SuggestAppend</AutoCompleteMode>
+        <AutoCompleteSource>ListItems</AutoCompleteSource>
+        <NullValue Show="True" Title="[не выбрано]" />
+        <ValueList>
+          <DataConnection SourceDataConnection="UserPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="UserId" />
+              <Field Name="UserFullName" />
+            </Fields>
+          </DataConnection>
+        </ValueList>
+        <Value>
+          <Switch>
+            <Case>
+              <When>
+                <Not>
+                  <Condition Name="UserIdIsNullCondition" />
+                </Not>
+              </When>
+              <Then>
+                <Parameter Name="UserId" />
+              </Then>
+            </Case>
+            <Case>
+              <DataConnection SourceDataConnection="LastLoginPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="LastUserId" />
+                </Fields>
+              </DataConnection>
+            </Case>
+          </Switch>
+        </Value>
+        <Enabled>
+          <Condition Name="UserIdIsNullCondition" />
+        </Enabled>
+      </MyObject>
+
+      <!--надпись "Пароль"-->
+      <MyObject Name="PasswordLabel" Type="Label" Assembly="BaseControls">
+        <Top>33</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>100</Width>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Пароль:</Text>
+      </MyObject>
+
+      <!--текстовое поле "Пароль"-->
+      <MyObject Name="PasswordTextBox" Type="TextBox" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>110</Left>
+        <Width>255</Width>
+        <TabIndex>
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="UserComboBoxIsNullCondition" />
+              </When>
+              <Then>3</Then>
+            </Case>
+            <Case>1</Case>
+          </Switch>
+        </TabIndex>
+        <Password>True</Password>
+      </MyObject>
+    </MyObject>
+
+    <!--панель-разделитель 2-->
+    <MyObject Name="SeparatePanel2" Type="Panel" Assembly="BaseControls">
+      <Top>109</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <!--панель управления-->
+    <MyObject Name="ManagementPanel" Type="Panel" Assembly="BaseControls">
+      <Top>113</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorBack</BackColor>
+      <TabIndex>2</TabIndex>
+
+      <!--кнопка "Войти"-->
+      <MyObject Name="EnterButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>195</Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TabIndex>3</TabIndex>
+        <Text>Войти</Text>
+        <Commands StopOnError="True">
+          <Command Name="LastLoginInsertSaveCommand" />
+          <Command Name="LoginCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="UserComboBoxIsNullCondition" />
+              <Condition Name="PasswordTextBoxEmptyEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

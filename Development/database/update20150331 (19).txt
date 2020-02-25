@@ -1,0 +1,18 @@
+CREATE SEQUENCE wash.organization_id_seq;
+CREATE TABLE wash.organization
+(
+  organization_id smallint NOT NULL DEFAULT nextval('wash.organization_id_seq'::regclass),
+  organization_title character varying NOT NULL,
+  CONSTRAINT pk_organization_id PRIMARY KEY (organization_id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+INSERT INTO wash.organization(organization_title)
+VALUES ('ИП Афанасьев'), ('ИП Девальд');
+
+ALTER TABLE wash.client ADD COLUMN report_organization_id smallint;
+ALTER TABLE wash.client ADD CONSTRAINT fk_client_report_organization_id
+FOREIGN KEY (report_organization_id) REFERENCES wash.organization (organization_id) MATCH SIMPLE
+ON UPDATE NO ACTION ON DELETE SET NULL;

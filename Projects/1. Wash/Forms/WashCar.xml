@@ -1,0 +1,685 @@
+<?xml version="1.0"?>
+<Form Name="WashCarForm" Title="Северный луч. Автомобили" Width="600" Height="500" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+     <Parameters>
+         <Parameter Name="NotApproved"/>
+     </Parameters>
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CarPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CarMainSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CategoryId" />
+                    <Field Name="CarModelId" />
+                    <Field Name="CarVendorId" />
+                    <Field Name="Category" />
+                    <Field Name="CarModel" />
+                    <Field Name="CarVendor" />
+                    <Field Name="IsNotApproved" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="CarVendorPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CarVendorSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CarVendorId" />
+                    <Field Name="Title" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="CategoryPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CategoryWithTruckSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CategoryId" />
+                    <Field Name="Title" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="CarModelApproveSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="CarModelId">
+                    <Value>
+                        <Object Name="CarsDatabaseTable">
+                            <Property Name="SelectedRowCellValueByColumnName">
+                                <Parameters>
+                                    <Parameter Name="ColumnName">CarModelId</Parameter>
+                                </Parameters>
+                            </Property>
+                        </Object>
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CarModelApproveUpdateSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+        
+        <DataConnection Name="CarModelDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="CarModelId">
+                    <Value>
+                        <Object Name="CarsDatabaseTable">
+                            <Property Name="SelectedRowCellValueByColumnName">
+                                <Parameters>
+                                    <Parameter Name="ColumnName">CarModelId</Parameter>
+                                </Parameters>
+                            </Property>
+                        </Object>
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CarModelDeleteSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+    
+        <DataConnection Name="ClientCheckPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientCheckSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Count" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="CarModelId" RefreshQuery="False">
+                        <Value>
+                            <Object Name="CarsDatabaseTable">
+                                <Property Name="SelectedRowCellValueByColumnName">
+                                    <Parameters>
+                                        <Parameter Name="ColumnName">CarModelId</Parameter>
+                                    </Parameters>
+                                </Property>
+                            </Object>
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+        
+        <Condition Name="CarIsUsedCondition" Type="NotEqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <DataConnection SourceDataConnection="ClientCheckPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Count" />
+                        </Fields>
+                    </DataConnection>
+                </Item>
+                <Item>0</Item>
+            </Items>
+            <DataType Type="DoubleDataType"/>
+        </Condition>
+        
+        <Condition Name="CarIsNotUsedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <DataConnection SourceDataConnection="ClientCheckPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Count" />
+                        </Fields>
+                    </DataConnection>
+                </Item>
+                <Item>0</Item>
+            </Items>
+            <DataType Type="DoubleDataType"/>
+        </Condition>
+    
+        <Condition Name="CarsDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="CarsDatabaseTable" />
+        </Condition>
+    
+        <Condition Name="CarAddItemUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Command Name="CarAddItemFormShowCommand" Parameter="Updated" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="CarEditItemUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Command Name="CarEditItemFormShowCommand" Parameter="Updated" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="CarVendorUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Command Name="CarVendorFormShowCommand" Parameter="Updated" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="NeedUpdateNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="CarAddItemUpdatedCondition" />
+                    <Condition Name="CarEditItemUpdatedCondition" />
+                    <Condition Name="CarVendorUpdatedCondition" />
+                </Or>
+            </ConditionExpression>
+        </Condition>
+        
+        <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CarsDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="CarAddItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCarModelItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="CarModelId">-1</Parameter>
+                <Parameter Name="CarVendorId">
+                    <Object Name="CarVendorFilterComboBox"/>
+                </Parameter>
+                <Parameter Name="IsApproved">True</Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="CarEditItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCarModelItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="CarModelId">
+                    <Object Name="CarsDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">CarModelId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+                <Parameter Name="IsApproved">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Object Name="NotApprovedCheckBox" />
+                            </When>
+                            <Then>False</Then>
+                        </Case>
+                        <Case>True</Case>
+                    </Switch>
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="CarVendorFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCarVendor.xml</Xml>
+            <Show Type="Modal" />
+        </Command>
+
+        <Command Name="CarModelApproveUpdateSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CarModelApproveSetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="CarModelDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <Condition Name="CarIsNotUsedCondition" />
+            <DataConnections>
+                <DataConnection Name="CarModelDeleteSetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="ErrorDeletingCarMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Condition Name="CarIsUsedCondition" />
+            <Caption>Предупреждение</Caption>
+            <Text>Невозможно удалить автомобиль, который использовался хотя бы одним клиентом.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+
+        <Command Name="CarDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <Condition Name="NeedUpdateNestedCondition" />
+            <DataConnections>
+                <DataConnection Name="CarPrimaryGetDataConnection" />
+                <DataConnection Name="CarVendorPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="CarForceDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CarPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+    
+        <Command Name="ClientCheckDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientCheckPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+    
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="CarsDatabaseTableCellDoubleClickCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="CarEditItemFormShowCommand" />
+                <Command Name="CarDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Автомобили</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>40</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="CarVendorFilterComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <NullValue Show="True" Title="[ВСЕ]" />
+                <Sorted>True</Sorted>
+                <ValueList>
+                    <DataConnection SourceDataConnection="CarVendorPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="CarVendorId" />
+                                <Field Name="Title" />
+                            </Fields>
+                    </DataConnection>
+                </ValueList>
+            </MyObject>
+            
+            <MyObject Name="CategoryFilterComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>320</Left>
+                <Width>105</Width>
+                <Height>25</Height>
+                <Sorted>True</Sorted>
+                <NullValue Show="True" Title="[ВСЕ]" />
+                <ValueList>
+                    <DataConnection SourceDataConnection="CategoryPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CategoryId" />
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+            </MyObject>
+
+            <MyObject Name="NotApprovedCheckBox" Type="CheckBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Height>25</Height>
+                <Width>155</Width>
+                <Text>Неподтверждённые</Text>
+                <Value>
+                    <Parameter Name="NotApproved" />
+                </Value>
+            </MyObject>
+
+            <MyObject Name="CarsDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>40</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>165</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeRowsMode Value="AllCells" />
+                <AutoSizeColumnsMode Value="Fill" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="CarPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="CarVendorId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False" FilterNullValue="False">
+                            <Object Name="CarVendorFilterComboBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="CarModelId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="CategoryId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False" FilterNullValue="False">
+                            <Object Name="CategoryFilterComboBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="IsNotApproved" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False" FilterNullValue="False">
+                            <Object Name="NotApprovedCheckBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="CarVendor" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Марка</Title>
+                        <Width>100</Width>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="CarModel" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Модель</Title>
+                        <Width>100</Width>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="Category" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Категория</Title>
+                        <Width>70</Width>
+                        <AllowSort Value="False" />
+                    </Column>
+                </Columns>
+            </MyObject>
+
+            <MyObject Name="AddCarButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Добавить...</Text>
+                <Visible>
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Object Name="NotApprovedCheckBox" />
+                            </When>
+                            <Then>False</Then>
+                        </Case>
+                        <Case>True</Case>
+                    </Switch>
+                </Visible>
+                <Commands StopOnError="True">
+                    <Command Name="CarAddItemFormShowCommand" />
+                    <Command Name="CarDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="EditCarButton" Type="Button" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Редактировать...</Text>
+                <Commands StopOnError="True">
+                    <Command Name="CarEditItemFormShowCommand" />
+                    <Command Name="CarDataConnectionRefreshCommand" />
+                </Commands>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="DeleteCarButton" Type="Button" Assembly="BaseControls">
+                <Top>95</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Удалить</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ClientCheckDataConnectionRefreshCommand" />
+                    <Command Name="ErrorDeletingCarMessageBoxCommand" />
+                    <Command Name="CarModelDeleteSaveCommand" />
+                    <Command Name="CarForceDataConnectionRefreshCommand" />
+                </Commands>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="ApproveCarButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <Text>   Подтвердить</Text>
+                <Visible>
+                    <Object Name="NotApprovedCheckBox" />
+                </Visible>
+                <Commands StopOnError="True">
+                    <Command Name="CarModelApproveUpdateSaveCommand" />
+                    <Command Name="CarForceDataConnectionRefreshCommand" />
+                </Commands>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+            </MyObject>
+            
+            <MyObject Name="CarVendorButton" Type="Button" Assembly="BaseControls">
+                <Top>140</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Марки машин...</Text>
+                <Commands StopOnError="True">
+                    <Command Name="CarVendorFormShowCommand" />
+                    <Command Name="CarDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

@@ -1,0 +1,26 @@
+ALTER DATABASE postgres SET timezone TO 'GMT-6';
+ALTER DATABASE workflow_technology SET timezone TO 'GMT-6';
+
+UPDATE wash.shift
+SET start_time = start_time + '1 hour'::interval
+WHERE start_time > '2013-10-28 13:00' AND start_time < '2013-10-30 11:00';
+
+UPDATE wash.shift
+SET end_time = end_time + '1 hour'::interval
+WHERE end_time > '2013-10-28 13:00' AND end_time < '2013-10-30 11:00';
+
+UPDATE wash.order_list
+SET order_date = order_date + '1 hour'::interval
+WHERE order_date > '2013-10-28 13:00' AND order_date < '2013-10-30 11:00';
+
+UPDATE wash.tire_order_list
+SET order_date = order_date + '1 hour'::interval
+WHERE order_date > '2013-10-28 13:00' AND order_date < '2013-10-30 11:00';
+
+UPDATE wash.order_list
+SET delete_date = delete_date + '1 hour'::interval
+WHERE delete_date > '2013-10-28 13:00' AND delete_date < '2013-10-30 11:00';
+
+UPDATE wash.tire_order_list
+SET delete_date = delete_date + '1 hour'::interval
+WHERE delete_date > '2013-10-28 13:00' AND delete_date < '2013-10-30 11:00';

@@ -1,0 +1,631 @@
+<?xml version="1.0"?>
+<Form Name="WashCashForm" Title="Северный луч. Операции по кассе" Width="810" Height="500" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Parameters>
+        <Parameter Name="ShiftId" />
+        <Parameter Name="CurrentUserIsInAdministratorGroup" />
+        <Parameter Name="Updated">False</Parameter>
+        <Parameter Name="Type" />
+    </Parameters>
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CashPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashId" />
+                    <Field Name="CashDateTime" />
+                    <Field Name="CashTime" />
+                    <Field Name="CashType" />
+                    <Field Name="Summ" />
+                    <Field Name="Comments" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ShiftId">
+                        <Value>
+                            <Parameter Name="ShiftId" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="IsArchive" RefreshQuery="False">
+                        <Value>
+                            <Object Name="ArchiveCheckBox" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="StartDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="StartDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="EndDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="EndDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="Type">
+                        <Value>
+                            <Parameter Name="Type" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CashDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="CashId">
+                    <Value>
+                        <Object Name="CashDatabaseTable" ObjectType="DatabaseTable">
+                            <Property Name="SelectedRowCellValueByColumnName">
+                                <Parameters>
+                                    <Parameter Name="ColumnName">CashId</Parameter>
+                                </Parameters>
+                            </Property>
+                        </Object>
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Type">
+                    <Value>
+                        <Parameter Name="Type" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CashDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="IsDepositCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Type" />
+                </Item>
+                <Item>deposit</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="IsArchiveModeCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ArchiveCheckBox" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ArchiveCheckBoxChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ArchiveCheckBox" />
+                </Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CashDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="ShiftIsOpenedCondition" Type="IsNotNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="ShiftId" />
+                </Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ConfirmDeleteMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="ConfirmDeleteMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="CashDatabaseTableDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="CashDatabaseTable"/>
+        </Condition>
+        
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="AddCashItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCashItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="Mode">add</Parameter>
+                <Parameter Name="ShiftId">
+                    <Parameter Name="ShiftId" />
+                </Parameter>
+                <Parameter Name="Type">
+                    <Parameter Name="Type" />
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="EditCashItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCashItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="Mode">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsArchiveModeCondition" />
+                            </When>
+                            <Then>archive</Then>
+                        </Case>
+                        <Case>edit</Case>
+                    </Switch>
+                </Parameter>
+                <Parameter Name="Type">
+                    <Parameter Name="Type" />
+                </Parameter>
+                <Parameter Name="ShiftId">
+                    <Parameter Name="ShiftId" />
+                </Parameter>
+                <Parameter Name="CashId">
+                    <Object Name="CashDatabaseTable" ObjectType="DatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">CashId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="CashDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CashDeleteSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="CashDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CashPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ConfirmDeleteMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Подтверждение удаления</Caption>
+            <Text>Вы действительно хотите удалить эту запись?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNo" />
+        </Command>
+
+        <Command Name="DivideCashFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashDivideCash.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="CashId">
+                    <Object Name="CashDatabaseTable" ObjectType="DatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">CashId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+                <Parameter Name="Type">
+                    <Parameter Name="Type" />
+                </Parameter>
+            </Parameters>
+        </Command>
+
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="CashDatabaseTableDoubleClickCondition"/>
+            </ConditionExpression>
+            <Commands>
+                <Command Name="EditCashItemFormShowCommand" />
+                <Command Name="CashDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Not>
+                    <Condition Name="IsArchiveModeCondition" />
+                </Not>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="CashDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsDepositCondition" />
+                            </When>
+                            <Then>Внесение наличных</Then>
+                        </Case>
+                        <Case>Снятие наличных</Case>
+                    </Switch>
+                </Text>
+            </MyObject>
+
+            <MyObject Name="ArchiveCheckBox" Type="CheckBox" Assembly="BaseControls">
+                <Top>6</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="HeadPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>420</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Height>25</Height>
+                <Width>67</Width>
+                <Text>Архив</Text>
+                <Value>False</Value>
+                <Change User="False" />
+                <Visible>
+                    <Parameter Name="CurrentUserIsInAdministratorGroup" />
+                </Visible>
+            </MyObject>
+
+            <MyObject Name="ArchivePanel" Type="Panel" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="HeadPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>355</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Height>25</Height>
+                <Width>355</Width>
+                <Visible>
+                    <Object Name="ArchiveCheckBox" />
+                </Visible>
+
+                <MyObject Name="StartDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                    <Top>0</Top>
+                    <Left>5</Left>
+                    <Height>25</Height>
+                    <Width>140</Width>
+                    <NullValue Show="False" />
+                    <Change User="False" />
+                    <Value>now</Value>
+                </MyObject>
+
+                <MyObject Name="EndDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                    <Top>0</Top>
+                    <Left>150</Left>
+                    <Height>25</Height>
+                    <Width>140</Width>
+                    <NullValue Show="False" />
+                    <Change User="False" />
+                    <Value>now</Value>
+                </MyObject>
+
+                <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+                    <Top>0</Top>
+                    <Left>296</Left>
+                    <Height>24</Height>
+                    <Width>52</Width>
+                    <Text>˃</Text>
+                    <BackColor>Default</BackColor>
+                    <FlatStyle>Flat</FlatStyle>
+                    <FlatBorderSize>0</FlatBorderSize>
+                    <Commands StopOnError="True">
+                        <Command Name="CashDataConnectionRefreshCommand" />
+                    </Commands>
+                    <Change User="False" />
+                </MyObject>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>460</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="CashDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>105</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeRowsMode Value="AllCells" />
+                <AutoSizeColumnsMode Value="AllCells" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="CashPrimaryGetDataConnection" />
+                <Change Source="False" />
+                <Columns>
+                    <Column Name="CashId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="CashTime" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Время</Title>
+                        <AutoSizeMode Value="AllCells" />
+                        <ReadOnly>True</ReadOnly>
+                        <Visible>
+                            <Switch>
+                                <Case>
+                                    <When>
+                                        <Object Name="ArchiveCheckBox" />
+                                    </When>
+                                    <Then>False</Then>
+                                </Case>
+                                <Case>True</Case>
+                            </Switch>
+                        </Visible>
+                        <DataType Type="DateTimeDataType" Format="HH:mm" />
+                    </Column>
+                    <Column Name="CashDateTime" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Дата и время</Title>
+                        <AutoSizeMode Value="AllCells" />
+                        <ReadOnly>True</ReadOnly>
+                        <Visible>
+                            <Object Name="ArchiveCheckBox" />
+                        </Visible>
+                    </Column>
+                    <Column Name="CashType" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Тип внесения</Title>
+                    </Column>
+                    <Column Name="Summ" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Сумма</Title>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <Minimum Value="0" />
+                        <Maximum Value="999999999" />
+                        <Increment Value="100" />
+                        <ThousandsSeparator Value="True" />
+                        <ReadOnly>
+                            <Condition Name="IsArchiveModeCondition" />
+                        </ReadOnly>
+                    </Column>
+                    <Column Name="Comments" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Комментарий</Title>
+                        <AutoSizeMode Value="Fill" />
+                        <AllowSort Value="False" />
+                        <ReadOnly>
+                            <Condition Name="IsArchiveModeCondition" />
+                        </ReadOnly>
+                    </Column>
+                </Columns>
+            </MyObject>
+
+            <MyObject Name="AddCashButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>715</Left>
+                <Width>90</Width>
+                <Height>25</Height>
+                <Text>Добавить</Text>
+                <Enabled>
+                    <And>
+                        <Condition Name="ShiftIsOpenedCondition" />
+                        <Not>
+                            <Condition Name="IsArchiveModeCondition" />
+                        </Not>
+                    </And>
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="AddCashItemFormShowCommand" />
+                    <Command Name="CashDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="EditCashButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>715</Left>
+                <Width>90</Width>
+                <Height>25</Height>
+                <Text>Изменить</Text>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="EditCashItemFormShowCommand" />
+                    <Command Name="CashDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="DivideCashButton" Type="Button" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>715</Left>
+                <Width>90</Width>
+                <Height>25</Height>
+                <Text>Разделить</Text>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="DivideCashFormShowCommand" />
+                    <Command Name="CashDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="DeleteCashButton" Type="Button" Assembly="BaseControls">
+                <Top>95</Top>
+                <Left>715</Left>
+                <Width>90</Width>
+                <Height>25</Height>
+                <Text>Удалить</Text>
+                <Enabled>
+                    <And>
+                        <Condition Name="ShiftIsOpenedCondition" />
+                        <Condition Name="SelectedIndex0GreaterCondition" />
+                        <Not>
+                            <Condition Name="IsArchiveModeCondition" />
+                        </Not>
+                    </And>
+                </Enabled>
+                <Commands>
+                    <Command Name="ConfirmDeleteMessageBoxCommand" />
+                    <If>
+                        <When>
+                            <Condition Name="ConfirmDeleteMessageBoxCommandYesEqualCondition" />
+                        </When>
+                        <Then>
+                            <Command Name="CashDeleteSaveCommand" />
+                            <Command Name="CashDataConnectionRefreshCommand" />
+                        </Then>
+                    </If>
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

@@ -1,0 +1,307 @@
+<?xml version="1.0"?>
+<Form Name="WashCategoryDescription" Title="Северный луч. Описание категорий" Width="600" Height="405" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CategoryDescriptionPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CategoryDescriptionSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CategoryId" />
+                    <Field Name="Title" />
+                    <Field Name="Description" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CategoryDescriptionDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="CategoryDescriptionsDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="CategoryId">
+                    <Column Name="CategoryId" />
+                </Parameter>
+                <Parameter NativeName="Description">
+                    <Column Name="Description" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CategoryDescriptionUpdateSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+        
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="CategoryDescriptionSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CategoryDescriptionDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rСохранить их перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+      
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands StopOnError="True">
+                <Command Name="CategoryDescriptionSaveCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+        
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveOnCloseMessageBoxCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveSequentialCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                    <And>
+                        <Condition Name="FormClosingCondition" />
+                        <Not>
+                            <Condition Name="FormChangedCondition" />
+                        </Not>
+                    </And>
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Описание категорий</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>325</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="CategoryDescriptionsDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Height>315</Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="Fill" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="CategoryDescriptionPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="CategoryId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Категория</Title>
+                        <ReadOnly>True</ReadOnly>
+                        <AutoSizeMode Value="None" />
+                        <Width>100</Width>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="Description" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Описание</Title>
+                        <AllowSort Value="False" />
+                        <Alignment Value="MiddleLeft" />
+                    </Column>
+                </Columns>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>365</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>369</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>395</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

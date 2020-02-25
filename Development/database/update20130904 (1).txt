@@ -1,0 +1,9 @@
+DROP TABLE tmp_price_id;
+
+DROP TABLE tmp_price;
+
+ALTER TABLE wash.work
+ADD COLUMN default_quantity double precision DEFAULT 1;
+
+INSERT INTO wash.withdrawal_type(withdrawal_type_id, title)
+VALUES (5, 'Оплата ночных');

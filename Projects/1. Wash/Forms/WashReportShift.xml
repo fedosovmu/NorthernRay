@@ -1,0 +1,1543 @@
+<?xml version="1.0"?>
+<Form Name="WashReportShiftForm" Title="Северный луч. Отчёт по сменам" Width="1250" Height="900" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" MaximizeBox="True" FormBorderStyle="Sizable">
+
+  <Parameters>
+    <Parameter Name="ShiftId" />
+    <Parameter Name="CurrentUserIsInAdministratorGroup" />
+    <Parameter Name="IsClosing">False</Parameter>
+  </Parameters>
+
+
+  <Appearance>
+    <Colors>
+      <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+      <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+
+  <DataConnections>
+    <DataConnection Name="ReportHistoryPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportHistorySelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="OrderDate" />
+          <Field Name="OrderType" />
+          <Field Name="Type" />
+          <Field Name="OrderId" />
+          <Field Name="OrderNumber" />
+          <Field Name="Cash" />
+          <Field Name="Terminal" />
+          <Field Name="NonCash" />
+          <Field Name="DiscountPercent" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="EndDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportIncomePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportIncomeSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Title" />
+          <Field Name="Cash" />
+          <Field Name="Terminal" />
+          <Field Name="NonCash" />
+          <Field Name="Total" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="EndDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportForSalaryPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportForSalarySelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Title" />
+          <Field Name="Summ" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="EndDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportOutcomePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportOutcomeSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Title" />
+          <Field Name="Summ" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="EndDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportOtherIncomePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportOtherIncomeSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Title" />
+          <Field Name="Summ" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="StartDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="EndDate">
+            <Value>%NULL%</Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportShiftPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportShiftSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ShiftDate" />
+          <Field Name="StartRest" />
+          <Field Name="CashRest" />
+          <Field Name="CashRestExplain" />
+          <Field Name="Collection" />
+          <Field Name="EndRest" />
+          <Field Name="EndRestExplain" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="ShiftId" RefreshQuery="False">
+            <Value>
+              <Object Name="ShiftComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ShiftPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ShiftSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ShiftId" />
+          <Field Name="Title" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="ShiftDate">
+            <Value>
+              <Object Name="ShiftDateTimePicker" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="WashShiftItemPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ShiftItemSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ShiftId" />
+          <Field Name="Title" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="ShiftId">
+            <Value>
+              <Parameter Name="ShiftId" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="CurrentShiftSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="WashShiftItemPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="ShiftId" />
+        <Value>
+          <Parameter Name="ShiftId" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="ShiftByShiftSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ShiftPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="ShiftId" />
+        <Value>
+          <Object Name="ShiftComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="EmailSettingPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="EmailSettingSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="EmailSettingName" />
+          <Field Name="AuthorSmtpServerAddress" />
+          <Field Name="AuthorSmtpServerPort" />
+          <Field Name="AuthorEmailAddress" />
+          <Field Name="AuthorEmailPassword" />
+          <Field Name="AuthorName" />
+          <Field Name="Subject" />
+          <Field Name="Text" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="EmailAddresseePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="EmailAddresseeSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="EmailAddresseeId" />
+          <Field Name="EmailAddress" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+  </DataConnections>
+
+
+  <Conditions>
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    <Condition Name="IsWashOrderCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderType</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>wash</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="IsTireOrderCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderType</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>tire</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="IsTireTruckOrderCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderType</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>tire_truck</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="HistoryDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+      <Table Name="ReportHistoryDatabaseTable" />
+    </Condition>
+
+    <Condition Name="ShiftComboBoxIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ShiftComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CurrentUserIsInAdministratorGroupCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Parameter Name="CurrentUserIsInAdministratorGroup" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShiftIsClosedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Parameter Name="IsClosing" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Type="EqualCondition" Name="EmailSendErrorCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="EmailSendCommand" />
+        </Item>
+        <Item>1</Item>
+      </Items>
+    </Condition>
+
+  </Conditions>
+
+
+  <Commands>
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+    <Command Name="ShiftDataConnectionResreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ReportHistoryPrimaryGetDataConnection" />
+        <DataConnection Name="ReportIncomePrimaryGetDataConnection" />
+        <DataConnection Name="ReportForSalaryPrimaryGetDataConnection" />
+        <DataConnection Name="ReportOutcomePrimaryGetDataConnection" />
+        <DataConnection Name="ReportOtherIncomePrimaryGetDataConnection" />
+        <DataConnection Name="ReportShiftPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="EditOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashEditOrder.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsReadOnly">True</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="EditTireOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashTireEditOrder.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsReadOnly">True</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="EditTireTruckOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashTireTruckEditOrder.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsReadOnly">True</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>Templates\PrintableReportShift.rtf</TemplateFileName>
+      <Print>False</Print>
+      <Open>
+        <Object Name="PrintReportVariable" />
+      </Open>
+      <Parameters>
+        <Parameter Name="ShiftDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="ShiftDate" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="WashAdmin">
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+              </When>
+              <Then>
+                <Object Name="ShiftComboBox">
+                  <Property Name="VisibleText" />
+                </Object>
+              </Then>
+            </Case>
+            <Case>
+              <DataConnection SourceDataConnection="CurrentShiftSecondaryGetDataConnection">
+                <Fields>
+                  <Field Name="Title" />
+                </Fields>
+              </DataConnection>
+            </Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="StartRest">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="StartRest" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="IncomeTitle">
+          <DataConnection SourceDataConnection="ReportIncomePrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Cash">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportIncomePrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Cash" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Terminal">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportIncomePrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Terminal" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="NonCash">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportIncomePrimaryGetDataConnection">
+              <Fields>
+                <Field Name="NonCash" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="Total">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportIncomePrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Total" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="ForSalaryTitle">
+          <DataConnection SourceDataConnection="ReportForSalaryPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ForSalarySumm">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportForSalaryPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Summ" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="OutcomeTitle">
+          <DataConnection SourceDataConnection="ReportOutcomePrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="OutcomeSumm">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportOutcomePrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Summ" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="CashRest">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="CashRest" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="CashRestExplain">
+          <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="CashRestExplain" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Collection">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Collection" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="EndRest">
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="EndRest" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="EndRestExplain">
+          <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="EndRestExplain" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="FormHideValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Form>
+        <Property Name="Opacity">0</Property>
+      </Form>
+    </Command>
+
+    <Command Name="PrintReportVariableFalseValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="PrintReportVariable">False</Object>
+    </Command>
+
+    <Command Name="PrintReportVariableTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="PrintReportVariable">True</Object>
+    </Command>
+
+    <Command Name="EmailSendCommand" Type="EmailSendCommand" Assembly="Commands">
+      <AuthorSmtpServerAddress>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="AuthorSmtpServerAddress" />
+          </Fields>
+        </DataConnection>
+      </AuthorSmtpServerAddress>
+      <AuthorSmtpServerPort>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="AuthorSmtpServerPort" />
+          </Fields>
+        </DataConnection>
+      </AuthorSmtpServerPort>
+      <AuthorEmailAddress>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="AuthorEmailAddress" />
+          </Fields>
+        </DataConnection>
+      </AuthorEmailAddress>
+      <AuthorEmailPassword>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="AuthorEmailPassword" />
+          </Fields>
+        </DataConnection>
+      </AuthorEmailPassword>
+      <AuthorName>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="AuthorName" />
+          </Fields>
+        </DataConnection>
+      </AuthorName>
+      <Subject>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Subject" />
+          </Fields>
+        </DataConnection>
+      </Subject>
+      <Text>
+        <DataConnection SourceDataConnection="EmailSettingPrimaryGetDataConnection">
+          <Fields>
+            <Field Name="Text" />
+          </Fields>
+        </DataConnection>
+      </Text>
+      <Files>
+        <Command Name="ReportExportToRtfCommand" />
+      </Files>
+      <Addressees>
+        <DataConnection SourceDataConnection="EmailAddresseePrimaryGetDataConnection">
+          <Fields>
+            <Field Name="EmailAddress" />
+          </Fields>
+        </DataConnection>
+      </Addressees>
+    </Command>
+
+    <Command Name="ShowCashFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCashItem.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="Mode">view</Parameter>
+        <Parameter Name="CashId">
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="Type">
+          <Object Name="ReportHistoryDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderType</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Type="MessageBoxCommand" Name="EmailSendErrorMessageBoxCommand" Assembly="Commands">
+      <Caption>Ошибка</Caption>
+      <Text>При автоматической отправке отчета произошла ошибка.\rПожалуйста, отправьте отчет по электронной почте вручную.\rДля этого нажмите кнопку "Распечатать" и в открывшемся окне \rсохраните документ с помощью кнопки "Сохранить как".</Text>
+      <Buttons Type="Ok" />
+      <Icon Type="Error" />
+    </Command>
+  </Commands>
+
+
+  <Executions>
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="FormClosingCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <If>
+          <When>
+            <And>
+              <Condition Name="ShiftIsClosedCondition" />
+              <Condition Name="EmailSendErrorCondition" />
+            </And>
+          </When>
+          <Then>
+            <Command Name="FormCloseCommand" />
+          </Then>
+          <ElseIf>
+            <When>
+              <Condition Name="ShiftIsClosedCondition" />
+            </When>
+            <Then>
+              <Command Name="PrintReportVariableFalseValueSetCommand" />
+              <Command Name="ReportExportToRtfCommand" />
+              <Command Name="PrintReportVariableTrueValueSetCommand" />
+              <Command Name="EmailSendCommand" />
+              <If>
+                <When>
+                  <Condition Name="EmailSendErrorCondition" />
+                </When>
+                <Then>
+                  <Command Name="EmailSendErrorMessageBoxCommand" />
+                </Then>
+                <Else>
+                  <Command Name="FormCloseCommand" />
+                </Else>
+              </If>
+            </Then>
+          </ElseIf>
+          <Else>
+            <Command Name="FormCloseCommand" />
+          </Else>
+        </If>
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="HistoryDatabaseTableCellDoubleClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <If>
+          <When>
+            <Condition Name="IsWashOrderCondition" />
+          </When>
+          <Then>
+            <Command Name="EditOrderFormShowCommand" />
+          </Then>
+          <ElseIf>
+            <When>
+              <Condition Name="IsTireOrderCondition" />
+            </When>
+            <Then>
+              <Command Name="EditTireOrderFormShowCommand" />
+            </Then>
+          </ElseIf>
+          <ElseIf>
+            <When>
+              <Condition Name="IsTireTruckOrderCondition" />
+            </When>
+            <Then>
+              <Command Name="EditTireTruckOrderFormShowCommand" />
+            </Then>
+          </ElseIf>
+          <Else>
+            <Command Name="ShowCashFormShowCommand" />
+          </Else>
+        </If>
+      </Commands>
+    </Execution>
+  </Executions>
+
+
+  <MyObjects>
+    <MyObject Name="PrintReportVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>True</Value>
+    </MyObject>
+
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>36</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+        <Top>0</Top>
+        <Left>10</Left>
+        <Height>
+          <Object Name="HeadPanel">
+            <Property Name="Height" />
+          </Object>
+        </Height>
+        <Width>280</Width>
+        <FontStyle>OrderTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Отчёт по сменам</Text>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>36</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>
+        <Formula>
+          <Minus DataType="DoubleDataType">
+            <Item>
+              <Form>
+                <Property Name="Height" />
+              </Form>
+            </Item>
+            <Item>45</Item>
+          </Minus>
+        </Formula>
+      </Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="DateLabel" Type="Label" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>50</Width>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Дата:</Text>
+        <Visible>
+          <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="ShiftDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>60</Left>
+        <Height>25</Height>
+        <Width>150</Width>
+        <NullValue Show="False" />
+        <Value>Now</Value>
+        <Visible>
+          <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="ShiftLabel" Type="Label" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>215</Left>
+        <Height>25</Height>
+        <Width>120</Width>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Администратор:</Text>
+        <Visible>
+          <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="ShiftComboBox" Type="ComboBox" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>340</Left>
+        <Height>25</Height>
+        <Width>250</Width>
+        <ValueList>
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+              </When>
+              <Then>
+                <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="ShiftId" />
+                    <Field Name="Title" />
+                  </Fields>
+                </DataConnection>
+              </Then>
+            </Case>
+            <Case>
+              <DataConnection SourceDataConnection="WashShiftItemPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="ShiftId" />
+                  <Field Name="Title" />
+                </Fields>
+              </DataConnection>
+            </Case>
+          </Switch>
+        </ValueList>
+        <Value>
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="CurrentUserIsInAdministratorGroupCondition" />
+              </When>
+              <Then>
+                <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="ShiftId" />
+                  </Fields>
+                </DataConnection>
+              </Then>
+            </Case>
+            <Case>
+              <Parameter Name="ShiftId" />
+            </Case>
+          </Switch>
+        </Value>
+        <Visible>
+          <Not>
+            <Condition Name="ShiftIsClosedCondition" />
+          </Not>
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>600</Left>
+        <Height>25</Height>
+        <Width>100</Width>
+        <Text>Показать</Text>
+        <Commands StopOnError="True">
+          <Command Name="ShiftDataConnectionResreshCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="ShiftComboBoxIsNullCondition" />
+          </Not>
+        </Enabled>
+        <Visible>
+          <Not>
+            <Condition Name="ShiftIsClosedCondition" />
+          </Not>
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="HistoryGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>5</Left>
+        <Height>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>35</Item>
+            </Minus>
+          </Formula>
+        </Height>
+        <Width>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Width" />
+                </Object>
+              </Item>
+              <Item>670</Item>
+            </Minus>
+          </Formula>
+        </Width>
+        <Text>История</Text>
+
+        <MyObject Name="ReportHistoryDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>20</Top>
+          <Left>5</Left>
+          <Height>
+            <Formula>
+              <Minus DataType="DoubleDataType">
+                <Item>
+                  <Object Name="HistoryGroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>25</Item>
+              </Minus>
+            </Formula>
+          </Height>
+          <Width>
+            <Formula>
+              <Minus DataType="DoubleDataType">
+                <Item>
+                  <Object Name="HistoryGroupBox">
+                    <Property Name="Width" />
+                  </Object>
+                </Item>
+                <Item>10</Item>
+              </Minus>
+            </Formula>
+          </Width>
+          <ColumnHeadersHeight Value="25" />
+          <AllowInsert>False</AllowInsert>
+          <AllowUpdate>False</AllowUpdate>
+          <AllowDelete>False</AllowDelete>
+          <AutoSizeColumnsMode Value="AllCells" />
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <SourceDataConnection Name="ReportHistoryPrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="OrderType" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="OrderId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="OrderDate" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Время</Title>
+              <DataType Type="DateTimeDataType" Format="HH:mm" />
+            </Column>
+            <Column Name="OrderNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>№</Title>
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="Type" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Тип операции</Title>
+              <AutoSizeMode Value="Fill" />
+            </Column>
+            <Column Name="Cash" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Нал.</Title>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="Terminal" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Терм.</Title>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="NonCash" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Б/нал.</Title>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="DiscountPercent" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Скид.</Title>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+            </Column>
+          </Columns>
+        </MyObject>
+      </MyObject>
+
+      <MyObject Name="ReportGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>
+          <Formula>
+            <Plus DataType="DoubleDataType">
+              <Item>
+                <Object Name="HistoryGroupBox">
+                  <Property Name="Left" />
+                </Object>
+              </Item>
+              <Item>
+                <Object Name="HistoryGroupBox">
+                  <Property Name="Width" />
+                </Object>
+              </Item>
+              <Item>5</Item>
+            </Plus>
+          </Formula>
+        </Left>
+        <Height>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>35</Item>
+            </Minus>
+          </Formula>
+        </Height>
+        <Width>655</Width>
+        <Text>Статистика</Text>
+
+        <MyObject Name="StartRestLabel" Type="Label" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>280</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Переходящий остаток на начало смены:</Text>
+        </MyObject>
+
+        <MyObject Name="StartRestValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>290</Left>
+          <Height>25</Height>
+          <Width>90</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>
+            <DataTypeFormat Type="IntegerDataType" Format="N0">
+              <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="StartRest" />
+                </Fields>
+              </DataConnection>
+            </DataTypeFormat>
+          </Text>
+        </MyObject>
+
+        <MyObject Name="ReportIncomeLabel" Type="Label" Assembly="BaseControls">
+          <Top>45</Top>
+          <Left>10</Left>
+          <Height>25</Height>
+          <Width>305</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>Приход за смену (с учетом скидок):</Text>
+        </MyObject>
+
+        <MyObject Name="ReportIncomeDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>70</Top>
+          <Left>5</Left>
+          <Height>160</Height>
+          <Width>645</Width>
+          <ColumnHeadersHeight Value="25" />
+          <AllowInsert>False</AllowInsert>
+          <AllowUpdate>False</AllowUpdate>
+          <AllowDelete>False</AllowDelete>
+          <AutoSizeColumnsMode Value="Fill" />
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <ShowCellHints Value="True" />
+          <SourceDataConnection Name="ReportIncomePrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title />
+              <Width>150</Width>
+              <AllowSort Value="False" />
+              <AutoSizeMode Value="Fill" />
+            </Column>
+            <Column Name="Cash" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>наличные</Title>
+              <Width>50</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="Terminal" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>терминал</Title>
+              <Width>50</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="NonCash" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>   безнал</Title>
+              <Width>50</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="Total" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>   ВСЕГО</Title>
+              <Width>50</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+          </Columns>
+        </MyObject>
+
+        <MyObject Name="ReportOutcomeLabel" Type="Label" Assembly="BaseControls">
+          <Top>240</Top>
+          <Left>10</Left>
+          <Height>25</Height>
+          <Width>305</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>Расход из кассы:</Text>
+        </MyObject>
+
+        <MyObject Name="ReportForSalaryLabel" Type="Label" Assembly="BaseControls">
+          <Top>240</Top>
+          <Left>330</Left>
+          <Height>25</Height>
+          <Width>200</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>Суммы для расчета з/п:</Text>
+        </MyObject>
+
+        <MyObject Name="ReportOutcomeDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>265</Top>
+          <Left>5</Left>
+          <Height>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>375</Item>
+              </Minus>
+            </Formula>
+          </Height>
+          <Width>320</Width>
+          <ColumnHeadersHeight Value="25" />
+          <AllowInsert>False</AllowInsert>
+          <AllowUpdate>False</AllowUpdate>
+          <AllowDelete>False</AllowDelete>
+          <AutoSizeColumnsMode Value="Fill" />
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <SourceDataConnection Name="ReportOutcomePrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title />
+              <Width>70</Width>
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Сумма</Title>
+              <Width>30</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+          </Columns>
+        </MyObject>
+
+        <MyObject Name="ReportForSalaryDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>265</Top>
+          <Left>330</Left>
+          <Height>93</Height>
+          <Width>320</Width>
+          <ColumnHeadersHeight Value="25" />
+          <AllowInsert>False</AllowInsert>
+          <AllowUpdate>False</AllowUpdate>
+          <AllowDelete>False</AllowDelete>
+          <AutoSizeColumnsMode Value="Fill" />
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <SourceDataConnection Name="ReportForSalaryPrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title />
+              <Width>60</Width>
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Сумма</Title>
+              <Width>40</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+          </Columns>
+        </MyObject>
+
+        <MyObject Name="ReportOtherIncomeLabel" Type="Label" Assembly="BaseControls">
+          <Top>367</Top>
+          <Left>330</Left>
+          <Height>25</Height>
+          <Width>200</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>Иной приход в кассу:</Text>
+        </MyObject>
+
+        <MyObject Name="ReportOtherIncomeDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>392</Top>
+          <Left>330</Left>
+          <Height>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>502</Item>
+              </Minus>
+            </Formula>
+          </Height>
+          <Width>320</Width>
+          <ColumnHeadersHeight Value="25" />
+          <AllowInsert>False</AllowInsert>
+          <AllowUpdate>False</AllowUpdate>
+          <AllowDelete>False</AllowDelete>
+          <AutoSizeColumnsMode Value="Fill" />
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <SourceDataConnection Name="ReportOtherIncomePrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title />
+              <Width>70</Width>
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Сумма</Title>
+              <Width>30</Width>
+              <AllowSort Value="False" />
+              <Alignment Value="MiddleRight" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+          </Columns>
+        </MyObject>
+
+        <MyObject Name="CashRestLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>105</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>280</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Остаток наличных за смену:</Text>
+        </MyObject>
+
+        <MyObject Name="CashRestValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>105</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>290</Left>
+          <Height>25</Height>
+          <Width>200</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>
+            <String Format="{0}   {1}">
+              <Items>
+                <Item>
+                  <DataTypeFormat Type="IntegerDataType" Format="N0">
+                    <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                      <Fields>
+                        <Field Name="CashRest" />
+                      </Fields>
+                    </DataConnection>
+                  </DataTypeFormat>
+                </Item>
+                <Item>
+                  <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                    <Fields>
+                      <Field Name="CashRestExplain" />
+                    </Fields>
+                  </DataConnection>
+                </Item>
+              </Items>
+            </String>
+          </Text>
+        </MyObject>
+
+        <MyObject Name="CollectionLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>80</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>5</Left>
+          <Width>280</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Инкассация:</Text>
+        </MyObject>
+
+        <MyObject Name="CollectionValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>80</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>290</Left>
+          <Height>25</Height>
+          <Width>200</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>
+            <DataTypeFormat Type="IntegerDataType" Format="N0">
+              <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="Collection" />
+                </Fields>
+              </DataConnection>
+            </DataTypeFormat>
+          </Text>
+        </MyObject>
+
+        <MyObject Name="EndRestLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>55</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>280</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Остаток на конец смены:</Text>
+        </MyObject>
+
+        <MyObject Name="EndRestValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>55</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>290</Left>
+          <Height>25</Height>
+          <Width>280</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>
+            <String Format="{0}   {1}">
+              <Items>
+                <Item>
+                  <DataTypeFormat Type="IntegerDataType" Format="N0">
+                    <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                      <Fields>
+                        <Field Name="EndRest" />
+                      </Fields>
+                    </DataConnection>
+                  </DataTypeFormat>
+                </Item>
+                <Item>
+                  <DataConnection SourceDataConnection="ReportShiftPrimaryGetDataConnection">
+                    <Fields>
+                      <Field Name="EndRestExplain" />
+                    </Fields>
+                  </DataConnection>
+                </Item>
+              </Items>
+            </String>
+          </Text>
+        </MyObject>
+
+        <MyObject Name="PrintButton" Type="Button" Assembly="BaseControls">
+          <Top>
+            <Formula>
+              <Minus DataType="IntegerDataType">
+                <Item>
+                  <Object Name="ReportGroupBox" ObjectType="GroupBox">
+                    <Property Name="Height" />
+                  </Object>
+                </Item>
+                <Item>30</Item>
+              </Minus>
+            </Formula>
+          </Top>
+          <Left>545</Left>
+          <Height>25</Height>
+          <Width>105</Width>
+          <Text>Распечатать</Text>
+          <Commands StopOnError="True">
+            <Command Name="ReportExportToRtfCommand" />
+          </Commands>
+        </MyObject>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

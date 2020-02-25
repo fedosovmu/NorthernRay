@@ -1,0 +1,223 @@
+DROP VIEW wash.main_view;
+
+CREATE OR REPLACE FUNCTION wash.refresh_work(integer, new_category_id integer, new_client_id integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	tmp_id integer;
+	tmp_work_id integer;
+	tmp_price record;
+BEGIN
+	FOR tmp_id IN SELECT order_work_id FROM wash.order_work WHERE order_id = $1 LOOP
+		SELECT 
+			work_id 
+		INTO 
+			tmp_work_id
+		FROM
+			wash.order_work OW
+			INNER JOIN wash.price P ON P.price_id = OW.price_id
+		WHERE
+			order_work_id = tmp_id;
+		
+		SELECT 
+			P.price_id,
+			P.price,
+			P.deleted
+		INTO 
+			tmp_price
+		FROM 
+			wash.price P
+		WHERE
+			work_id = tmp_work_id
+			AND category_id = new_category_id
+			AND (((new_client_id ISNULL OR (SELECT COUNT(*) FROM wash.price WHERE client_id = new_client_id AND category_id = new_category_id) = 0) AND client_id ISNULL)
+			OR (new_client_id IS NOT NULL AND client_id = new_client_id));
+		
+		IF tmp_price.price_id IS NOT NULL AND NOT tmp_price.deleted
+		THEN
+			UPDATE
+				wash.order_work
+			SET
+				price_id = tmp_price.price_id,
+				price = tmp_price.price
+			WHERE
+				order_work_id = tmp_id
+				AND (SELECT category_id FROM wash.price WHERE tmp_price.price_id = price_id) != (SELECT category_id FROM wash.category WHERE category_key = 'truck_spec')
+				AND new_category_id != (SELECT category_id FROM wash.category WHERE category_key = 'truck');
+		ELSE
+			DELETE FROM
+				wash.order_work
+			WHERE
+				order_work_id = tmp_id;
+		END IF;
+	END LOOP;
+	
+	RETURN 0;
+        END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+ALTER TABLE wash."work"
+ADD COLUMN  client_id integer;
+
+ALTER TABLE wash."work"
+ADD COLUMN  source_work_id integer;
+
+ALTER TABLE wash."work" 
+ADD COLUMN deleted boolean NOT NULL DEFAULT false;
+
+ALTER TABLE wash."work"
+ADD CONSTRAINT fk_client_id FOREIGN KEY (client_id)
+      REFERENCES wash.client (client_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE;
+
+
+ALTER TABLE wash."work"
+ALTER COLUMN work_id SET DATA TYPE int;
+
+
+ALTER TABLE wash.price
+ALTER COLUMN work_id SET DATA TYPE int;
+
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION wash.works()
+  RETURNS void AS
+$BODY$
+DECLARE
+  rec RECORD;
+BEGIN
+  FOR rec IN SELECT DISTINCT client_id, work_id FROM wash.price WHERE client_id IS NOT NULL
+  LOOP
+    INSERT INTO
+      wash.work(part_id, title, work_number, default_quantity, source_work_id, client_id)
+    SELECT
+      W.part_id, W.title, W.work_number, W.default_quantity, W.work_id, rec.client_id
+    FROM
+      wash.work W
+    WHERE
+      W.work_id = rec.work_id;
+
+  END LOOP;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+SELECT wash.works();
+
+DROP FUNCTION wash.works();
+
+
+
+UPDATE
+  wash.price P
+SET
+  work_id = (SELECT work_id FROM wash.work W WHERE W.source_work_id = P.work_id AND P.client_id = W.client_id)
+WHERE
+  P.client_id IS NOT NULL;
+
+
+UPDATE
+  wash.work W
+SET
+  deleted = true
+WHERE
+  work_id IN (SELECT DISTINCT work_id FROM wash.price WHERE deleted);
+
+
+
+ALTER TABLE wash.price DROP COLUMN client_id;
+ALTER TABLE wash.price DROP COLUMN deleted;
+
+
+UPDATE
+  wash.work
+SET
+  work_number = 0
+WHERE
+  work_number ISNULL;
+
+UPDATE
+  wash.work
+SET
+  deleted = true
+WHERE
+  work_id BETWEEN 205 AND 215;
+
+
+
+
+
+CREATE OR REPLACE FUNCTION wash.refresh_work(integer, new_category_id integer, new_client_id integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	tmp_id integer;
+	tmp_work_id integer;
+	tmp_price record;
+BEGIN
+	FOR tmp_id IN SELECT order_work_id FROM wash.order_work WHERE order_id = $1 LOOP
+		SELECT 
+			work_id 
+		INTO 
+			tmp_work_id
+		FROM
+			wash.order_work OW
+			INNER JOIN wash.price P ON P.price_id = OW.price_id
+		WHERE
+			order_work_id = tmp_id;
+		
+		SELECT 
+			P.price_id,
+			P.price,
+			W.deleted
+		INTO 
+			tmp_price
+		FROM 
+			wash.price P
+			INNER JOIN wash.work W ON W.work_id = P.work_id
+		WHERE
+			P.work_id = tmp_work_id
+			AND category_id = new_category_id
+			AND (((new_client_id ISNULL OR (SELECT COUNT(*) FROM wash.price INNER JOIN wash.work ON work.work_id = price.work_id WHERE client_id = new_client_id AND category_id = new_category_id) = 0) AND client_id ISNULL)
+			OR (new_client_id IS NOT NULL AND client_id = new_client_id));
+		
+		IF tmp_price.price_id IS NOT NULL AND NOT tmp_price.deleted
+		THEN
+			UPDATE
+				wash.order_work
+			SET
+				price_id = tmp_price.price_id,
+				price = tmp_price.price
+			WHERE
+				order_work_id = tmp_id
+				AND (SELECT category_id FROM wash.price WHERE tmp_price.price_id = price_id) != (SELECT category_id FROM wash.category WHERE category_key = 'truck_spec')
+				AND new_category_id != (SELECT category_id FROM wash.category WHERE category_key = 'truck');
+		ELSE
+			DELETE FROM
+				wash.order_work
+			WHERE
+				order_work_id = tmp_id;
+		END IF;
+	END LOOP;
+	
+	RETURN 0;
+        END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+
+ALTER TABLE wash.price
+DROP CONSTRAINT fk_work_id;
+
+ALTER TABLE wash.price
+ADD CONSTRAINT fk_work_id FOREIGN KEY (work_id)
+  REFERENCES wash."work" (work_id) MATCH SIMPLE
+  ON UPDATE NO ACTION ON DELETE CASCADE;

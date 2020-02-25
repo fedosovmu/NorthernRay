@@ -1,0 +1,2772 @@
+<?xml version="1.0"?>
+<Form Name="WashStartForm" Title="Северный луч. Автомойка" Width="1272" Height="740" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" BackColor="Default" StatusBar="True" MaximizeBox="True">
+
+  <Parameters>
+    <!--идентификатор пользователя, запустившего приложение-->
+    <Parameter Name="OriginalUserId" />
+  </Parameters>
+
+  <Appearance>
+    <Colors>
+      <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+
+  <DataConnections>
+    <!--загрузка: таблица "Права доступа"-->
+    <DataConnection Name="PermissionsPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="PermissionsSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CurrentUserIsInAdministratorGroup" />
+          <Field Name="CurrentUserIsInOwnerGroup" />
+          <Field Name="CurrentUserIsInAdministrationGroup" />
+          <Field Name="CurrentUserIsInWashAdminGroup" />
+          <Field Name="CurrentUserId" />
+          <Field Name="CurrentUserFullName" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="OrderPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="OrderMainSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="RowNumber" />
+          <Field Name="OrderId" />
+          <Field Name="OrderNumber" />
+          <Field Name="OrderTime" />
+          <Field Name="OrderDateTime" />
+          <Field Name="OrderType" />
+          <Field Name="Car" />
+          <Field Name="CarNumber" />
+          <Field Name="Summ" />
+          <Field Name="Works" />
+          <Field Name="WashAdmin" />
+          <Field Name="Comments" />
+          <Field Name="Deleted" />
+          <Field Name="DeleteDate" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="IsArchive" RefreshQuery="False">
+            <Value>
+              <Object Name="ArchiveCheckBox" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="ShiftId">
+            <Value>
+              <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="ShiftId" />
+                </Fields>
+              </DataConnection>
+            </Value>
+          </Parameter>
+          <Parameter NativeName="StartDate" RefreshQuery="False">
+            <Value>
+              <Object Name="StartDateTimePicker" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="EndDate" RefreshQuery="False">
+            <Value>
+              <Object Name="EndDateTimePicker" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ReportPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ReportSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CashRevenue" />
+          <Field Name="NonCashRevenue" />
+          <Field Name="TerminalRevenue" />
+          <Field Name="CurrentCash" />
+          <Field Name="Rest" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="ShiftId">
+            <Value>
+              <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="ShiftId" />
+                </Fields>
+              </DataConnection>
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="OrderByTypeSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="OrderPrimaryGetDataConnection" />
+      <Filter Type="Nested">
+        <And>
+          <Filter>
+            <Field NativeName="OrderType" />
+            <Value>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="TireSelectedCondition" />
+                  </When>
+                  <Then>tire</Then>
+                </Case>
+                <Case>
+                  <When>
+                    <Condition Name="TireTruckSelectedCondition" />
+                  </When>
+                  <Then>tire_truck</Then>
+                </Case>
+                <Case>wash</Case>
+              </Switch>
+            </Value>
+          </Filter>
+          <Filter>
+            <Field NativeName="Deleted" />
+            <Value>
+              <Object Name="ShowDeletedCheckBox" />
+            </Value>
+          </Filter>
+        </And>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="OrderByDeletedSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="OrderPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="Deleted" />
+        <Value>True</Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="OrderDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OrderId">
+          <Value>
+            <Object Name="OrdersDatabaseTable">
+              <Property Name="SelectedRowCellValueByColumnName">
+                <Parameters>
+                  <Parameter Name="ColumnName">OrderId</Parameter>
+                </Parameters>
+              </Property>
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Comments">
+          <Value>
+            <Command Name="DeleteOrderCommentFormShowCommand" Parameter="Comments" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="DeleteDate">
+          <Value>%NOW%</Value>
+        </Parameter>
+        <Parameter NativeName="OrderType">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="TireSelectedCondition" />
+                </When>
+                <Then>tire</Then>
+              </Case>
+              <Case>
+                <When>
+                  <Condition Name="TireTruckSelectedCondition" />
+                </When>
+                <Then>tire_truck</Then>
+              </Case>
+              <Case>wash</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderFakeDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="ShiftPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="ShiftCurrentSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ShiftId" />
+          <Field Name="WashAdmin" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ShiftSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="WashAdminId">
+          <Value>
+            <Command Name="WashAdminLoginFormShowCommand" Parameter="WashAdminId" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="StartTime">
+          <Value>now</Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ShiftInsertSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="ShiftUpdateSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="ShiftId">
+          <Value>
+            <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="ShiftId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="EndTime">
+          <Value>now</Value>
+        </Parameter>
+        <Parameter NativeName="RestSumm">
+          <Value>
+            <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Rest" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="ShiftUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="NewCarCheckPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="NewCarCheckSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="Count" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="IsWashAdmin">
+            <Value>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+  </DataConnections>
+
+
+  <Conditions>
+    <!--сравнение значения параметра "Обновлена" команды открытия формы "Перерегистрация" со значением "True"-->
+    <Condition Name="ReloginFormUpdatedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="ReloginFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <!--сравнение значения параметра "Обновлена" команды открытия формы "Регистрация" со значением "True"-->
+    <Condition Name="LoginFormUpdatedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="LoginFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <Condition Name="CurrentUserIsWashAdminCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="CurrentUserIsInWashAdminGroup" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <Condition Name="CurrentUserIsOwnerCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="CurrentUserIsInOwnerGroup" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <Condition Name="CurrentUserIsAdministratorCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="CurrentUserIsInAdministratorGroup" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    <Condition Name="WashButtonClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="WashButton" />
+    </Condition>
+
+    <Condition Name="TireButtonClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="TireButton" />
+    </Condition>
+
+    <Condition Name="TireTruckButtonClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="TireTruckButton" />
+    </Condition>
+
+    <Condition Name="WashSelectedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="WashButton">
+            <Property Name="BackColor" />
+          </Object>
+        </Item>
+        <Item>ThemeColorSeparatorBold</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="TireSelectedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="TireButton">
+            <Property Name="BackColor" />
+          </Object>
+        </Item>
+        <Item>ThemeColorSeparatorBold</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="TireTruckSelectedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="TireTruckButton">
+            <Property Name="BackColor" />
+          </Object>
+        </Item>
+        <Item>ThemeColorSeparatorBold</Item>
+      </Items>
+    </Condition>
+
+
+    <Condition Name="OrdersDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+      <Table Name="OrdersDatabaseTable" />
+    </Condition>
+
+    <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="OrdersDatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+        <Item>-1</Item>
+      </Items>
+      <DataType Type="IntegerDataType" />
+    </Condition>
+
+    <Condition Name="IsArchiveModeCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ArchiveCheckBox" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShiftIsOpenedCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShiftIsNotOpenedCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShiftCloseConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="ShiftCloseConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AllCashOperationsAreSavedConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="AllCashOperationsAreSavedConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShiftCloseMenuItemClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="ShiftCloseMenuItem" />
+    </Condition>
+
+    <Condition Name="WithdrawalMenuItemClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="WithdrawalMenuItem" />
+    </Condition>
+
+    <Condition Name="DepositMenuItemClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="DepositMenuItem" />
+    </Condition>
+
+    <Condition Name="CarMenuItemClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="CarsMenuItem" />
+    </Condition>
+
+    <Condition Name="OrderDeleteConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="OrderDeleteConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="AddOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddTireOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="AddTireOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddTireTruckOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="AddTireTruckOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="EditOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="EditOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="EditTireOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="EditTireOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="EditTireTruckOrderUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="EditTireTruckOrderFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ReloginUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="ReloginFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="DepositUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="DepositFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="WithdrawalUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="WithdrawalFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="HasNewCarCondition" Type="NotEqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="NewCarCheckPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="Count" />
+            </Fields>
+          </DataConnection>
+        </Item>
+        <Item>0</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="HasDeletedOrderCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="OrderByDeletedSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderId" />
+            </Fields>
+          </DataConnection>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="DeleteOrderCommentIsNotNullCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="DeleteOrderCommentFormShowCommand" Parameter="Comments" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ShowDeletedModeCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ShowDeletedCheckBox" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+  </Conditions>
+
+
+  <Commands>
+    <!--команда обновления всех загружающих первичных соединений с данными-->
+    <Command Name="AllPrimaryGetDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="PermissionsPrimaryGetDataConnection" />
+        <DataConnection Name="OrderPrimaryGetDataConnection" />
+        <DataConnection Name="ReportPrimaryGetDataConnection" />
+        <DataConnection Name="NewCarCheckPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderPrimaryGetDataConnection" />
+        <DataConnection Name="ReportPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ReportPrimaryGetDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ReportPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <!--команда открытия формы "Перерегистрация"-->
+    <Command Name="ReloginFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashLogin.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="First">False</Parameter>
+        <Parameter Name="OriginalUserId">
+          <Parameter Name="OriginalUserId" />
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <!--команда открытия формы "Регистрация"-->
+    <Command Name="LoginFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashLogin.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="First">False</Parameter>
+        <Parameter Name="UserId">
+          <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="CurrentUserId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="WashAdminLoginFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAdminLogin.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+    <Command Name="WashButtonSetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="WashButton">
+        <Property Name="BackColor">ThemeColorSeparatorBold</Property>
+      </Object>
+    </Command>
+
+    <Command Name="WashButtonResetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="WashButton">
+        <Property Name="BackColor">ThemeColorHead</Property>
+      </Object>
+    </Command>
+
+    <Command Name="WashButtonSetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="WashButton">
+        <Property Name="ForeColor">White</Property>
+      </Object>
+    </Command>
+
+    <Command Name="WashButtonResetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="WashButton">
+        <Property Name="ForeColor">Black</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireButtonSetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireButton">
+        <Property Name="BackColor">ThemeColorSeparatorBold</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireButtonResetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireButton">
+        <Property Name="BackColor">ThemeColorHead</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireTruckButtonSetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireTruckButton">
+        <Property Name="BackColor">ThemeColorSeparatorBold</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireTruckButtonResetColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireTruckButton">
+        <Property Name="BackColor">ThemeColorHead</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireButtonSetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireButton">
+        <Property Name="ForeColor">White</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireButtonResetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireButton">
+        <Property Name="ForeColor">Black</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireTruckButtonSetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireTruckButton">
+        <Property Name="ForeColor">White</Property>
+      </Object>
+    </Command>
+
+    <Command Name="TireTruckButtonResetForeColor" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="TireTruckButton">
+        <Property Name="ForeColor">Black</Property>
+      </Object>
+    </Command>
+
+    <Command Name="AddOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="WashSelectedCondition" />
+      <Xml Type="Path">WashAddOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AddTireOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="TireSelectedCondition" />
+      <Xml Type="Path">WashTireAddOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AddTireTruckOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="TireTruckSelectedCondition" />
+      <Xml Type="Path">WashTireTruckAddOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="EditOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="WashSelectedCondition" />
+      <Xml Type="Path">WashEditOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="OrdersDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsArchive">
+          <Or>
+            <Condition Name="IsArchiveModeCondition" />
+            <Condition Name="ShowDeletedModeCondition" />
+          </Or>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="EditTireOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="TireSelectedCondition" />
+      <Xml Type="Path">WashTireEditOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="OrdersDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsArchive">
+          <Or>
+            <Condition Name="IsArchiveModeCondition" />
+            <Condition Name="ShowDeletedModeCondition" />
+          </Or>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="EditTireTruckOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Condition Name="TireTruckSelectedCondition" />
+      <Xml Type="Path">WashTireTruckEditOrder.xml</Xml>
+      <Show Type="None" />
+      <Multiple Allow="False" Reload="False" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <Object Name="OrdersDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">OrderId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="IsArchive">
+          <Or>
+            <Condition Name="IsArchiveModeCondition" />
+            <Condition Name="ShowDeletedModeCondition" />
+          </Or>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ClientFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashClient.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="CurrentUserIsWashAdmin">
+          <Condition Name="CurrentUserIsWashAdminCondition" />
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="SettingFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashSetting.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="CategoryDescriptionFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCategoryDescription.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="EmailSettingFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashEmailSetting.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="EmailSendSettingFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashEmailSendSetting.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="SendLegalClientFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashSendLegalClient.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="CarFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCar.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="NotApproved">False</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="WashAdminFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAdmin.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="PricePassFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashPricePass.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="PriceTruckFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashPriceTruck.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="PriceTireFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashPriceTire.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="PriceTireTruckFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashPriceTireTruck.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="PriceProductFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashPriceProduct.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="DepositFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCash.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="Type">deposit</Parameter>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="WithdrawalFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCash.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="Type">withdrawal</Parameter>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportShiftFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportShift.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportClosedShiftFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportShift.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="CurrentUserIsInAdministratorGroup">False</Parameter>
+        <Parameter Name="IsClosing">True</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportPeriodFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportPeriod.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="ShiftId">
+          <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="ShiftId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ReportNonCashFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportNonCash.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="ReportProductFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportProduct.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="ReportWorkFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashReportWork.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="GroupsFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashGroups.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="UsersFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashUsers.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="NewCarFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCar.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="NotApproved">True</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AboutFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAbout.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="DeleteOrderCommentFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashDeleteOrderComment.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+    <Command Name="OrderDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderDeleteSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ShiftCloseConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Подтверждение действия</Caption>
+      <Text>Вы действительно хотите закрыть смену?</Text>
+      <Icon Type="Information" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="ShiftDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ShiftPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ShiftCloseSetCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ShiftUpdateSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ShiftSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ShiftSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ShiftOpenSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands StopOnError="True">
+        <Command Name="WashAdminLoginFormShowCommand" />
+        <Command Name="ShiftSaveCommand" />
+        <Command Name="ShiftDataConnectionRefreshCommand" />
+      </Commands>
+    </Command>
+
+    <Command Name="PrintWashExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>Templates\PrintableWashList.rtf</TemplateFileName>
+      <Parameters>
+        <Parameter Name="OrderNumber">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderNumber" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="OrderDateTime">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderDateTime" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Car">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Car" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="CarNumber">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="CarNumber" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Summ">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Summ" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Works">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Works" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WashAdmin">
+          <DataConnection SourceDataConnection="OrderByTypeSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="WashAdmin" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="OrderDeleteConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Подтверждение действия</Caption>
+      <Text>Вы действительно хотите удалить заказ? Это действие необратимо!</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="NewCarCheckDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="NewCarCheckPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ResetShowDeletedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ShowDeletedCheckBox">False</Object>
+    </Command>
+
+    <Command Name="ResetArchiveValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ArchiveCheckBox">False</Object>
+    </Command>
+
+    <Command Name="SelectLastRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="OrdersDatabaseTable">
+        <Property Name="SelectedRowIndex">
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="OrdersDatabaseTable">
+                  <Property Name="RowsCount" />
+                </Object>
+              </Item>
+              <Item>1</Item>
+            </Minus>
+          </Formula>
+        </Property>
+      </Object>
+    </Command>
+
+    <Command Name="Opacity0ValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Form>
+        <Property Name="Opacity">0</Property>
+      </Form>
+    </Command>
+
+    <Command Name="AllCashOperationsAreSavedConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Вопрос</Caption>
+      <Text>Все ли операции по кассе (внесения, снятия) были записаны?</Text>
+      <Icon Type="Question" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="CashTypeFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashCashType.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+
+  </Commands>
+
+
+
+  <Executions>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="ReloginFormUpdatedTrueEqualCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ResetShowDeletedValueSetCommand" />
+        <Command Name="ResetArchiveValueSetCommand" />
+        <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="LoginFormUpdatedTrueEqualCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ResetShowDeletedValueSetCommand" />
+        <Command Name="ResetArchiveValueSetCommand" />
+        <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Or>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+            <And>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+              <Not>
+                <Condition Name="ShiftIsOpenedCondition" />
+              </Not>
+            </And>
+          </Or>
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Or>
+          <Condition Name="ShiftCloseMenuItemClickCondition" />
+          <And>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+            <Condition Name="ShiftIsOpenedCondition" />
+            <Condition Name="FormClosingCondition" />
+          </And>
+        </Or>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ShiftCloseConfirmMessageBoxCommand" />
+        <If>
+          <When>
+            <Condition Name="ShiftCloseConfirmMessageBoxCommandYesEqualCondition" />
+          </When>
+          <Then>
+            <Command Name="AllCashOperationsAreSavedConfirmMessageBoxCommand" />
+            <If>
+              <When>
+                <Condition Name="AllCashOperationsAreSavedConfirmMessageBoxCommandYesEqualCondition" />
+              </When>
+              <Then>
+                <Command Name="ReportPrimaryGetDataConnectionRefreshCommand" />
+                <Command Name="ShiftCloseSetCommand" />
+                <Command Name="Opacity0ValueSetCommand" />
+                <Command Name="ReportClosedShiftFormShowCommand" />
+                <Command Name="FormCloseCommand" />
+              </Then>
+            </If>
+          </Then>
+        </If>
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="CarMenuItemClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="CarFormShowCommand" />
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="NewCarCheckDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="WithdrawalMenuItemClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="WithdrawalFormShowCommand" />
+        <Command Name="ReportPrimaryGetDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="DepositMenuItemClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="DepositFormShowCommand" />
+        <Command Name="ReportPrimaryGetDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="WashButtonClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="WashButtonSetColor" />
+        <Command Name="WashButtonSetForeColor" />
+        <Command Name="TireButtonResetColor" />
+        <Command Name="TireButtonResetForeColor" />
+        <Command Name="TireTruckButtonResetColor" />
+        <Command Name="TireTruckButtonResetForeColor" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="TireButtonClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="TireButtonSetColor" />
+        <Command Name="TireButtonSetForeColor" />
+        <Command Name="WashButtonResetColor" />
+        <Command Name="WashButtonResetForeColor" />
+        <Command Name="TireTruckButtonResetColor" />
+        <Command Name="TireTruckButtonResetForeColor" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="TireTruckButtonClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="TireTruckButtonSetColor" />
+        <Command Name="TireTruckButtonSetForeColor" />
+        <Command Name="TireButtonResetColor" />
+        <Command Name="TireButtonResetForeColor" />
+        <Command Name="WashButtonResetColor" />
+        <Command Name="WashButtonResetForeColor" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="OrdersDatabaseTableCellDoubleClickCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="EditOrderFormShowCommand" />
+        <Command Name="EditTireOrderFormShowCommand" />
+        <Command Name="EditTireTruckOrderFormShowCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Not>
+          <Condition Name="IsArchiveModeCondition" />
+        </Not>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="ResetShowDeletedValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="AddOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="AddTireOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="AddTireTruckOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="EditOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="EditTireOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="EditTireTruckOrderUpdatedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderAndReportPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="SelectLastRowValueSetCommand" />
+      </Commands>
+    </Execution>
+
+  </Executions>
+
+
+
+  <MainMenu>
+    <MenuItem Name="FileMenu" Type="MenuItem">
+      <Title>Файл</Title>
+      <Items>
+
+        <MenuItem Name="ReloginMenuItem" Type="MenuItem">
+          <Title>Войти как...</Title>
+          <Command Name="ReloginFormShowCommand" />
+        </MenuItem>
+
+        <MenuItem Name="SeparatorMenuItem" Type="Separator" />
+
+        <MenuItem Name="ShiftOpenMenuItem" Type="MenuItem">
+          <Title>Открыть смену...</Title>
+          <Enabled>
+            <And>
+              <Not>
+                <Condition Name="ShiftIsOpenedCondition" />
+              </Not>
+            </And>
+          </Enabled>
+          <Command Name="ShiftOpenSequentialCommand" />
+        </MenuItem>
+
+        <MenuItem Name="ShiftCloseMenuItem" Type="MenuItem">
+          <Title>Закрыть смену</Title>
+          <Enabled>
+            <And>
+              <Condition Name="ShiftIsOpenedCondition" />
+            </And>
+          </Enabled>
+        </MenuItem>
+
+        <MenuItem Name="Separator1MenuItem" Type="Separator" />
+
+        <MenuItem Name="PrintMenuItem" Type="MenuItem">
+          <Title>Печать...</Title>
+          <Command Name="PrintWashExportToRtfCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="Separator2MenuItem" Type="Separator">
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="RefreshMenuItem" Type="MenuItem">
+          <Title>Обновить</Title>
+          <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+          <Enabled>
+            <Condition Name="ShiftIsOpenedCondition" />
+          </Enabled>
+        </MenuItem>
+
+        <MenuItem Name="Separator3MenuItem" Type="Separator" />
+
+        <MenuItem Name="ExitMenuItem" Type="MenuItem">
+          <Title>Выход</Title>
+          <Command Name="FormCloseCommand" />
+          <Enabled>
+            <Or>
+              <Not>
+                <Condition Name="CurrentUserIsWashAdminCondition" />
+              </Not>
+              <And>
+                <Condition Name="CurrentUserIsWashAdminCondition" />
+                <Not>
+                  <Condition Name="ShiftIsOpenedCondition" />
+                </Not>
+              </And>
+            </Or>
+          </Enabled>
+        </MenuItem>
+      </Items>
+    </MenuItem>
+
+    <MenuItem Name="ListsMenu" Type="MenuItem">
+      <Title>Списки</Title>
+      <Items>
+        <MenuItem Name="ClientsMenuItem" Type="MenuItem">
+          <Title>Клиенты...</Title>
+          <Command Name="ClientFormShowCommand" />
+        </MenuItem>
+
+        <MenuItem Name="CarsMenuItem" Type="MenuItem">
+          <Title>Автомобили...</Title>
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="PricesMenuItem" Type="MenuItem">
+          <Title>Прайсы</Title>
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+          <Items>
+            <MenuItem Name="PassengersPriceSubMenuItem" Type="MenuItem">
+              <Title>Легковые...</Title>
+              <Command Name="PricePassFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="TrucksPriceSubMenuItem" Type="MenuItem">
+              <Title>Грузовые...</Title>
+              <Command Name="PriceTruckFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="TirePriceSubMenuItem" Type="MenuItem">
+              <Title>Шиномонтаж (легк.)...</Title>
+              <Command Name="PriceTireFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="TireTruckPriceSubMenuItem" Type="MenuItem">
+              <Title>Шиномонтаж (груз.)...</Title>
+              <Command Name="PriceTireTruckFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="ProductPriceSubMenuItem" Type="MenuItem">
+              <Title>Товары...</Title>
+              <Command Name="PriceProductFormShowCommand" />
+            </MenuItem>
+          </Items>
+        </MenuItem>
+
+        <MenuItem Name="WashAdminsMenuItem" Type="MenuItem">
+          <Title>Администраторы...</Title>
+          <Command Name="WashAdminFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="SettingsMenuItem" Type="MenuItem">
+          <Title>Настройки</Title>
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+          <Items>
+            <MenuItem Name="MainSettingsSubMenuItem" Type="MenuItem">
+              <Title>Основные...</Title>
+              <Command Name="SettingFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="CategorySettingsSubMenuItem" Type="MenuItem">
+              <Title>Категории...</Title>
+              <Command Name="CategoryDescriptionFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="CashSettingSumMenuItem" Type="MenuItem">
+              <Title>Операции по кассе...</Title>
+              <Command Name="CashTypeFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="EmailSettingSubMenuItem" Type="MenuItem">
+              <Title>Email-оповещения...</Title>
+              <Command Name="EmailSettingFormShowCommand" />
+            </MenuItem>
+
+            <MenuItem Name="EmailSendSettingSubMenuItem" Type="MenuItem">
+              <Title>Email-отправка...</Title>
+              <Command Name="EmailSendSettingFormShowCommand" />
+            </MenuItem>
+          </Items>
+        </MenuItem>
+      </Items>
+    </MenuItem>
+
+    <MenuItem Name="CashMenu" Type="MenuItem">
+      <Title>Операции по кассе</Title>
+      <Items>
+        <MenuItem Name="WithdrawalMenuItem" Type="MenuItem">
+          <Title>Снятие наличных...</Title>
+        </MenuItem>
+
+        <MenuItem Name="DepositMenuItem" Type="MenuItem">
+          <Title>Внесение наличных...</Title>
+        </MenuItem>
+      </Items>
+    </MenuItem>
+
+    <MenuItem Name="ReportsMenu" Type="MenuItem">
+      <Title>Отчёты</Title>
+      <Items>
+        <MenuItem Name="ReportShiftMenuItem" Type="MenuItem">
+          <Title>Отчёт по сменам...</Title>
+          <Command Name="ReportShiftFormShowCommand" />
+        </MenuItem>
+
+        <MenuItem Name="ReportPeriodMenuItem" Type="MenuItem">
+          <Title>Отчёт за период...</Title>
+          <Command Name="ReportPeriodFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="ReportNonCashMenuItem" Type="MenuItem">
+          <Title>Отчёт по безналу...</Title>
+          <Command Name="ReportNonCashFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="ReportProductMenuItem" Type="MenuItem">
+          <Title>Отчёт по продажам...</Title>
+          <Command Name="ReportProductFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="ReportWorkMenuItem" Type="MenuItem">
+          <Title>Отчёт по работам...</Title>
+          <Command Name="ReportWorkFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+
+        <MenuItem Name="Separator4MenuItem" Type="Separator" />
+
+
+
+        <MenuItem Name="SendLegalClientMenuItem" Type="MenuItem">
+          <Title>Отправка писем...</Title>
+          <Command Name="SendLegalClientFormShowCommand" />
+          <Visible>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </Visible>
+        </MenuItem>
+      </Items>
+    </MenuItem>
+
+    <MenuItem Name="UsersGroupsMenuItem" Type="MenuItem">
+      <Title>Администрирование</Title>
+      <Visible>
+        <Condition Name="CurrentUserIsAdministratorCondition" />
+      </Visible>
+      <Items>
+        <MenuItem Name="UsersGroupsGroupsMenuItem" Type="MenuItem">
+          <Title>Группы...</Title>
+          <Command Name="GroupsFormShowCommand" />
+        </MenuItem>
+        <MenuItem Name="UsersGroupsUsersMenuItem" Type="MenuItem">
+          <Title>Пользователи...</Title>
+          <Command Name="UsersFormShowCommand" />
+        </MenuItem>
+      </Items>
+    </MenuItem>
+
+    <MenuItem Name="HelpMenu" Type="MenuItem">
+      <Title>Помощь</Title>
+      <Items>
+        <MenuItem Name="AboutMenuItem" Type="MenuItem">
+          <Title>О программе...</Title>
+          <Command Name="AboutFormShowCommand" />
+        </MenuItem>
+      </Items>
+    </MenuItem>
+  </MainMenu>
+
+
+
+  <MyObjects>
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>25</Top>
+      <Left>0</Left>
+      <Height>65</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <AutoScroll>False</AutoScroll>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="FormLabel" Type="Label" Assembly="BaseControls" ChangeForm="False">
+        <Top>20</Top>
+        <Left>15</Left>
+        <Height>27</Height>
+        <Width>500</Width>
+        <FontStyle>HeadTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Северный луч</Text>
+      </MyObject>
+
+      <MyObject Name="WashButton" Type="Button" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>615</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>Автомойка</Text>
+        <TextAlign>MiddleCenter</TextAlign>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <FlatStyle>Flat</FlatStyle>
+        <BackColor>ThemeColorSeparatorBold</BackColor>
+        <ForeColor>White</ForeColor>
+        <FlatBorderSize>0</FlatBorderSize>
+      </MyObject>
+
+      <MyObject Name="TireButton" Type="Button" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>410</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>Легковой шиномонтаж</Text>
+        <TextAlign>MiddleCenter</TextAlign>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <FlatStyle>Flat</FlatStyle>
+        <BackColor>ThemeColorHead</BackColor>
+        <ForeColor>Black</ForeColor>
+        <FlatBorderSize>0</FlatBorderSize>
+      </MyObject>
+
+      <MyObject Name="TireTruckButton" Type="Button" Assembly="BaseControls">
+        <Top>35</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>Грузовой шиномонтаж</Text>
+        <TextAlign>MiddleCenter</TextAlign>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <FlatStyle>Flat</FlatStyle>
+        <BackColor>ThemeColorHead</BackColor>
+        <ForeColor>Black</ForeColor>
+        <FlatBorderSize>0</FlatBorderSize>
+      </MyObject>
+
+      <MyObject Name="ArchiveCheckBox" Type="CheckBox" Assembly="BaseControls">
+        <Top>6</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>415</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Height>25</Height>
+        <Width>67</Width>
+        <Text>Архив</Text>
+        <Value>False</Value>
+        <Visible>
+          <Not>
+            <Condition Name="CurrentUserIsWashAdminCondition" />
+          </Not>
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="ArchivePanel" Type="Panel" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>355</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Height>25</Height>
+        <Width>355</Width>
+        <AutoScroll>False</AutoScroll>
+        <Visible>
+          <Object Name="ArchiveCheckBox" />
+        </Visible>
+
+        <MyObject Name="StartDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+          <Top>0</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>140</Width>
+          <NullValue Show="False" />
+          <Value>now</Value>
+        </MyObject>
+
+        <MyObject Name="EndDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+          <Top>0</Top>
+          <Left>150</Left>
+          <Height>25</Height>
+          <Width>140</Width>
+          <NullValue Show="False" />
+          <Value>now</Value>
+        </MyObject>
+
+        <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+          <Top>0</Top>
+          <Left>296</Left>
+          <Height>24</Height>
+          <Width>52</Width>
+          <Text>˃</Text>
+          <BackColor>Default</BackColor>
+          <FlatStyle>Flat</FlatStyle>
+          <FlatBorderSize>0</FlatBorderSize>
+          <Commands StopOnError="True">
+            <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+          </Commands>
+        </MyObject>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="SeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>90</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <AutoScroll>False</AutoScroll>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>94</Top>
+      <Left>0</Left>
+      <Height>
+        <Formula>
+          <Minus DataType="DoubleDataType">
+            <Item>
+              <Form>
+                <Property Name="Height" />
+              </Form>
+            </Item>
+            <Item>94</Item>
+          </Minus>
+        </Formula>
+      </Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <AutoScroll>False</AutoScroll>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="OrdersDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>10</Item>
+            </Minus>
+          </Formula>
+        </Height>
+        <Width>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Width" />
+                </Object>
+              </Item>
+              <Item>215</Item>
+            </Minus>
+          </Formula>
+        </Width>
+        <ColumnHeadersHeight Value="25" />
+        <AllowInsert>False</AllowInsert>
+        <AllowUpdate>False</AllowUpdate>
+        <AllowDelete>False</AllowDelete>
+        <AutoSizeRowsMode Value="AllCells" />
+        <AutoSizeColumnsMode Value="Fill" />
+        <RowHeadersVisible Value="False" />
+        <AllowResizeColumns Value="False" />
+        <AllowResizeRows Value="False" />
+        <SourceDataConnection Name="OrderByTypeSecondaryGetDataConnection" />
+        <Columns>
+          <Column Name="OrderId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="OrderNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>№</Title>
+            <AutoSizeMode Value="AllCells" />
+            <Alignment Value="MiddleRight" />
+            <AllowSort Value="False" />
+          </Column>
+          <Column Name="OrderTime" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Время</Title>
+            <AutoSizeMode Value="AllCells" />
+            <Alignment Value="MiddleCenter" />
+            <Visible>
+              <Switch>
+                <Case>
+                  <When>
+                    <Object Name="ArchiveCheckBox" />
+                  </When>
+                  <Then>False</Then>
+                </Case>
+                <Case>True</Case>
+              </Switch>
+            </Visible>
+            <DataType Type="DateTimeDataType" Format="HH:mm" />
+          </Column>
+          <Column Name="OrderDateTime" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Дата и время</Title>
+            <AutoSizeMode Value="AllCells" />
+            <Alignment Value="MiddleCenter" />
+            <Visible>
+              <Object Name="ArchiveCheckBox" />
+            </Visible>
+          </Column>
+          <Column Name="Car" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Машина (марка и модель)</Title>
+            <AutoSizeMode Value="AllCells" />
+            <AllowSort Value="False" />
+          </Column>
+          <Column Name="CarNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Гос. номер</Title>
+            <AutoSizeMode Value="AllCells" />
+            <AllowSort Value="False" />
+          </Column>
+          <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Сумма</Title>
+            <AutoSizeMode Value="AllCells" />
+            <Alignment Value="MiddleRight" />
+            <DataType Type="IntegerDataType" Format="N0" />
+          </Column>
+          <Column Name="Works" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Проделанные работы</Title>
+            <Width>600</Width>
+            <WrapMode Value="True" />
+            <AllowSort Value="False" />
+          </Column>
+          <Column Name="WashAdmin" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Администратор</Title>
+            <AutoSizeMode Value="AllCells" />
+            <Visible>
+              <Condition Name="IsArchiveModeCondition" />
+            </Visible>
+          </Column>
+          <Column Name="Comments" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Комментарий</Title>
+            <Width>200</Width>
+            <WrapMode Value="True" />
+            <AllowSort Value="False" />
+            <Visible>
+              <Object Name="ShowDeletedCheckBox" />
+            </Visible>
+          </Column>
+          <Column Name="DeleteDate" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Дата удаления</Title>
+            <AllowSort Value="False" />
+            <AutoSizeMode Value="AllCells" />
+            <Visible>
+              <Object Name="ShowDeletedCheckBox" />
+            </Visible>
+          </Column>
+        </Columns>
+      </MyObject>
+
+      <MyObject Name="ShowDeletedCheckBox" Type="CheckBox" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>25</Height>
+        <Text>Показать удалённые</Text>
+        <Value>False</Value>
+        <Visible>
+          <And>
+            <Condition Name="HasDeletedOrderCondition" />
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+          </And>
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="WashAddButton" Type="Button" Assembly="BaseControls">
+        <Top>30</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>   Добавить...</Text>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Commands StopOnError="True">
+          <Command Name="AddOrderFormShowCommand" />
+          <Command Name="AddTireOrderFormShowCommand" />
+          <Command Name="AddTireTruckOrderFormShowCommand" />
+        </Commands>
+        <Enabled>
+          <And>
+            <Not>
+              <Condition Name="IsArchiveModeCondition" />
+            </Not>
+            <Not>
+              <Condition Name="ShowDeletedModeCondition" />
+            </Not>
+            <Condition Name="ShiftIsOpenedCondition" />
+          </And>
+        </Enabled>
+      </MyObject>
+
+      <MyObject Name="WashEditButton" Type="Button" Assembly="BaseControls">
+        <Top>65</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>
+          <Switch>
+            <Case>
+              <When>
+                <Or>
+                  <Condition Name="ShowDeletedModeCondition" />
+                  <Condition Name="IsArchiveModeCondition" />
+                </Or>
+              </When>
+              <Then>   Просмотреть...</Then>
+            </Case>
+            <Case>   Редактировать...</Case>
+          </Switch>
+        </Text>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Enabled>
+          <Condition Name="SelectedIndex0GreaterCondition" />
+        </Enabled>
+        <Commands StopOnError="True">
+          <Command Name="EditOrderFormShowCommand" />
+          <Command Name="EditTireOrderFormShowCommand" />
+          <Command Name="EditTireTruckOrderFormShowCommand" />
+        </Commands>
+      </MyObject>
+
+      <MyObject Name="WashDeleteButton" Type="Button" Assembly="BaseControls">
+        <Top>100</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>   Удалить</Text>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Enabled>
+          <And>
+            <Condition Name="SelectedIndex0GreaterCondition" />
+            <Not>
+              <Condition Name="IsArchiveModeCondition" />
+            </Not>
+            <Not>
+              <Condition Name="ShowDeletedModeCondition" />
+            </Not>
+          </And>
+        </Enabled>
+        <Commands StopOnError="True">
+          <Command Name="DeleteOrderCommentFormShowCommand" />
+          <If>
+            <When>
+              <Condition Name="DeleteOrderCommentIsNotNullCondition" />
+            </When>
+            <Then>
+              <Command Name="OrderDeleteConfirmMessageBoxCommand" />
+              <If>
+                <When>
+                  <Condition Name="OrderDeleteConfirmMessageBoxCommandYesEqualCondition" />
+                </When>
+                <Then>
+                  <Command Name="OrderDeleteSaveCommand" />
+                  <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+                </Then>
+              </If>
+            </Then>
+          </If>
+        </Commands>
+      </MyObject>
+
+      <MyObject Name="NewCarButton" Type="Button" Assembly="BaseControls">
+        <Top>150</Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>30</Height>
+        <Text>   Новые автомобили</Text>
+        <TextAlign>MiddleLeft</TextAlign>
+        <ForeColor>Red</ForeColor>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <Visible>
+          <And>
+            <Not>
+              <Condition Name="CurrentUserIsWashAdminCondition" />
+            </Not>
+            <Condition Name="HasNewCarCondition" />
+          </And>
+        </Visible>
+        <Commands StopOnError="True">
+          <Command Name="NewCarFormShowCommand" />
+          <Command Name="NewCarCheckDataConnectionRefreshCommand" />
+        </Commands>
+      </MyObject>
+
+      <MyObject Name="CashRevenueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>175</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>100</Width>
+        <Height>20</Height>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Наличные:</Text>
+      </MyObject>
+
+      <MyObject Name="CashRevenueValueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>175</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>90</Width>
+        <Height>20</Height>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <Switch>
+              <Case>
+                <When>
+                  <Not>
+                    <Condition Name="ShiftIsOpenedCondition" />
+                  </Not>
+                </When>
+                <Then> </Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="CashRevenue" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </DataTypeFormat>
+        </Text>
+      </MyObject>
+
+
+      <MyObject Name="TerminalRevenueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>150</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>100</Width>
+        <Height>20</Height>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Терминал:</Text>
+      </MyObject>
+
+      <MyObject Name="TerminalRevenueValueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>150</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>90</Width>
+        <Height>20</Height>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <Switch>
+              <Case>
+                <When>
+                  <Not>
+                    <Condition Name="ShiftIsOpenedCondition" />
+                  </Not>
+                </When>
+                <Then> </Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="TerminalRevenue" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </DataTypeFormat>
+        </Text>
+      </MyObject>
+
+
+      <MyObject Name="NonCashRevenueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>125</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>100</Width>
+        <Height>20</Height>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>Безнал:</Text>
+      </MyObject>
+
+      <MyObject Name="NonCashRevenueValueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>125</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>90</Width>
+        <Height>20</Height>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <Switch>
+              <Case>
+                <When>
+                  <Not>
+                    <Condition Name="ShiftIsOpenedCondition" />
+                  </Not>
+                </When>
+                <Then> </Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="NonCashRevenue" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </DataTypeFormat>
+        </Text>
+      </MyObject>
+
+      <MyObject Name="CurrentCashLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>100</Width>
+        <Height>20</Height>
+        <TextAlign>MiddleRight</TextAlign>
+        <Text>В кассе:</Text>
+      </MyObject>
+
+      <MyObject Name="CurrentCashValueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>100</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>90</Width>
+        <Height>20</Height>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>
+          <DataTypeFormat Type="IntegerDataType" Format="N0">
+            <Switch>
+              <Case>
+                <When>
+                  <Not>
+                    <Condition Name="ShiftIsOpenedCondition" />
+                  </Not>
+                </When>
+                <Then> </Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="ReportPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="CurrentCash" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </DataTypeFormat>
+        </Text>
+      </MyObject>
+
+      <MyObject Type="Label" Name="FormIsNotOpenedLabel" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>75</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Text>СМЕНА НЕ ОТКРЫТА</Text>
+        <ForeColor>Red</ForeColor>
+        <TextAlign>MiddleCenter</TextAlign>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <Visible>
+          <Not>
+            <Condition Name="ShiftIsOpenedCondition" />
+          </Not>
+        </Visible>
+      </MyObject>
+
+      <MyObject Name="CurrentUserLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>50</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>20</Height>
+        <TextAlign>BottomCenter</TextAlign>
+        <Text>Текущий пользователь:</Text>
+      </MyObject>
+
+      <MyObject Name="CurrentUserValueLabel" Type="Label" Assembly="BaseControls">
+        <Top>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Object Name="ContentPanel">
+                  <Property Name="Height" />
+                </Object>
+              </Item>
+              <Item>30</Item>
+            </Minus>
+          </Formula>
+        </Top>
+        <Left>
+          <Formula>
+            <Minus DataType="DoubleDataType">
+              <Item>
+                <Form>
+                  <Property Name="Width" />
+                </Form>
+              </Item>
+              <Item>205</Item>
+            </Minus>
+          </Formula>
+        </Left>
+        <Width>200</Width>
+        <Height>20</Height>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TextAlign>TopCenter</TextAlign>
+        <Text>
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="CurrentUserIsWashAdminCondition" />
+              </When>
+              <Then>
+                <DataConnection SourceDataConnection="ShiftPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="WashAdmin" />
+                  </Fields>
+                </DataConnection>
+              </Then>
+            </Case>
+            <Case>
+              <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="CurrentUserFullName" />
+                </Fields>
+              </DataConnection>
+            </Case>
+          </Switch>
+        </Text>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

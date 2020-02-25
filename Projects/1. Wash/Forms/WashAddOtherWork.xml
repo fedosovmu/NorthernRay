@@ -1,0 +1,265 @@
+<?xml version="1.0"?>
+<Form Name="WashAddOtherWorkForm" Title="Северный луч. Работа не из прайса" Width="320" Height="155" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+  <Parameters>
+    <Parameter Name="OrderId" />
+    <Parameter Name="OrderType" />
+    <Parameter Name="Updated">False</Parameter>
+  </Parameters>
+
+  <Appearance>
+    <Colors>
+      <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+      <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+
+  <Checkings>
+    <Checking>
+      <Object Name="TitleTextBox" />
+      <ConditionExpression>
+        <Condition Name="WorkIsEmptyCondition" />
+      </ConditionExpression>
+      <AsteriskHint>Введите название работы</AsteriskHint>
+    </Checking>
+  </Checkings>
+
+
+  <DataConnections>
+    <DataConnection Name="OrderOtherWorkSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="Title">
+          <Value>
+            <Object Name="TitleTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Price">
+          <Value>
+            <Object Name="PriceNumericBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="OrderId">
+          <Value>
+            <Parameter Name="OrderId" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="OrderType">
+          <Value>
+            <Parameter Name="OrderType" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderOtherWorkInsertSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+  </DataConnections>
+
+
+  <Conditions>
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    <Condition Name="WorkIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="TitleTextBox" />
+        </Item>
+        <Item> </Item>
+      </Items>
+    </Condition>
+  </Conditions>
+
+
+  <Commands>
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+    <Command Name="OrderOtherWorkSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderOtherWorkSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="Updated">True</Parameter>
+    </Command>
+
+  </Commands>
+
+
+  <Executions>
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="FormClosingCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+
+  <MyObjects>
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>36</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+        <Top>0</Top>
+        <Left>10</Left>
+        <Height>
+          <Object Name="HeadPanel">
+            <Property Name="Height" />
+          </Object>
+        </Height>
+        <Width>280</Width>
+        <FontStyle>OrderTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Работа не из прайса</Text>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>36</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>75</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="TitleLabel" Type="Label" Assembly="BaseControls">
+        <Top>10</Top>
+        <Left>0</Left>
+        <Height>25</Height>
+        <Width>120</Width>
+        <Text>Наименование:</Text>
+        <TextAlign>MiddleRight</TextAlign>
+      </MyObject>
+
+      <MyObject Name="TitleTextBox" Type="TextBox" Assembly="BaseControls">
+        <Top>10</Top>
+        <Left>130</Left>
+        <Height>25</Height>
+        <Width>165</Width>
+      </MyObject>
+
+      <MyObject Name="PriceLabel" Type="Label" Assembly="BaseControls">
+        <Top>40</Top>
+        <Left>0</Left>
+        <Height>25</Height>
+        <Width>120</Width>
+        <Text>Цена:</Text>
+        <TextAlign>MiddleRight</TextAlign>
+      </MyObject>
+
+      <MyObject Name="PriceNumericBox" Type="NumericBox" Assembly="BaseControls">
+        <Top>40</Top>
+        <Left>130</Left>
+        <Height>25</Height>
+        <Width>100</Width>
+        <Minimum>0</Minimum>
+        <Maximum>99999999</Maximum>
+        <Increment>100</Increment>
+        <DecimalPlaces>2</DecimalPlaces>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>115</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+      <Top>119</Top>
+      <Left>0</Left>
+      <Height>36</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="AddOtherWorkButton" Type="Button" Assembly="BaseControls">
+        <Top>3</Top>
+        <Left>95</Left>
+        <Height>30</Height>
+        <Width>220</Width>
+        <Text>Добавить</Text>
+        <BackColor>Default</BackColor>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <Commands StopOnError="True">
+          <Command Name="OrderOtherWorkSaveCommand" />
+          <Command Name="UpdatedValueSetCommand" />
+          <Command Name="FormCloseCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="WorkIsEmptyCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+
+</Form>

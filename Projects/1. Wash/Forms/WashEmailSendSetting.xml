@@ -1,0 +1,449 @@
+<?xml version="1.0"?>
+<Form Name="WashEmailSendSettingForm" Title="Настройки Email-отправки" Width="510" Height="350" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskForeColor="Red" AsteriskFontStyle="HeadTitleFont">
+  <Appearance>
+    <Colors>
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+      
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+      
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+      
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+      
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+      
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+      
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+      
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="14" Bold="True" />
+      
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+      
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+  <DataConnections>
+    <DataConnection Name="EmailSendSettingPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="EmailSendSettingSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="EmailSendSettingId" />
+          <Field Name="ServerAddress" />
+          <Field Name="ServerPort" />
+          <Field Name="EmailAddress" />
+          <Field Name="EmailPassword" />
+          <Field Name="Subject" />
+          <Field Name="Header" />
+          <Field Name="Text" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+  
+
+    <DataConnection Name="EmailSendSettingSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="EmailSendSettingId">
+          <Value>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="EmailSendSettingId"/>
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ServerAddress">
+          <Value>
+            <Object Name="ServerAddressTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ServerPort">
+          <Value>
+            <Object Name="ServerPortTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="EmailAddress">
+          <Value>
+            <Object Name="EmailAddressTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="EmailPassword">
+          <Value>
+            <Object Name="EmailPasswordTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Subject">
+          <Value>
+            <Object Name="SubjectTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Header">
+          <Value>
+            <Object Name="HeaderTextBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Text">
+          <Value>
+            <Object Name="TextTextBox" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="EmailSendSettingUpdateSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+    
+  </DataConnections>
+
+  <Conditions>
+    <Condition Name="FormLoadedCondition" Type="FormLoadedCondition" Assembly="Conditions" />
+    
+    <Condition Name="FormChangedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Form>
+            <Property Name="FormChanged" />
+          </Form>
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CloseOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="CloseOnCloseMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+  </Conditions>
+
+  <Commands>
+    <Command Name="CloseOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Сохранение</Caption>
+      <Text>При закрытии все изменения будут утеряны.\rВы уверены, что хотите закрыть форму?</Text>
+      <Icon Type="Question" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="EmailSendSettingSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="EmailSendSettingSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="EmailSendSettingSaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <Commands StopOnError="True">
+        <Command Name="EmailSendSettingSaveCommand" />
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Command>
+
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+  </Commands>
+
+  <Executions>
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Condition Name="FormChangedTrueEqualCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="CloseOnCloseMessageBoxCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Or>
+          <And>
+            <Condition Name="FormClosingCondition" />
+            <Not>
+              <Condition Name="FormChangedTrueEqualCondition" />
+            </Not>
+          </And>
+          <Condition Name="CloseOnCloseMessageBoxCommandYesEqualCondition" />
+        </Or>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+  <MyObjects>
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>660</Width>
+      <TabIndex>3</TabIndex>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="TitleLabel" Type="Label" Assembly="BaseControls">
+        <Top>6</Top>
+        <Left>10</Left>
+        <Height>27</Height>
+        <Width>390</Width>
+        <FontStyle>HeadTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Настройки Email-отправки</Text>
+      </MyObject>
+            
+    </MyObject>
+
+    <MyObject Name="SeparatePanel1" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>660</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>44</Top>
+      <Left>0</Left>
+      <Height>259</Height>
+      <Width>660</Width>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="EmailSendSettingGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>250</Height>
+        <Width>500</Width>
+        <Text>Настройки отправки</Text>
+        <BackColor>ThemeColorBack</BackColor>
+
+        <MyObject Name="ServerAddressLabel" Type="Label" Assembly="BaseControls">
+          <Top>18</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Адрес сервера:</Text>
+          <Hint>Адрес сервера, через который будут отправлены письма</Hint>
+        </MyObject>
+
+        <MyObject Name="ServerAddressTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>1</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="ServerAddress" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        
+        <MyObject Name="ServerPortLabel" Type="Label" Assembly="BaseControls">
+          <Top>43</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Порт сервера:</Text>
+          <Hint>Порт сервера, через который будут отправлены письма</Hint>
+        </MyObject>
+        
+        <MyObject Name="ServerPortTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>45</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>2</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="ServerPort" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        
+        <MyObject Name="EmailAddressLabel" Type="Label" Assembly="BaseControls">
+          <Top>68</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Адрес ящика:</Text>
+          <Hint>Адрес ящика, через который будут отправлены письма</Hint>
+        </MyObject>
+        
+        <MyObject Name="EmailAddressTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>70</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>3</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="EmailAddress" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        
+        <MyObject Name="EmailPasswordLabel" Type="Label" Assembly="BaseControls">
+          <Top>93</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Пароль от ящика:</Text>
+          <Hint>Пароль от ящика, через который будут отправлены письма</Hint>
+        </MyObject>
+        
+        <MyObject Name="EmailPasswordTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>95</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>4</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="EmailPassword" />
+              </Fields>
+            </DataConnection>
+          </Text>
+          <Password>
+            <Object Name="AuthorEmailPasswordHideCheckBox" />
+          </Password>
+        </MyObject>
+        
+        <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+          <Top>118</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Заголовок отправителя:</Text>
+        </MyObject>
+        
+        <MyObject Name="HeaderTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>120</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>5</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Header" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        
+        <MyObject Name="SubjectLabel" Type="Label" Assembly="BaseControls">
+          <Top>143</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Тема письма:</Text>
+        </MyObject>
+        
+        <MyObject Name="SubjectTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>145</Top>
+          <Left>160</Left>
+          <Width>220</Width>
+          <TabIndex>5</TabIndex>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Subject" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        м
+        <MyObject Name="TextLabel" Type="Label" Assembly="BaseControls">
+          <Top>168</Top>
+          <Left>5</Left>
+          <Height>25</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Шаблон письма:</Text>
+        </MyObject>
+        
+        <MyObject Name="TextTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>170</Top>
+          <Left>160</Left>
+          <Width>330</Width>
+          <Height>75</Height>
+          <TabIndex>6</TabIndex>
+          <Multiline>True</Multiline>
+          <Change User="True" Source="False" ValueSet="True" />
+          <Text>
+            <DataConnection SourceDataConnection="EmailSendSettingPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="Text" />
+              </Fields>
+            </DataConnection>
+          </Text>
+        </MyObject>
+        
+        <MyObject Name="AuthorEmailPasswordHideCheckBox" Type="CheckBox" Assembly="BaseControls" ChangeForm="False">
+          <Top>95</Top>
+          <Left>385</Left>
+          <Width>100</Width>
+          <TabIndex>5</TabIndex>
+          <Text>спрятать</Text>
+          <Value>True</Value>
+        </MyObject>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="SeparatePanel2" Type="Panel" Assembly="BaseControls">
+      <Top>304</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>660</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ManagementPanel" Type="Panel" Assembly="BaseControls">
+      <Top>308</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>660</Width>
+      <TabIndex>2</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>305</Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <TabIndex>2</TabIndex>
+        <Text>Сохранить</Text>
+        <Commands StopOnError="True">
+          <Command Name="EmailSendSettingSaveSequentialCommand" />
+        </Commands>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6BB55A69-D0DC-489E-910D-AA40BF669440}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WindowsFormsApplication1</RootNamespace>
+    <AssemblyName>WindowsFormsApplication1</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddClientForm.Designer.cs">
+      <DependentUpon>AddClientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddRecord2Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddRecord2Form.Designer.cs">
+      <DependentUpon>AddRecord2Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddRecordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddRecordForm.Designer.cs">
+      <DependentUpon>AddRecordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClientsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClientsForm.Designer.cs">
+      <DependentUpon>ClientsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomWorkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CustomWorkForm.Designer.cs">
+      <DependentUpon>CustomWorkForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DayReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DayReport.Designer.cs">
+      <DependentUpon>DayReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DiscountControlForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DiscountControlForm.Designer.cs">
+      <DependentUpon>DiscountControlForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OpenShiftForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OpenShiftForm.Designer.cs">
+      <DependentUpon>OpenShiftForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PutMoneyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PutMoneyForm.Designer.cs">
+      <DependentUpon>PutMoneyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PutMoneyTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PutMoneyTableForm.Designer.cs">
+      <DependentUpon>PutMoneyTableForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReportsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReportsForm.Designer.cs">
+      <DependentUpon>ReportsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TakeMoneyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TakeMoneyForm.Designer.cs">
+      <DependentUpon>TakeMoneyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TakeMoneyTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TakeMoneyTableForm.Designer.cs">
+      <DependentUpon>TakeMoneyTableForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UnconfirmedCarsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UnconfirmedCarsForm.Designer.cs">
+      <DependentUpon>UnconfirmedCarsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WorkTableForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WorkTableForm.Designer.cs">
+      <DependentUpon>WorkTableForm.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="AddClientForm.resx">
+      <DependentUpon>AddClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddRecord2Form.resx">
+      <DependentUpon>AddRecord2Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddRecordForm.resx">
+      <DependentUpon>AddRecordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClientsForm.resx">
+      <DependentUpon>ClientsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CustomWorkForm.resx">
+      <DependentUpon>CustomWorkForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DayReport.resx">
+      <DependentUpon>DayReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiscountControlForm.resx">
+      <DependentUpon>DiscountControlForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenShiftForm.resx">
+      <DependentUpon>OpenShiftForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="PutMoneyForm.resx">
+      <DependentUpon>PutMoneyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PutMoneyTableForm.resx">
+      <DependentUpon>PutMoneyTableForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReportsForm.resx">
+      <DependentUpon>ReportsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TakeMoneyForm.resx">
+      <DependentUpon>TakeMoneyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TakeMoneyTableForm.resx">
+      <DependentUpon>TakeMoneyTableForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UnconfirmedCarsForm.resx">
+      <DependentUpon>UnconfirmedCarsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WorkTableForm.resx">
+      <DependentUpon>WorkTableForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\DataSources\AddRecordForm.datasource" />
+    <None Include="Properties\DataSources\WindowsFormsApplication1.Properties.Resources.datasource" />
+    <None Include="Properties\DataSources\WindowsFormsApplication1.Properties.Settings.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

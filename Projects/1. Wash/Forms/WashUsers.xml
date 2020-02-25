@@ -1,0 +1,384 @@
+<?xml version="1.0"?>
+<Form Name="washUsers" Title="Пользователи"  Width="400" Height="600" StartPosition="CenterScreen" StatusBar="True" FontStyle="TitleFont" ForeColor="Black" AsteriskForeColor="Red" AsteriskFontStyle="HeadTitleFont">
+  <!--параметры-->
+  <Parameters>
+    <!--признак изменения формы-->
+    <Parameter Name="Updated">False</Parameter>
+  </Parameters>
+
+  <!--визуальные настройки-->
+  <Appearance>
+    <!--цвета-->
+    <Colors>
+      <!--красный-->
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+      
+      <!--черный-->
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+      
+      <!--белый-->
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+      
+      <!--цвет темы: заголовок-->
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+      
+      <!--цвет темы: основные разделители-->
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+      
+      <!--цвет темы: внутренние разделители-->
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+      
+      <!--цвет темы: фон-->
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+      
+      <!--серый 200-->
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+    <!--шрифты-->
+    <FontStyles>
+      <!--шрифт заголовка: жирный Tahoma 12-->
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="12" Bold="True" />
+
+      <!--основной шрифт: Tahoma 8-->
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="8" />
+
+      <!--основной жирный шрифт: жирный Tahoma 8-->
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="8" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+  <!--соединения с данными-->
+  <DataConnections>
+    <!--таблица "Пользователи"-->
+    <DataConnection Name="UserPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="UserSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="UserId" />
+          <Field Name="PublicUserId" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+    
+    <!--вспомогательная таблица "Глобальные пользователи"-->
+    <DataConnection Name="PublicUserPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="PublicUserSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="PublicUserId" />
+          <Field Name="User" Type="FormatField" FormatString="{0} ({2}\{1})">
+            <Field NativeName="UserFullName" />
+            <Field NativeName="UserName" />
+            <Field NativeName="UserDomain" />
+          </Field>
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+    
+    <!--сохранение таблицы "Пользователи"-->
+    <DataConnection Name="UserDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+      <Workflow Name="Wash" />
+      <DatabaseTable Name="UserDatabaseTable" />
+      <Parameters>
+        <Parameter NativeName="UserId">
+          <Column Name="UserId" />
+        </Parameter>
+        <Parameter NativeName="PublicUserId">
+          <Column Name="PublicUserId" />
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="UserInsertSqlQuery" Type="Insert" />
+        <SqlQuery Name="UserUpdateSqlQuery" Type="Update" />
+        <SqlQuery Name="UserDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="UserPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+            
+  </DataConnections>
+
+  <!--условия-->
+  <Conditions>
+    <!--сравнение свойства формы "Изменена" со значением "True"-->
+    <Condition Name="FormChangedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Form>
+            <Property Name="FormChanged" />
+          </Form>
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение результата диалогового окна вопроса о сохранени данных при закрытии со значением "Yes"-->
+    <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="SaveOnCloseMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение результата диалогового окна вопроса о сохранени данных при закрытии со значением "No"-->
+    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="SaveOnCloseMessageBoxCommand" />
+        </Item>
+        <Item>No</Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение значений столбца "Глобальный пользователь" таблицы "Пользователи" базы данных с невыбранными-->
+    <Condition Name="UserDatabaseTableColumnPublicUserIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="UserDatabaseTable">
+            <Property Name="Column">
+              <Parameters>
+                <Parameter Name="ColumnName">PublicUserId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+    
+    <!--условие, определяющее момент закрытия формы-->
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+  </Conditions>
+
+  <!--команды-->
+  <Commands>
+    <!--команда вывоза диалогового окна для вопроса о сохранении данных формы при закрытии-->
+    <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Сохранение таблицы</Caption>
+      <Text>Таблица "Пользователи" содержит измененные поля.\rСохранить эти изменения перед закрытием?</Text>
+      <Icon Type="Question" />
+      <Buttons Type="YesNoCancel" />
+    </Command>
+    
+    <!--команда обновления всех загружающих первичных соединений с данными-->
+    <Command Name="AllPrimaryGetDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="UserPrimaryGetDataConnection" />
+        <DataConnection Name="PublicUserPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+    
+    <!--команда присвоения признаку изменений, произведенных формой, значения "True"-->
+    <Command Name="UpdatedTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="Updated">True</Parameter>
+    </Command>
+    
+    <!--команда сохранения таблицы "Пользователи"-->
+    <Command Name="UserSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="UserDatabaseTableSetDataConnection" />
+      </DataConnections>
+    </Command>
+    
+    <!--сборная команда сохранения таблицы "Пользователи"-->
+    <Command Name="UserSaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <StopOnError>True</StopOnError>
+      <Commands>
+        <Command Name="UserSaveCommand" />
+        <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+        <Command Name="UpdatedTrueValueSetCommand" />
+      </Commands>
+    </Command>
+    
+    <!--команда закрытия формы-->
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+  </Commands>
+
+  <!--выполнение действий-->
+  <Executions>
+    <!--вызов диалогового окна вопроса о сохранении данных формы при закрытии-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Condition Name="FormChangedTrueEqualCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands>
+        <Command Name="SaveOnCloseMessageBoxCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--сохранение данных формы с последующим закрытием-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="UserSaveCommand" />
+        <Command Name="UpdatedTrueValueSetCommand" />
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--закрытие формы при отсутствии изменений-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Not>
+            <Condition Name="FormChangedTrueEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <Commands>
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--закрытие формы при отсутствии сохранения-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+  <!--проверки-->
+  <Checkings>
+    <!--проверка значений столбца "Глобальный пользователь" таблицы "Пользователи" на пустоту-->
+    <Checking>
+      <Object Name="UserDatabaseTable" />
+      <ConditionExpression>
+        <Condition Name="UserDatabaseTableColumnPublicUserIsNullCondition" />
+      </ConditionExpression>
+      <AsteriskHint>Столбец "Глобальный пользователь" таблицы "Пользователи" обязателен для заполнения</AsteriskHint>
+    </Checking>
+  </Checkings>
+
+  <!--основные объекты формы-->
+  <MyObjects>
+    <!--панель заголовка формы-->
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorHead</BackColor>
+      
+      <!--название формы-->
+      <MyObject Name="TitleLabel" Type="Label" Assembly="BaseControls">
+        <Top>6</Top>
+        <Left>10</Left>
+        <Height>27</Height>
+        <Width>390</Width>
+        <FontStyle>HeadTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Пользователи</Text>
+      </MyObject>
+    </MyObject>
+    
+    <!--панель разделитель 1-->
+    <MyObject Name="SeparatePanel1" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+    
+    <!--панель содержания-->
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>44</Top>
+      <Left>0</Left>
+      <Height>512</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorBack</BackColor>
+      
+      <!-- таблица "Пользователи" -->
+      <MyObject Name="UserDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>502</Height>
+        <Width>380</Width>
+        <TabIndex>1</TabIndex>
+        <Change User="True" Source="False" ValueSet="True" />
+        <BackgroundColor Value="Gray200" />
+        <RowHeadersVisible Value="False" />
+        <ColumnHeadersHeight Value="22" />
+        <RowHeight Value="18" />
+        <AllowResizeColumns Value="False" />
+        <AllowResizeRows Value="False" />
+        <SourceDataConnection Name="UserPrimaryGetDataConnection" />
+        <Columns>
+          <Column Name="UserId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="PublicUserId" Type="DatabaseTableColumnComboBox" Assembly="DatabaseTableColumnControls">
+            <Title>Пользователь</Title>
+            <Width>360</Width>
+            <Sorted Value="True" />
+            <Sorting>
+              <SortOrder Type="Asc" />
+              <ColumnOrder Order="1" />
+            </Sorting>
+            <ValueList>
+              <DataConnection SourceDataConnection="PublicUserPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="PublicUserId" />
+                  <Field Name="User" />
+                </Fields>
+              </DataConnection>
+            </ValueList>
+            <Hint>Глобальный пользователь</Hint>
+          </Column>
+        </Columns>
+      </MyObject>
+    </MyObject>
+    
+    <!-- панель разделитель 2 -->
+    <MyObject Name="SeparatePanel2" Type="Panel" Assembly="BaseControls">
+      <Top>556</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+    
+    <!-- панель управления -->
+    <MyObject Name="ManagementPanel" Type="Panel" Assembly="BaseControls">
+      <Top>560</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>400</Width>
+      <BackColor>ThemeColorBack</BackColor>
+      
+      <!-- кнопка сохранить -->
+      <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>195</Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TabIndex>2</TabIndex>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <Text>Сохранить</Text>
+        <Commands>
+          <Command Name="UserSaveSequentialCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="UserDatabaseTableColumnPublicUserIsNullCondition" />
+          </Not>
+        </Enabled>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

@@ -1,0 +1,403 @@
+<?xml version="1.0"?>
+<Form Name="WashReportWorkForm" Title="Северный луч. Отчёт по работам" Width="870" Height="600" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" MaximizeBox="True" FormBorderStyle="Sizable">
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="ReportWorkTitlePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ReportWorkTitleSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Title" />
+                    <Field Name="Quantity" />
+                    <Field Name="Type" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="StartDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="StartDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="EndDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="EndDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="ReportWorkTitleByTypeSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+            <SourceDataConnection Name="ReportWorkTitlePrimaryGetDataConnection" />
+            <Filter>
+                <Field NativeName="Type" />
+                <Value>
+                    <Object Name="TypeComboBox" />
+                </Value>
+            </Filter>
+        </DataConnection>
+        
+        <DataConnection Name="ReportWorkOrderPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ReportWorkOrderSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="OrderId" />
+                    <Field Name="Order" />
+                    <Field Name="Title" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="StartDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="StartDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="EndDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="EndDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="ReportWorkOrderByWorkTitleSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+            <SourceDataConnection Name="ReportWorkOrderPrimaryGetDataConnection" />
+            <Filter>
+                <Field NativeName="Title" />
+                <Value>
+                    <Object Name="ReportWorkTitleDatabaseTable" ObjectType="DatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">Title</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Value>
+            </Filter>
+        </DataConnection>
+        
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="ReportWorkOrderDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="ReportWorkOrderDatabaseTable" />
+        </Condition>
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="ShiftDataConnectionResreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ReportWorkTitlePrimaryGetDataConnection" />
+                <DataConnection Name="ReportWorkOrderPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="EditOrderFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashEditOrder.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="OrderId">
+                    <Object Name="ReportWorkOrderDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">OrderId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+                <Parameter Name="IsReadOnly">True</Parameter>
+            </Parameters>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="ReportWorkOrderDatabaseTableCellDoubleClickCondition" />
+            </ConditionExpression>
+            <Commands>
+                <Command Name="EditOrderFormShowCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Отчёт по работам</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>45</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="DateLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Height>25</Height>
+                <Width>50</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Дата:</Text>
+            </MyObject>
+
+            <MyObject Name="StartDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>60</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="False" />
+                <Value>
+                    <DateTime Variable="FirstDayOfCurrMonth" />
+                </Value>
+            </MyObject>
+
+            <MyObject Name="EndDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>215</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="False" />
+                <Value>Now</Value>
+            </MyObject>
+
+            <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>375</Left>
+                <Height>25</Height>
+                <Width>100</Width>
+                <Text>Показать</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ShiftDataConnectionResreshCommand" />
+                </Commands>
+            </MyObject>
+            
+            <MyObject Name="TypeComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>500</Left>
+                <Height>25</Height>
+                <Width>150</Width>   
+                <ValueList>
+                    <Structure Type="Table">
+                        <Row>
+                            <Item>pass</Item>
+                            <Item>Легковой прайс</Item>
+                        </Row>
+                        <Row>
+                            <Item>truck</Item>
+                            <Item>Грузовой прайс</Item>
+                        </Row>
+                    </Structure>
+                </ValueList>
+                <Value>pass</Value>
+            </MyObject>
+            
+            <MyObject Name="ReportWorkTitleDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>40</Top>
+                <Left>5</Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>45</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>550</Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="AllCells" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="ReportWorkTitleByTypeSecondaryGetDataConnection" />
+                <Columns>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Наименование</Title>
+                        <AutoSizeMode Value="Fill" />
+                    </Column>
+                    <Column Name="Quantity" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кол-во</Title>
+                        <Alignment Value="MiddleRight" />
+                        <DataType Type="IntegerDataType" Format="N0" />
+                    </Column>
+                </Columns>
+            </MyObject>
+            
+            <MyObject Name="ReportWorkOrderDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>40</Top>
+                <Left>
+                    <Formula>
+                        <Plus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ReportWorkTitleDatabaseTable" ObjectType="DatabaseTable">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>10</Item>
+                        </Plus>
+                    </Formula>
+                </Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>45</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>
+                                <Object Name="ReportWorkTitleDatabaseTable" ObjectType="DatabaseTable">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>15</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="AllCells" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="ReportWorkOrderByWorkTitleSecondaryGetDataConnection" />
+                <Columns>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="OrderId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="Order" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Заказ-наряд</Title>
+                        <AllowSort Value="False" />
+                        <AutoSizeMode Value="Fill" />
+                    </Column>
+                </Columns>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

@@ -1,0 +1,351 @@
+<?xml version="1.0"?>
+<Form Name="WashReportProductForm" Title="Северный луч. Отчёт по продажам" Width="600" Height="600" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" MaximizeBox="True" FormBorderStyle="Sizable">
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="ReportProductPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ReportProductSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="StartDate" />
+                    <Field Name="EndDate" />
+                    <Field Name="Title" />
+                    <Field Name="Quantity" />
+                    <Field Name="Summ" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="StartDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="StartDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="EndDate" RefreshQuery="False">
+                        <Value>
+                            <Object Name="EndDateTimePicker" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="ShiftDataConnectionResreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ReportProductPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ReportExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+            <TemplateFileName>Templates\PrintableReportProduct.rtf</TemplateFileName>
+            <Print>False</Print>
+            <Parameters>
+                <Parameter Name="StartDate">
+                    <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+                        <DataConnection SourceDataConnection="ReportProductPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="StartDate" />
+                            </Fields>
+                        </DataConnection>
+                    </DataTypeFormat>
+                </Parameter>
+                <Parameter Name="EndDate">
+                    <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+                        <DataConnection SourceDataConnection="ReportProductPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="EndDate" />
+                            </Fields>
+                        </DataConnection>
+                    </DataTypeFormat>
+                </Parameter>
+                <Parameter Name="Title">
+                    <DataConnection SourceDataConnection="ReportProductPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Quantity">
+                    <DataConnection SourceDataConnection="ReportProductPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Quantity" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Summ">
+                    <DataTypeFormat Type="IntegerDataType" Format="N0">
+                        <DataConnection SourceDataConnection="ReportProductPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Summ" />
+                            </Fields>
+                        </DataConnection>
+                    </DataTypeFormat>
+                </Parameter>
+            </Parameters>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Отчёт по продажам</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>45</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="DateLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Height>25</Height>
+                <Width>50</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Дата:</Text>
+            </MyObject>
+
+            <MyObject Name="StartDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>60</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="False" />
+                <Value>
+                    <DateTime Variable="FirstDayOfCurrMonth" />
+                </Value>
+            </MyObject>
+
+            <MyObject Name="EndDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>215</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="False" />
+                <Value>Now</Value>
+            </MyObject>
+
+            <MyObject Name="RefreshButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>375</Left>
+                <Height>25</Height>
+                <Width>100</Width>
+                <Text>Показать</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ShiftDataConnectionResreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="ReportProductDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>40</Top>
+                <Left>5</Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>70</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="AllCells" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="ReportProductPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Наименование</Title>
+                        <AllowSort Value="False" />
+                        <AutoSizeMode Value="Fill" />
+                    </Column>
+                    <Column Name="Quantity" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Количество</Title>
+                        <AllowSort Value="False" />
+                        <Alignment Value="MiddleRight" />
+                        <DataType Type="IntegerDataType" Format="N0" />
+                    </Column>
+                    <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Сумма</Title>
+                        <AllowSort Value="False" />
+                        <Alignment Value="MiddleRight" />
+                    </Column>
+                </Columns>
+            </MyObject>
+            
+            <MyObject Name="ResultLabel" Type="Label" Assembly="BaseControls">
+                <Top>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>25</Item>
+                        </Minus>
+                    </Formula>
+                </Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>140</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>140</Width>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <Text>
+                    <String Format="Итого: {0}">
+                        <Items>
+                            <Item>
+                                <DataTypeFormat Type="IntegerDataType" Format="N0">
+                                    <Object Name="ReportProductDatabaseTable" ObjectType="DatabaseTable">
+                                        <Property Name="ColumnSum">
+                                            <Parameters>
+                                                <Parameter Name="ColumnName">Summ</Parameter>
+                                            </Parameters>
+                                        </Property>
+                                    </Object>
+                                </DataTypeFormat>
+                            </Item>
+                        </Items>
+                    </String>
+                </Text>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

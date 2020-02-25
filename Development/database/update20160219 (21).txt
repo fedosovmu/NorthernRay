@@ -1,0 +1,3 @@
+ALTER TABLE wash.order_list ALTER car_id TYPE integer;
+ALTER TABLE wash.tire_order_list ALTER car_id TYPE integer;
+ALTER TABLE wash.tire_truck_order_list ALTER car_id TYPE integer;

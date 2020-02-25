@@ -1,0 +1,248 @@
+CREATE SEQUENCE wash.email_setting_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+CREATE TABLE wash.email_setting
+(
+  email_setting_id smallint NOT NULL DEFAULT nextval('wash.email_setting_id_seq'::regclass),
+  email_setting_name character varying NOT NULL,
+  author_smtp_server_address character varying NOT NULL,
+  author_smtp_server_port integer NOT NULL,
+  author_email_address character varying NOT NULL,
+  author_email_password character varying NOT NULL,
+  author_name character varying,
+  subject character varying,
+  text character varying,
+  CONSTRAINT pk_email_setting_id PRIMARY KEY (email_setting_id)
+);
+
+INSERT INTO
+wash.email_setting
+(
+email_setting_name,
+author_smtp_server_address,
+author_smtp_server_port,
+author_email_address,
+author_email_password,
+author_name,
+subject,
+text
+)
+VALUES
+(
+'ShiftReport',
+'smtp.yandex.ru',
+25,
+'northern-ray-email@yandex.ru',
+'notify_nr_2013',
+'WT. Автомойка',
+'Отчёт за смену',
+'Доброго времени суток! Это автоматическое письмо, отвечать на него не нужно. Отчёт за смену находится во вложении.'
+);
+
+CREATE SEQUENCE wash.email_addressee_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+CREATE TABLE wash.email_addressee
+(
+  email_addressee_id smallint NOT NULL DEFAULT nextval('wash.email_addressee_id_seq'::regclass),
+  email_address character varying,
+  email_setting_id smallint NOT NULL,
+  CONSTRAINT pk_email_addressee_id PRIMARY KEY (email_addressee_id),
+  CONSTRAINT fk_email_addressee_email_setting_id FOREIGN KEY (email_setting_id)
+     REFERENCES wash.email_setting (email_setting_id) MATCH FULL
+     ON UPDATE NO ACTION ON DELETE CASCADE
+);
+
+INSERT INTO
+wash.email_addressee
+(
+email_address,
+email_setting_id
+)
+VALUES
+(
+'dpm@chelinvest.ru',
+(
+SELECT
+email_setting_id
+FROM
+wash.email_setting
+WHERE
+email_setting_name = 'ShiftReport'
+)
+);
+
+INSERT INTO
+wash.email_addressee
+(
+email_address,
+email_setting_id
+)
+VALUES
+(
+'',
+(
+SELECT
+email_setting_id
+FROM
+wash.email_setting
+WHERE
+email_setting_name = 'ShiftReport'
+)
+);
+
+INSERT INTO
+wash.email_addressee
+(
+email_address,
+email_setting_id
+)
+VALUES
+(
+'',
+(
+SELECT
+email_setting_id
+FROM
+wash.email_setting
+WHERE
+email_setting_name = 'ShiftReport'
+)
+);
+
+INSERT INTO
+wash.email_addressee
+(
+email_address,
+email_setting_id
+)
+VALUES
+(
+'',
+(
+SELECT
+email_setting_id
+FROM
+wash.email_setting
+WHERE
+email_setting_name = 'ShiftReport'
+)
+);
+
+INSERT INTO
+wash.email_addressee
+(
+email_address,
+email_setting_id
+)
+VALUES
+(
+'',
+(
+SELECT
+email_setting_id
+FROM
+wash.email_setting
+WHERE
+email_setting_name = 'ShiftReport'
+)
+);
+
+
+ALTER TABLE wash.order_list
+ADD COLUMN discount integer;
+
+UPDATE wash.order_list
+SET discount = ROUND(((cash + non_cash + terminal) / (100.0 - discount_percent) * discount_percent) / 5) * 5
+WHERE order_id != 1917;
+
+UPDATE wash.order_list
+SET 
+discount = (SELECT SUM(price) FROM wash.order_work WHERE order_id = 1917),
+discount_percent = 100
+WHERE order_id = 1917;
+
+UPDATE wash.client
+SET discount = 100
+WHERE client_id = 632;
+
+CREATE OR REPLACE FUNCTION wash.count_salary(integer, character varying)
+  RETURNS integer AS
+$BODY$
+BEGIN
+IF($2 = 'wash')
+THEN
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'wsalary') * (SELECT cash + non_cash + terminal + discount)) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'wminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      SUM(discount) AS discount,
+      shift_id
+    FROM
+      wash.order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+ELSE
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'tsalary') * (SELECT cash + non_cash + terminal)) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'tminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      shift_id
+    FROM
+      wash.tire_order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+END IF;
+RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+ALTER TABLE wash.order_list
+ADD COLUMN delete_date timestamp;
+
+ALTER TABLE wash.tire_order_list
+ADD COLUMN delete_date timestamp;

@@ -1,0 +1,79 @@
+-- Function: wash.count_salary(integer, character varying)
+
+-- DROP FUNCTION wash.count_salary(integer, character varying);
+
+CREATE OR REPLACE FUNCTION wash.count_salary(
+    integer,
+    character varying)
+  RETURNS integer AS
+$BODY$
+BEGIN
+IF($2 = 'wash')
+THEN
+RETURN
+(SELECT
+  CASE
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'wsalary') * S.summ) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'wminsalary') AS min_salary
+  FROM
+    (
+      SELECT order_id, price * quantity AS summ FROM wash.order_work UNION ALL
+      SELECT order_id, price * quantity AS summ FROM wash.order_other_work 
+    ) S
+    JOIN wash.order_list USING(order_id)
+  WHERE
+    NOT order_list.deleted AND
+    order_list.shift_id = $1) x);
+ELSIF ($2 = 'tire') THEN
+RETURN
+(SELECT
+  CASE
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'tsalary') * S.summ) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'tminsalary') AS min_salary
+  FROM
+    (
+      SELECT tire_order_id, price * quantity AS summ FROM wash.tire_order_work UNION ALL
+      SELECT tire_order_id, price * quantity AS summ FROM wash.tire_order_other_work
+    ) S
+    JOIN wash.tire_order_list USING(tire_order_id)
+  WHERE
+    NOT tire_order_list.deleted AND
+    tire_order_list.shift_id = $1) x);
+ELSE
+RETURN
+(SELECT
+  CASE
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'ttsalary') * S.summ) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'ttminsalary') AS min_salary
+  FROM
+    (
+      SELECT tire_truck_order_id, price * quantity AS summ FROM wash.tire_truck_order_work UNION ALL
+      SELECT tire_truck_order_id, price * quantity AS summ FROM wash.tire_truck_order_other_work
+    ) S
+    JOIN wash.tire_truck_order_list USING(tire_truck_order_id)
+  WHERE
+    NOT tire_truck_order_list.deleted AND
+    tire_truck_order_list.shift_id = $1) x);
+END IF;
+RETURN 0;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE;

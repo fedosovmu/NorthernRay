@@ -1,0 +1,3246 @@
+<?xml version="1.0"?>
+<Form Name="WashAddOrderForm" Title="Северный луч. Заказ" Width="855" Height="590" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+  <Parameters>
+    <Parameter Name="ShiftId" />
+    <Parameter Name="Updated">False</Parameter>
+  </Parameters>
+
+
+  <Appearance>
+    <Colors>
+      <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+
+    <FontStyles>
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+      <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+
+  <Checkings>
+    <Checking>
+      <Object Name="CarVendorComboBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="CarVendorIsNullCondition" />
+          <Condition Name="CarVendorIsEmptyCondition" />
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Выберите марку из списка или введите новую</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="CarModelComboBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="CarModelIsNullCondition" />
+          <Condition Name="CarModelIsEmptyCondition" />
+          <Not>
+            <Condition Name="CarIsTruckCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Выберите модель автомобиля из списка \rили введите новую и нажмите кнопку "Добавить машину"</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="CategoryComboBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="CategoryIsNullCondition" />
+          <Condition Name="CarModelIsNullCondition" />
+          <Not>
+            <Condition Name="CarModelIsEmptyCondition" />
+          </Not>
+          <Not>
+            <Condition Name="CarIsTruckCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Выберите категорию нового автомобиля </AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="ClientButton" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="ClientIsLegalCondition" />
+          <Condition Name="ClientIsNullCondition" />
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Выберите клиента из списка юридических лиц</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="SummButton" />
+      <ConditionExpression>
+        <And>
+          <Not>
+            <Condition Name="CarModelIsNullCondition" />
+          </Not>
+          <Not>
+            <Condition Name="IsCalculatedCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Добавьте необходимые работы \rи нажмите кнопку "Рассчитать",\rчтобы получить сумму заказа</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="CashNumericBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="IsCalculatedCondition" />
+          <Not>
+            <Condition Name="PaymentAndSummEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Сумма по заказу не совпадает с оплатой</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="NonCashNumericBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="IsCalculatedCondition" />
+          <Not>
+            <Condition Name="PaymentAndSummEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Сумма по заказу не совпадает с оплатой</AsteriskHint>
+    </Checking>
+
+    <Checking>
+      <Object Name="TerminalNumericBox" />
+      <ConditionExpression>
+        <And>
+          <Condition Name="IsCalculatedCondition" />
+          <Not>
+            <Condition Name="PaymentAndSummEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <AsteriskHint>Сумма по заказу не совпадает с оплатой</AsteriskHint>
+    </Checking>
+  </Checkings>
+
+  <DataConnections>
+    <!-- Скидки -->
+    <!--    <DataConnection Name="SettingPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="SettingSelectSqlQuery" Type="Select">
+      <Workflow Name="Wash" />
+      <Fields>
+      <Field Name="SettingId" />
+      <Field Name="Title" />
+      <Field Name="SettingKey" />
+      <Field Name="SettingValue" />
+      </Fields>
+      </SqlQuery>
+      </DataConnection>
+      
+      <DataConnection Name="SettingCashServiceWashSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="SettingPrimaryGetDataConnection" />
+      <Filter>
+      <Field NativeName="SettingKey" />
+      <Value>cash_service_wash</Value>
+      <DataType Type="StringDataType" />
+      </Filter>
+      </DataConnection>
+      
+      <DataConnection Name="SettingCashGoodsWashSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="SettingPrimaryGetDataConnection" />
+      <Filter>
+      <Field NativeName="SettingKey" />
+      <Value>cash_goods_wash</Value>
+      <DataType Type="StringDataType" />
+      </Filter>
+      </DataConnection>-->
+
+    <!-- - - - - - - - - ORDER - - - - - - - - -->
+    <DataConnection Name="OrderInsertPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="OrderInsertSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Parameters>
+          <Parameter NativeName="ShiftId">
+            <Value>
+              <Parameter Name="ShiftId" />
+            </Value>
+          </Parameter>
+        </Parameters>
+        <Fields>
+          <Field Name="OrderId" />
+          <Field Name="OrderNumber" />
+          <Field Name="OrderDate" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="OrderDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OrderId">
+          <Value>
+            <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="OrderSaveSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OrderId">
+          <Value>
+            <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarId">
+          <Value>
+            <DataConnection SourceDataConnection="CarByClientSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="CarId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarVendorId">
+          <Value>
+            <Object Name="CarVendorComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarModelId">
+          <Value>
+            <Object Name="CarModelComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarNumber">
+          <Value>
+            <Object Name="CarNumberComboBox">
+              <Property Name="VisibleText" />
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Object Name="ClientComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ClientTitle">
+          <Value>
+            <Object Name="ClientComboBox">
+              <Property Name="Text" />
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="IsPerson">
+          <Value>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="DiscountPercent">
+          <Value>
+            <Object Name="DiscountVariable" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Cash">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>
+                  <Object Name="CashNumericBox" />
+                </Then>
+              </Case>
+              <Case>
+                <When>
+                  <Condition Name="PaymentIsCashCondition" />
+                </When>
+                <Then>
+                  <Object Name="ResultSummValueLabel" />
+                </Then>
+              </Case>
+              <Case>0</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="NonCash">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>
+                  <Object Name="NonCashNumericBox" />
+                </Then>
+              </Case>
+              <Case>0</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Terminal">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>
+                  <Object Name="TerminalNumericBox" />
+                </Then>
+              </Case>
+              <Case>
+                <When>
+                  <Not>
+                    <Condition Name="PaymentIsCashCondition" />
+                  </Not>
+                </When>
+                <Then>
+                  <Object Name="ResultSummValueLabel" />
+                </Then>
+              </Case>
+              <Case>0</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Discount">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <And>
+                    <Condition Name="Discount0GreaterCondition" />
+                    <Not>
+                      <Condition Name="CarIsTruckCondition" />
+                    </Not>
+                  </And>
+                </When>
+                <Then>
+                  <Calculate>
+                    <Expression>{0} - {1}</Expression>
+                    <Items>
+                      <Item>
+                        <Object Name="SummButton" />
+                      </Item>
+                      <Item>
+                        <Object Name="ResultSummValueLabel" />
+                      </Item>
+                    </Items>
+                  </Calculate>
+                </Then>
+              </Case>
+              <Case>0</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="Comments">
+          <Value>
+            <Object Name="CommentsTextBox" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderSaveSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+
+    <DataConnection Name="OrderDataCheckPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="OrderDataCheckSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CarModelDoesnotExist" />
+          <Field Name="ClientDoesnotExist" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="CarModelId" RefreshQuery="False">
+            <Value>
+              <Object Name="CarModelComboBox" />
+            </Value>
+          </Parameter>
+          <Parameter NativeName="ClientId" RefreshQuery="False">
+            <Value>
+              <Object Name="ClientComboBox" />
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <!-- - - - - - - - - CARS - - - - - - - - -->
+    <DataConnection Name="CarVendorPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="CarVendorSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CarVendorId" />
+          <Field Name="Title" />
+          <Field Name="CarType" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="CarModelPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="CarModelSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CarModelId" />
+          <Field Name="Title" />
+          <Field Name="CarVendorId" />
+          <Field Name="CategoryId" />
+          <Field Name="CarType" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="CategoryPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="CategorySelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="CategoryId" />
+          <Field Name="Title" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="CarVendorByTypeSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="CarVendorPrimaryGetDataConnection" />
+      <Filter Type="Nested">
+        <Or>
+          <Filter>
+            <Field NativeName="CarType" />
+            <Value>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="CarIsTruckCondition" />
+                  </When>
+                  <Then>truck</Then>
+                </Case>
+                <Case>pass</Case>
+              </Switch>
+            </Value>
+          </Filter>
+          <Filter>
+            <Field NativeName="CarType" />
+            <Value>both</Value>
+          </Filter>
+        </Or>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="CarModelByVendorAndTypeSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="CarModelPrimaryGetDataConnection" />
+      <Filter Type="Nested">
+        <And>
+          <Filter>
+            <Field NativeName="CarVendorId" />
+            <Value>
+              <Object Name="CarVendorComboBox" />
+            </Value>
+          </Filter>
+          <Filter>
+            <Field NativeName="CarType" />
+            <Value>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="CarIsTruckCondition" />
+                  </When>
+                  <Then>truck</Then>
+                </Case>
+                <Case>pass</Case>
+              </Switch>
+            </Value>
+          </Filter>
+        </And>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="CarModelByModelIdSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="CarModelPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="CarModelId" />
+        <Value>
+          <Command Name="CarVendorAndModelSaveCommand" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="CategoryByModelSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <!-- ВОТ ЗДЕСЬ КРОЕТСЯ ПРОБЛЕМА ИСЧЕЗНОВЕНИЯ КАТЕГОРИИ ПРИ ИЗМЕНЕНИИ МОДЕЛИ -->
+      <SourceDataConnection Name="CarModelByVendorAndTypeSecondaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="CarModelId" />
+        <Value>
+          <Object Name="CarModelComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="CarByClientSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ClientByCarNumberSecondaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="ClientId" />
+        <Value>
+          <Object Name="ClientComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="CarVendorAndModelSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="CarVendor">
+          <Value>
+            <Object Name="CarVendorComboBox">
+              <Property Name="Text" />
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarVendorId">
+          <Value>
+            <Object Name="CarVendorComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CarModel">
+          <Value>
+            <Object Name="CarModelComboBox">
+              <Property Name="Text" />
+            </Object>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CategoryId">
+          <Value>
+            <Object Name="CategoryComboBox" />
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="CarVendorAndModelInsertSqlQuery" Type="Insert" />
+      </SqlQueries>
+    </DataConnection>
+
+    <!-- - - - - - - - - CLIENTS - - - - - - - - -->
+    <DataConnection Name="ClientPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <Async Value="True" />
+      <SqlQuery Name="ClientSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ClientId" />
+          <Field Name="Title" />
+          <Field Name="IsPerson" />
+          <Field Name="Discount" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ClientWithCarsPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <Async Value="True" />
+      <SqlQuery Name="ClientWithCarsSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="ClientId" />
+          <Field Name="IsPerson" />
+          <Field Name="ClientType" />
+          <Field Name="Discount" />
+          <Field Name="CarId" />
+          <Field Name="CarNumber" />
+          <Field Name="CarModelId" />
+          <Field Name="CarVendorId" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="ClientByCarModelVendorSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ClientWithCarsPrimaryGetDataConnection" />
+      <Filter Type="Nested">
+        <And>
+          <Filter>
+            <Field NativeName="CarModelId" />
+            <Value>
+              <Object Name="CarModelComboBox" />
+            </Value>
+          </Filter>
+          <Filter>
+            <Field NativeName="CarVendorId" />
+            <Value>
+              <Object Name="CarVendorComboBox" />
+            </Value>
+          </Filter>
+        </And>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="ClientByCarNumberSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ClientByCarModelVendorSecondaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="CarId" />
+        <Value>
+          <Object Name="CarNumberComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="ClientByTypeSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ClientPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="IsPerson" />
+        <Value>
+          <Not>
+            <Condition Name="ClientIsLegalCondition" />
+          </Not>
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="ClientByIdSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="ClientPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="ClientId" />
+        <Value>
+          <Object Name="ClientComboBox" />
+        </Value>
+      </Filter>
+    </DataConnection>
+
+    <!-- - - - - - - - - WORKS IN ORDER - - - - - - - - -->
+    <DataConnection Name="OrderAllWorksPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="OrderAllWorksSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="OrderWorkId" />
+          <Field Name="Title" />
+          <Field Name="PriceId" />
+          <Field Name="Quantity" />
+          <Field Name="Price" />
+          <Field Name="Discount" />
+          <Field Name="PriceWithDiscount" />
+          <Field Name="Summ" />
+          <Field Name="SummWithDiscount" />
+          <Field Name="Total" />
+          <Field Name="TotalWithDiscount" />
+          <Field Name="Type" />
+        </Fields>
+        <Parameters>
+          <Parameter NativeName="OrderId">
+            <Value>
+              <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="OrderId" />
+                </Fields>
+              </DataConnection>
+            </Value>
+          </Parameter>
+        </Parameters>
+      </SqlQuery>
+    </DataConnection>
+
+    <DataConnection Name="OrderWorksSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="OrderAllWorksPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="Type" />
+        <Value>work</Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="OrderProductsSecondaryGetDataConnection" Type="SecondaryGetDataConnection" Assembly="DataConnections">
+      <SourceDataConnection Name="OrderAllWorksPrimaryGetDataConnection" />
+      <Filter>
+        <Field NativeName="Type" />
+        <Value>product</Value>
+      </Filter>
+    </DataConnection>
+
+    <DataConnection Name="OrderWorkDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+      <Workflow Name="Wash" />
+      <DatabaseTable Name="WorksDatabaseTable" />
+      <Parameters>
+        <Parameter NativeName="Quantity">
+          <Column Name="Quantity" />
+        </Parameter>
+        <Parameter NativeName="PriceId">
+          <Column Name="PriceId" />
+        </Parameter>
+        <Parameter NativeName="Type">
+          <Column Name="Type" />
+        </Parameter>
+        <Parameter NativeName="OrderWorkId">
+          <Column Name="OrderWorkId" />
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderAnyWorkUpdateSqlQuery" Type="Update" />
+        <SqlQuery Name="OrderAnyWorkDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+      <Refresh>
+        <DataConnection Name="OrderAllWorksPrimaryGetDataConnection" />
+      </Refresh>
+    </DataConnection>
+
+    <DataConnection Name="WorksRecountSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+      <Workflow Name="Wash" />
+      <Parameters>
+        <Parameter NativeName="OrderId">
+          <Value>
+            <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </Parameter>
+        <Parameter NativeName="CategoryId">
+          <Value>
+            <Object Name="CategoryComboBox" />
+          </Value>
+        </Parameter>
+        <Parameter NativeName="ClientId">
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>
+                  <Object Name="ClientComboBox" />
+                </Then>
+              </Case>
+              <Case>%NULL%</Case>
+            </Switch>
+          </Value>
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="OrderWorksRecountSqlQuery" Type="Update" />
+      </SqlQueries>
+    </DataConnection>
+
+  </DataConnections>
+
+
+  <Conditions>
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+    <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Form>
+            <Property Name="FormChanged" />
+          </Form>
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarIsTruckCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarTypeRadioButtonBlock" />
+        </Item>
+        <Item>truck</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarIsNotTruckCondition" Type="NotEqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarTypeRadioButtonBlock" />
+        </Item>
+        <Item>truck</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientIsLegalCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ClientTypeRadioButtonBlock" />
+        </Item>
+        <Item>legal</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarModelIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarModelComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarVendorIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarVendorComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarVendorIsNotNullCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarVendorComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CategoryIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CategoryComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="CarModelIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarModelComboBox">
+            <Property Name="Text" />
+          </Object>
+        </Item>
+        <Item />
+      </Items>
+    </Condition>
+
+    <Condition Name="CarVendorIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarVendorComboBox">
+            <Property Name="Text" />
+          </Object>
+        </Item>
+        <Item />
+      </Items>
+    </Condition>
+
+    <Condition Name="Discount0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="PaymentIsCashCondition" />
+              </When>
+              <Then>
+                <Object Name="DiscountWithCashVariable" />
+              </Then>
+            </Case>
+            <Case>
+              <DataConnection SourceDataConnection="ClientByIdSecondaryGetDataConnection">
+                <Fields>
+                  <Field Name="Discount" />
+                </Fields>
+              </DataConnection>
+            </Case>
+          </Switch>
+        </Item>
+        <Item>0</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="WorksDatabaseTableIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="WorksDatabaseTable">
+            <Property Name="RowsCount" />
+          </Object>
+        </Item>
+        <Item>0</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="NeedRecalculateCondition" Type="ChangedCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarVendorComboBox" />
+        </Item>
+        <Item>
+          <Object Name="CarModelComboBox" />
+        </Item>
+        <Item>
+          <Object Name="CarTypeRadioButtonBlock" />
+        </Item>
+        <Item>
+          <Object Name="WorksDatabaseTable" />
+        </Item>
+        <Item>
+          <Object Name="ClientTypeRadioButtonBlock" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ClientComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="LegalClientChangedNestedCondition" Type="NestedCondition" Assembly="Conditions">
+      <ConditionExpression>
+        <And>
+          <Condition Name="ClientIsLegalCondition" />
+          <Condition Name="ClientChangedCondition" />
+        </And>
+      </ConditionExpression>
+    </Condition>
+
+    <Condition Name="IsCalculatedCondition" Type="NotEqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="SummButton">
+            <Property Name="Text" />
+          </Object>
+        </Item>
+        <Item>Рассчитать</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="SummButtonClickCondition" Type="ClickCondition" Assembly="Conditions">
+      <Object Name="SummButton" />
+    </Condition>
+
+    <Condition Name="PaymentAndSummEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ResultSummValueLabel" />
+        </Item>
+        <Item>
+          <Calculate>
+            <Expression>{0} + {1} + {2}</Expression>
+            <Items>
+              <Item>
+                <Object Name="CashNumericBox" />
+              </Item>
+              <Item>
+                <Object Name="NonCashNumericBox" />
+              </Item>
+              <Item>
+                <Object Name="TerminalNumericBox" />
+              </Item>
+            </Items>
+          </Calculate>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="PaymentIsCashCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="PaymentTypeRadioButtonBlock" />
+        </Item>
+        <Item>cash</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ClientComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientIsNotNullCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ClientComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientFromDCIsNotNullCondition" Type="IsNotNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <DataConnection SourceDataConnection="ClientByCarNumberSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="ClientId" />
+            </Fields>
+          </DataConnection>
+        </Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ClientIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="ClientComboBox">
+            <Property Name="VisibleText" />
+          </Object>
+        </Item>
+        <Item />
+      </Items>
+    </Condition>
+
+    <Condition Name="CarNumberIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="CarNumberComboBox">
+            <Property Name="VisibleText" />
+          </Object>
+        </Item>
+        <Item />
+      </Items>
+    </Condition>
+
+    <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="WorksDatabaseTable">
+            <Property Name="SelectedRowIndex" />
+          </Object>
+        </Item>
+        <Item>-1</Item>
+      </Items>
+      <DataType Type="IntegerDataType" />
+    </Condition>
+
+    <Condition Name="NewCarConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="NewCarConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddWorkUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="AddWorkFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddWorkTruckUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="AddWorkTruckFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="AddOtherWorkUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Command Name="AddOtherWorkFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="NeedUpdateNestedCondition" Type="NestedCondition" Assembly="Conditions">
+      <ConditionExpression>
+        <Or>
+          <Command Name="AddWorkFormShowCommand" Parameter="Updated" />
+          <Command Name="AddWorkTruckFormShowCommand" Parameter="Updated" />
+          <Command Name="AddOtherWorkFormShowCommand" Parameter="Updated" />
+          <Command Name="AddProductFormShowCommand" Parameter="Updated" />
+        </Or>
+      </ConditionExpression>
+    </Condition>
+
+    <Condition Name="ExitConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="ExitConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="DeleteWorkConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="DeleteWorkConfirmMessageBoxCommand" />
+        </Item>
+        <Item>Yes</Item>
+      </Items>
+    </Condition>
+
+    <Condition Name="ProductExistsCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="WorksDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="Column">
+              <Parameters>
+                <Parameter Name="ColumnName">Type</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>product</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="WorkExistsCondition" Type="NotEqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="WorksDatabaseTable" ObjectType="DatabaseTable">
+            <Property Name="Column">
+              <Parameters>
+                <Parameter Name="ColumnName">Type</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>product</Item>
+      </Items>
+      <Satisfy MinCount="1" />
+    </Condition>
+
+    <Condition Name="ProductAndWorkExistNestedCondition" Type="NestedCondition" Assembly="Conditions">
+      <ConditionExpression>
+        <And>
+          <Condition Name="ProductExistsCondition" />
+          <Condition Name="WorkExistsCondition" />
+        </And>
+      </ConditionExpression>
+    </Condition>
+
+  </Conditions>
+
+
+  <Commands>
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+    <Command Name="AddWorkFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAddWork.xml</Xml>
+      <Show Type="Modal" />
+      <Condition Name="CarIsNotTruckCondition" />
+      <Parameters>
+        <Parameter Name="CategoryId">
+          <Object Name="CategoryComboBox" />
+        </Parameter>
+        <Parameter Name="ClientId">
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="ClientIsLegalCondition" />
+              </When>
+              <Then>
+                <Object Name="ClientComboBox" />
+              </Then>
+            </Case>
+            <Case>%NULL%</Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="OrderId">
+          <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AddWorkTruckFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAddWorkTruck.xml</Xml>
+      <Show Type="Modal" />
+      <Condition Name="CarIsTruckCondition" />
+      <Parameters>
+        <Parameter Name="ClientId">
+          <Switch>
+            <Case>
+              <When>
+                <Condition Name="ClientIsLegalCondition" />
+              </When>
+              <Then>
+                <Object Name="ClientComboBox" />
+              </Then>
+            </Case>
+            <Case>%NULL%</Case>
+          </Switch>
+        </Parameter>
+        <Parameter Name="OrderId">
+          <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AddOtherWorkFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAddOtherWork.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="OrderType">wash</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="AddProductFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashAddProduct.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="OrderId">
+          <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderId" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="OrderType">wash</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="CarVendorAndModelSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="CarVendorAndModelSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="CarDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="CarVendorPrimaryGetDataConnection" />
+        <DataConnection Name="CarModelPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ClientDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="ClientPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="CarTypeRadioValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="CarTypeRadioButtonBlock">
+        <DataConnection SourceDataConnection="CarModelByModelIdSecondaryGetDataConnection">
+          <Fields>
+            <Field Name="CarType" />
+          </Fields>
+        </DataConnection>
+      </Object>
+    </Command>
+
+    <Command Name="CarVendorComboBoxValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="CarVendorComboBox">
+        <DataConnection SourceDataConnection="CarModelByModelIdSecondaryGetDataConnection">
+          <Fields>
+            <Field Name="CarVendorId" />
+          </Fields>
+        </DataConnection>
+      </Object>
+    </Command>
+
+    <Command Name="CarModelComboBoxValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="CarModelComboBox">
+        <DataConnection SourceDataConnection="CarModelByModelIdSecondaryGetDataConnection">
+          <Fields>
+            <Field Name="CarModelId" />
+          </Fields>
+        </DataConnection>
+      </Object>
+    </Command>
+
+    <Command Name="OrderDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderDeleteSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="WorkDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <Condition Name="NeedUpdateNestedCondition" />
+      <DataConnections>
+        <DataConnection Name="OrderAllWorksPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="CalculateSummValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">
+        <Object Name="WorksDatabaseTable">
+          <Property Name="ColumnSum">
+            <Parameters>
+              <Parameter Name="ColumnName">Summ</Parameter>
+            </Parameters>
+          </Property>
+        </Object>
+      </Object>
+    </Command>
+
+    <Command Name="ResetSummValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">Рассчитать</Object>
+    </Command>
+
+    <Command Name="DisableSummButtonValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">
+        <Property Name="Enabled">False</Property>
+      </Object>
+    </Command>
+
+    <Command Name="EnableSummButtonValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">
+        <Property Name="Enabled">True</Property>
+      </Object>
+    </Command>
+
+    <Command Name="SetBorderSummButtonValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">
+        <Property Name="FlatBorderSize">1</Property>
+      </Object>
+    </Command>
+
+    <Command Name="ClearBorderSummButtonValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="SummButton">
+        <Property Name="FlatBorderSize">0</Property>
+      </Object>
+    </Command>
+
+    <Command Name="OrderWorkDatabaseTableSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderWorkDatabaseTableSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="OrderSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderSaveSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="WorkDeleteValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Condition Name="DeleteWorkConfirmMessageBoxCommandYesEqualCondition" />
+      <Object Name="WorksDatabaseTable">
+        <Property Name="DeleteRowsByIndices">
+          <Parameters>
+            <Parameter Name="Value">
+              <Object Name="WorksDatabaseTable">
+                <Property Name="SelectedRowIndex" />
+              </Object>
+            </Parameter>
+          </Parameters>
+        </Property>
+      </Object>
+    </Command>
+
+    <Command Name="WorksRecountSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="WorksRecountSetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="NewCarConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Подтверждение действия</Caption>
+      <Text>Вы действительно хотите добавить новую машину?</Text>
+      <Icon Type="Information" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="Updated">True</Parameter>
+    </Command>
+
+    <Command Name="ExitConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Подтверждение действия</Caption>
+      <Text>Вы уверены, что хотите выйти?\rВсе данные по заказу будут утеряны.</Text>
+      <Icon Type="Information" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="DeleteWorkConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Подтверждение действия</Caption>
+      <Text>Вы уверены, что хотите удалить работу?</Text>
+      <Icon Type="Information" />
+      <Buttons Type="YesNo" />
+    </Command>
+
+    <Command Name="NotCalculatatedErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Не рассчитана итоговая сумма заказа</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="CarIsNotFilledErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Введены не все данные об автомобиле</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="CategoryIsEmptyErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Невозможно получить данные о категории автомобиля. \rЛибо автомобиль не выбран, либо не нажата кнопка "Добавить машину", если это новый автомобиль</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="PaymentAndSummNotEqualErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Сумма к заказа не совпадает с оплатой</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="WorksTableIsEmptyErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Не добавлено ни одной работы по заказу</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="ClientIsNullErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Не выбран ни один клиент из списка юр. лиц</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="ClientAddItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashClientItem.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="ClientId">-1</Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Name="ClientTypeValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ClientTypeRadioButtonBlock">
+        <Command Name="ClientAddItemFormShowCommand" Parameter="ClientType" />
+      </Object>
+    </Command>
+
+    <Command Name="ClientValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="ClientComboBox">
+        <Command Name="ClientAddItemFormShowCommand" Parameter="ClientId" />
+      </Object>
+    </Command>
+
+    <Command Type="ValueSetCommand" Name="NonCashValueSetCommand" Assembly="Commands">
+      <Condition Name="ClientIsLegalCondition" />
+      <Object Name="NonCashNumericBox">
+        <Object Name="ResultVariable" />
+      </Object>
+    </Command>
+
+    <Command Name="ClientSearchFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashClientSearch.xml</Xml>
+      <Show Type="Modal" />
+      <Parameters>
+        <Parameter Name="ClientId">
+          <Object Name="ClientComboBox" />
+        </Parameter>
+      </Parameters>
+    </Command>
+
+    <Command Type="ValueSetCommand" Name="ClientSearchValueSetCommand" Assembly="Commands">
+      <Object Name="ClientComboBox">
+        <Command Name="ClientSearchFormShowCommand" Parameter="ClientId" />
+      </Object>
+    </Command>
+
+    <Command Type="ValueSetCommand" Name="ClientChangedValueSetCommand" Assembly="Commands">
+      <Object Name="ClientButton">
+        <Object Name="ClientComboBox" ObjectType="ComboBox">
+          <Property Name="VisibleText" />
+        </Object>
+      </Object>
+    </Command>
+
+    <Command Name="OrderDataCheckDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="OrderDataCheckPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+
+    <Command Name="ClientDoesnotExistErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Не найден указанный клиент. Возможно, он был удален. Попробуйте выбрать другого клиента.</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="CarModelDoesnotExistErrorMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Предупреждение</Caption>
+      <Text>Не найдена указанная модель автомобиля. Возможно, она была удалена. Попробуйте выбрать другую модель.</Text>
+      <Icon Type="Warning" />
+      <Buttons Type="Ok" />
+    </Command>
+
+    <Command Name="OrderExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+      <TemplateFileName>
+        <Switch>
+          <Case>
+            <When>
+              <Condition Name="ProductAndWorkExistNestedCondition" />
+            </When>
+            <Then>
+              <Switch>
+                <Case>
+                  <When>
+                    <And>
+                      <Condition Name="PaymentIsCashCondition" />
+                      <Not>
+                        <Condition Name="ClientIsLegalCondition" />
+                      </Not>
+                    </And>
+                  </When>
+                  <Then>Templates\PrintableOrderAllCash.rtf</Then>
+                </Case>
+                <Case>Templates\PrintableOrderAll.rtf</Case>
+              </Switch>
+            </Then>
+          </Case>
+          <Case>
+            <When>
+              <Condition Name="ProductExistsCondition" />
+            </When>
+            <Then>
+              <Switch>
+                <Case>
+                  <When>
+                    <And>
+                      <Condition Name="PaymentIsCashCondition" />
+                      <Not>
+                        <Condition Name="ClientIsLegalCondition" />
+                      </Not>
+                    </And>
+                  </When>
+                  <Then>Templates\PrintableOrderProductsCash.rtf</Then>
+                </Case>
+                <Case>Templates\PrintableOrderProducts.rtf</Case>
+              </Switch>
+            </Then>
+          </Case>
+          <Case>
+            <Switch>
+              <Case>
+                <When>
+                  <And>
+                    <Condition Name="PaymentIsCashCondition" />
+                    <Not>
+                      <Condition Name="ClientIsLegalCondition" />
+                    </Not>
+                  </And>
+                </When>
+                <Then>Templates\PrintableOrderWorksCash.rtf</Then>
+              </Case>
+              <Case>Templates\PrintableOrderWorks.rtf</Case>
+            </Switch>
+          </Case>
+        </Switch>
+      </TemplateFileName>
+      <Print>True</Print>
+      <Parameters>
+        <Parameter Name="OrderNumber">
+          <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="OrderNumber" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="OrderDate">
+          <DataTypeFormat Type="DateTimeDataType" Format="d MMMM yyyy">
+            <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderDate" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="OrderTime">
+          <DataTypeFormat Type="DateTimeDataType" Format="HH:mm">
+            <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+              <Fields>
+                <Field Name="OrderDate" />
+              </Fields>
+            </DataConnection>
+          </DataTypeFormat>
+        </Parameter>
+        <Parameter Name="CarVendor">
+          <Object Name="CarVendorComboBox">
+            <Property Name="VisibleText" />
+          </Object>
+        </Parameter>
+        <Parameter Name="CarModel">
+          <Object Name="CarModelComboBox">
+            <Property Name="VisibleText" />
+          </Object>
+        </Parameter>
+        <Parameter Name="CarNumber">
+          <Object Name="CarNumberComboBox">
+            <Property Name="VisibleText" />
+          </Object>
+        </Parameter>
+        <Parameter Name="Work">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkQuantity">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Quantity" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkPrice">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Price" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkDiscount">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Discount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkPriceWithDiscount">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="PriceWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkSumm">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Summ" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkSummWithDiscount">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="SummWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkTotal">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Total" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="WorkTotalWithDiscount">
+          <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="TotalWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="GeneralDiscount">
+          <String Format="{0}%">
+            <Items>
+              <Item>
+                <Object Name="DiscountVariable" />
+              </Item>
+            </Items>
+          </String>
+        </Parameter>
+        <Parameter Name="TotalWithGeneralDiscount">
+          <Calculate>
+            <Expression>Round({0} * ( 1 - {1}/100), 0)</Expression>
+            <Items>
+              <Item>
+                <Switch>
+                  <Case>
+                    <When>
+                      <And>
+                        <Condition Name="PaymentIsCashCondition" />
+                        <Not>
+                          <Condition Name="ClientIsLegalCondition" />
+                        </Not>
+                      </And>
+                    </When>
+                    <Then>
+                      <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+                        <Fields>
+                          <Field Name="TotalWithDiscount" />
+                        </Fields>
+                      </DataConnection>
+                    </Then>
+                  </Case>
+                  <Case>
+                    <DataConnection SourceDataConnection="OrderWorksSecondaryGetDataConnection">
+                      <Fields>
+                        <Field Name="Total" />
+                      </Fields>
+                    </DataConnection>
+                  </Case>
+                </Switch>
+              </Item>
+              <Item>
+                <Object Name="DiscountVariable" />
+              </Item>
+            </Items>
+          </Calculate>
+        </Parameter>
+        <Parameter Name="Product">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Title" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductQuantity">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Quantity" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductPrice">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Price" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductDiscount">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Discount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductPriceWithDiscount">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="PriceWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductSumm">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Summ" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductSummWithDiscount">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="SummWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductTotal">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="Total" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="ProductTotalWithDiscount">
+          <DataConnection SourceDataConnection="OrderProductsSecondaryGetDataConnection">
+            <Fields>
+              <Field Name="TotalWithDiscount" />
+            </Fields>
+          </DataConnection>
+        </Parameter>
+        <Parameter Name="Total">
+          <Object Name="WorksDatabaseTable">
+            <Property Name="ColumnSum">
+              <Parameters>
+                <Parameter Name="ColumnName">Summ</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Parameter>
+        <Parameter Name="Discount">
+          <String Format="{0}%">
+            <Items>
+              <Item>
+                <Switch>
+                  <Case>
+                    <When>
+                      <Condition Name="PaymentIsCashCondition" />
+                    </When>
+                    <Then>
+                      <Object Name="DiscountWithCashVariable" />
+                    </Then>
+                  </Case>
+                  <Case>
+                    <Object Name="DiscountVariable" />
+                  </Case>
+                </Switch>
+              </Item>
+            </Items>
+          </String>
+        </Parameter>
+        <Parameter Name="TotalWithDiscount">
+          <Object Name="ResultSummValueLabel" />
+        </Parameter>
+      </Parameters>
+    </Command>
+
+  </Commands>
+
+
+  <Executions>
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Condition Name="FormChangedCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ExitConfirmMessageBoxCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Or>
+          <And>
+            <Condition Name="FormClosingCondition" />
+            <Not>
+              <Condition Name="FormChangedCondition" />
+            </Not>
+          </And>
+          <Condition Name="ExitConfirmMessageBoxCommandYesEqualCondition" />
+        </Or>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="OrderDeleteSaveCommand" />
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Or>
+          <Condition Name="NeedRecalculateCondition" />
+          <Condition Name="ClientChangedCondition" />
+        </Or>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ResetSummValueSetCommand" />
+        <Command Name="SetBorderSummButtonValueSetCommand" />
+        <Command Name="EnableSummButtonValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="SummButtonClickCondition" />
+          <Not>
+            <Condition Name="WorksDatabaseTableIsEmptyCondition" />
+          </Not>
+          <Or>
+            <And>
+              <Not>
+                <Condition Name="ClientIsEmptyCondition" />
+              </Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </And>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </Or>
+        </And>
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="CalculateSummValueSetCommand" />
+        <Command Name="DisableSummButtonValueSetCommand" />
+        <Command Name="ClearBorderSummButtonValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="NewCarConfirmMessageBoxCommandYesEqualCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="CarVendorAndModelSaveCommand" />
+        <Command Name="CarDataConnectionRefreshCommand" />
+        <Command Name="CarTypeRadioValueSetCommand" />
+        <Command Name="CarVendorComboBoxValueSetCommand" />
+        <Command Name="CarModelComboBoxValueSetCommand" />
+      </Commands>
+    </Execution>
+
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="ClientChangedCondition" />
+      </ConditionExpression>
+      <Commands StopOnError="True">
+        <Command Name="ClientChangedValueSetCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+
+  <MyObjects>
+    <MyObject Name="DiscountVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>
+        <Switch>
+          <Case>
+            <When>
+              <And>
+                <Condition Name="Discount0GreaterCondition" />
+                <Not>
+                  <Condition Name="CarIsTruckCondition" />
+                </Not>
+              </And>
+            </When>
+            <Then>
+              <DataConnection SourceDataConnection="ClientByIdSecondaryGetDataConnection">
+                <Fields>
+                  <Field Name="Discount" />
+                </Fields>
+              </DataConnection>
+            </Then>
+          </Case>
+          <Case>0</Case>
+        </Switch>
+      </Value>
+    </MyObject>
+
+    <MyObject Name="ResultVariable" Type="Variable" Assembly="SimpleControls">
+      <Value>
+        <Calculate>
+          <Expression>Round(({0} * (100 - {2}) / 100 + {1}), 0)</Expression>
+          <Items>
+            <Item>
+              <Object Name="WorksDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="CountingSignSumMultiply">
+                  <Parameters>
+                    <Parameter Name="ColumnName1">
+                      <Switch>
+                        <Case>
+                          <When>
+                            <And>
+                              <Condition Name="PaymentIsCashCondition" />
+                              <Not>
+                                <Condition Name="ClientIsLegalCondition" />
+                              </Not>
+                            </And>
+                          </When>
+                          <Then>PriceWithDiscount</Then>
+                        </Case>
+                        <Case>Price</Case>
+                      </Switch>
+                    </Parameter>
+                    <Parameter Name="ColumnName2">Quantity</Parameter>
+                    <Parameter Name="SignColumnName">WorkFactor</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Item>
+            <Item>
+              <Object Name="WorksDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="CountingSignSumMultiply">
+                  <Parameters>
+                    <Parameter Name="ColumnName1">
+                      <Switch>
+                        <Case>
+                          <When>
+                            <And>
+                              <Condition Name="PaymentIsCashCondition" />
+                              <Not>
+                                <Condition Name="ClientIsLegalCondition" />
+                              </Not>
+                            </And>
+                          </When>
+                          <Then>PriceWithDiscount</Then>
+                        </Case>
+                        <Case>Price</Case>
+                      </Switch>
+                    </Parameter>
+                    <Parameter Name="ColumnName2">Quantity</Parameter>
+                    <Parameter Name="SignColumnName">ProductFactor</Parameter>
+                  </Parameters>
+                </Property>
+              </Object>
+            </Item>
+            <Item>
+              <Object Name="DiscountVariable" />
+            </Item>
+          </Items>
+        </Calculate>
+      </Value>
+    </MyObject>
+
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>36</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+        <Top>0</Top>
+        <Left>10</Left>
+        <Height>
+          <Object Name="HeadPanel">
+            <Property Name="Height" />
+          </Object>
+        </Height>
+        <Width>500</Width>
+        <FontStyle>OrderTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>
+          <String Format="Заказ-наряд №{0}">
+            <Items>
+              <Item>
+                <DataConnection SourceDataConnection="OrderInsertPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="OrderNumber" />
+                  </Fields>
+                </DataConnection>
+              </Item>
+            </Items>
+          </String>
+        </Text>
+      </MyObject>
+    </MyObject>
+
+    <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+      <Top>36</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>
+        <Formula>
+          <Minus DataType="DoubleDataType">
+            <Item>
+              <Form>
+                <Property Name="Height" />
+              </Form>
+            </Item>
+            <Item>40</Item>
+          </Minus>
+        </Formula>
+      </Height>
+      <Width>
+        <Form>
+          <Property Name="Width" />
+        </Form>
+      </Width>
+      <TabIndex>1</TabIndex>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <MyObject Name="OrderPropertyGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>265</Height>
+        <Width>420</Width>
+        <TabIndex>1</TabIndex>
+        <Text>Параметры заказа</Text>
+
+        <MyObject Name="CarTypeLabel" Type="Label" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Тип автомобиля:</Text>
+        </MyObject>
+
+        <MyObject Name="CarTypeRadioButtonBlock" Type="RadioButtonBlock" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>190</Width>
+          <TabIndex>1</TabIndex>
+          <Options>
+            <Option Name="PassengerRadioButton">
+              <Top>0</Top>
+              <Left>0</Left>
+              <Width>100</Width>
+              <Text>Легковой</Text>
+              <Value>pass</Value>
+            </Option>
+            <Option Name="TruckRadioButton">
+              <Top>0</Top>
+              <Left>110</Left>
+              <Width>90</Width>
+              <Text>Грузовой</Text>
+              <Value>truck</Value>
+            </Option>
+          </Options>
+          <Value>pass</Value>
+        </MyObject>
+
+        <MyObject Name="CarVendorLabel" Type="Label" Assembly="BaseControls">
+          <Top>50</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Марка автомобиля:</Text>
+        </MyObject>
+
+        <MyObject Name="CarVendorComboBox" Type="ComboBox" Assembly="BaseControls">
+          <Top>50</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>120</Width>
+          <EnterText>True</EnterText>
+          <AutoCompleteMode>SuggestAppend</AutoCompleteMode>
+          <AutoCompleteSource>ListItems</AutoCompleteSource>
+          <NullValue Show="True" Title="[Не выбрано]" />
+          <Sorted>True</Sorted>
+          <TabIndex>2</TabIndex>
+          <ValueList>
+            <DataConnection SourceDataConnection="CarVendorByTypeSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="CarVendorId" />
+                <Field Name="Title" />
+              </Fields>
+            </DataConnection>
+          </ValueList>
+        </MyObject>
+
+        <MyObject Name="CarModelLabel" Type="Label" Assembly="BaseControls">
+          <Top>80</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Модель автомобиля:</Text>
+        </MyObject>
+
+        <MyObject Name="CarModelComboBox" Type="ComboBox" Assembly="BaseControls">
+          <Top>80</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>120</Width>
+          <EnterText>True</EnterText>
+          <AutoCompleteMode>SuggestAppend</AutoCompleteMode>
+          <AutoCompleteSource>ListItems</AutoCompleteSource>
+          <Sorted>True</Sorted>
+          <NullValue Show="True" Title="[Не выбрано]" />
+          <TabIndex>3</TabIndex>
+          <ValueList>
+            <DataConnection SourceDataConnection="CarModelByVendorAndTypeSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="CarModelId" />
+                <Field Name="Title" />
+              </Fields>
+            </DataConnection>
+          </ValueList>
+        </MyObject>
+
+        <MyObject Name="CategoryLabel" Type="Label" Assembly="BaseControls">
+          <Top>110</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Категория:</Text>
+        </MyObject>
+
+        <MyObject Name="CategoryComboBox" Type="ComboBox" Assembly="BaseControls">
+          <Top>110</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>120</Width>
+          <TabIndex>4</TabIndex>
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="CarIsTruckCondition" />
+                </When>
+                <Then>7</Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="CategoryByModelSecondaryGetDataConnection">
+                  <Fields>
+                    <Field Name="CategoryId" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </Value>
+          <ValueList>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="CarIsTruckCondition" />
+                </When>
+                <Then>
+                  <Structure Type="Table">
+                    <Row>
+                      <Item>7</Item>
+                      <Item>ГРУЗОВЫЕ</Item>
+                    </Row>
+                  </Structure>
+                </Then>
+              </Case>
+              <Case>
+                <DataConnection SourceDataConnection="CategoryPrimaryGetDataConnection">
+                  <Fields>
+                    <Field Name="CategoryId" />
+                    <Field Name="Title" />
+                  </Fields>
+                </DataConnection>
+              </Case>
+            </Switch>
+          </ValueList>
+          <Enabled>
+            <And>
+              <Condition Name="CarModelIsNullCondition" />
+              <Not>
+                <Condition Name="CarIsTruckCondition" />
+              </Not>
+            </And>
+          </Enabled>
+        </MyObject>
+
+        <MyObject Name="CarAddButton" Type="Button" Assembly="BaseControls">
+          <Top>70</Top>
+          <Left>320</Left>
+          <Height>45</Height>
+          <Width>80</Width>
+          <Text>Добавить машину</Text>
+          <Hint>Добавление нового автомобиля в список</Hint>
+          <TabIndex>5</TabIndex>
+          <Visible>
+            <And>
+              <Or>
+                <Not>
+                  <Condition Name="CarVendorIsEmptyCondition" />
+                </Not>
+                <Not>
+                  <Condition Name="CarVendorIsNullCondition" />
+                </Not>
+              </Or>
+              <Not>
+                <Condition Name="CarModelIsEmptyCondition" />
+              </Not>
+              <Not>
+                <Condition Name="CategoryIsNullCondition" />
+              </Not>
+            </And>
+          </Visible>
+          <Commands StopOnError="True">
+            <Command Name="NewCarConfirmMessageBoxCommand" />
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="CarNumberLabel" Type="Label" Assembly="BaseControls">
+          <Top>140</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Гос. номер:</Text>
+        </MyObject>
+
+        <MyObject Name="CarNumberComboBox" Type="ComboBox" Assembly="BaseControls">
+          <Top>140</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>120</Width>
+          <TabIndex>6</TabIndex>
+          <EnterText>True</EnterText>
+          <NullValue Show="True" Title="[Не выбрано]" />
+          <ValueList>
+            <DataConnection SourceDataConnection="ClientByCarModelVendorSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="CarId" />
+                <Field Name="CarNumber" />
+              </Fields>
+            </DataConnection>
+          </ValueList>
+          <Value>
+            <DataConnection SourceDataConnection="ClientByCarModelVendorSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="CarId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+        </MyObject>
+
+        <MyObject Name="ClientTypeLabel" Type="Label" Assembly="BaseControls">
+          <Top>170</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Клиент:</Text>
+        </MyObject>
+
+        <MyObject Name="ClientTypeRadioButtonBlock" Type="RadioButtonBlock" Assembly="BaseControls">
+          <Top>170</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>190</Width>
+          <TabIndex>7</TabIndex>
+          <Options>
+            <Option Name="PhysicalRadioButton">
+              <Top>0</Top>
+              <Left>0</Left>
+              <Width>100</Width>
+              <Text>Физ. лицо</Text>
+              <Value>phys</Value>
+            </Option>
+            <Option Name="LegalRadioButton">
+              <Top>0</Top>
+              <Left>110</Left>
+              <Width>90</Width>
+              <Text>Юр. лицо</Text>
+              <Value>legal</Value>
+            </Option>
+          </Options>
+          <Value>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientFromDCIsNotNullCondition" />
+                </When>
+                <Then>
+                  <DataConnection SourceDataConnection="ClientByCarNumberSecondaryGetDataConnection">
+                    <Fields>
+                      <Field Name="ClientType" />
+                    </Fields>
+                  </DataConnection>
+                </Then>
+              </Case>
+              <Case>phys</Case>
+            </Switch>
+          </Value>
+        </MyObject>
+
+        <MyObject Name="ClientNameLabel" Type="Label" Assembly="BaseControls">
+          <Top>200</Top>
+          <Left>10</Left>
+          <Height>20</Height>
+          <Width>150</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>Организация:</Then>
+              </Case>
+              <Case>Фамилия:</Case>
+            </Switch>
+          </Text>
+        </MyObject>
+
+        <MyObject Name="ClientComboBox" Type="ComboBox" Assembly="BaseControls">
+          <Top>200</Top>
+          <Left>170</Left>
+          <Height>20</Height>
+          <Width>120</Width>
+          <EnterText>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </EnterText>
+          <TabIndex>8</TabIndex>
+          <AutoCompleteMode>SuggestAppend</AutoCompleteMode>
+          <AutoCompleteSource>ListItems</AutoCompleteSource>
+          <NullValue Show="True" Title="" />
+          <ValueList>
+            <DataConnection SourceDataConnection="ClientByTypeSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="ClientId" />
+                <Field Name="Title" />
+              </Fields>
+            </DataConnection>
+          </ValueList>
+          <Value>
+            <DataConnection SourceDataConnection="ClientByCarNumberSecondaryGetDataConnection">
+              <Fields>
+                <Field Name="ClientId" />
+              </Fields>
+            </DataConnection>
+          </Value>
+          <Visible>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </Visible>
+        </MyObject>
+
+        <MyObject Name="ClientButton" Type="Button" Assembly="BaseControls">
+          <Top>198</Top>
+          <Left>170</Left>
+          <Height>27</Height>
+          <Width>220</Width>
+          <TabIndex>5</TabIndex>
+          <FlatStyle>Flat</FlatStyle>
+          <TextAlign>MiddleLeft</TextAlign>
+          <Commands StopOnError="True">
+            <Command Name="ClientSearchFormShowCommand" />
+            <Command Name="ClientSearchValueSetCommand" />
+          </Commands>
+          <Visible>
+            <Condition Name="ClientIsLegalCondition" />
+          </Visible>
+        </MyObject>
+
+        <MyObject Name="ClientAddButton" Type="Button" Assembly="BaseControls">
+          <Top>230</Top>
+          <Left>170</Left>
+          <Height>25</Height>
+          <Width>140</Width>
+          <Text>Добавить клиента</Text>
+          <TabIndex>5</TabIndex>
+          <Commands StopOnError="True">
+            <Command Name="ClientAddItemFormShowCommand" />
+            <Command Name="ClientDataConnectionRefreshCommand" />
+            <Command Name="ClientTypeValueSetCommand" />
+            <Command Name="ClientValueSetCommand" />
+          </Commands>
+          <Visible>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </Visible>
+        </MyObject>
+      </MyObject>
+
+      <MyObject Name="CommentsGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>430</Left>
+        <Height>135</Height>
+        <Width>420</Width>
+        <TabIndex>4</TabIndex>
+        <Text>Комментарий</Text>
+
+        <MyObject Name="CommentsTextBox" Type="TextBox" Assembly="BaseControls">
+          <Top>23</Top>
+          <Left>5</Left>
+          <Height>105</Height>
+          <Width>410</Width>
+          <Multiline>True</Multiline>
+          <Change User="True" Source="False" ValueSet="True" />
+          <TipText>Дополнительная информация по заказу...</TipText>
+        </MyObject>
+      </MyObject>
+
+      <MyObject Name="PaymentGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>140</Top>
+        <Left>430</Left>
+        <Height>130</Height>
+        <Width>420</Width>
+        <TabIndex>3</TabIndex>
+        <Text>Оплата</Text>
+
+        <MyObject Name="PaymentTypeLabel" Type="Label" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>5</Left>
+          <Height>20</Height>
+          <Width>140</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Способ оплаты:</Text>
+        </MyObject>
+
+        <MyObject Name="PhysicalPaymentTypePanel" Type="Panel" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>160</Left>
+          <Height>25</Height>
+          <Width>200</Width>
+          <Visible>
+            <Not>
+              <Condition Name="ClientIsLegalCondition" />
+            </Not>
+          </Visible>
+
+          <MyObject Name="PaymentTypeRadioButtonBlock" Type="RadioButtonBlock" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>25</Height>
+            <Width>200</Width>
+            <Options>
+              <Option Name="CashRadioButton">
+                <Top>0</Top>
+                <Left>0</Left>
+                <Width>100</Width>
+                <Text>Наличные</Text>
+                <Value>cash</Value>
+              </Option>
+              <Option Name="TerminalRadioButton">
+                <Top>0</Top>
+                <Left>110</Left>
+                <Width>110</Width>
+                <Text>Терминал</Text>
+                <Value>term</Value>
+              </Option>
+            </Options>
+            <Value>cash</Value>
+          </MyObject>
+        </MyObject>
+
+        <MyObject Name="LegalPaymentTypePanel" Type="Panel" Assembly="BaseControls">
+          <Top>20</Top>
+          <Left>160</Left>
+          <Height>85</Height>
+          <Width>200</Width>
+          <Visible>
+            <Condition Name="ClientIsLegalCondition" />
+          </Visible>
+
+          <MyObject Name="CashLabel" Type="Label" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>5</Left>
+            <Height>20</Height>
+            <Width>80</Width>
+            <TextAlign>MiddleRight</TextAlign>
+            <Text>Наличные:</Text>
+          </MyObject>
+
+          <MyObject Name="CashNumericBox" Type="NumericBox" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>90</Left>
+            <Height>20</Height>
+            <Width>60</Width>
+            <Minimum>0</Minimum>
+            <Maximum>99999999</Maximum>
+            <Increment>100</Increment>
+            <TabIndex>1</TabIndex>
+            <ThousandsSeparator>True</ThousandsSeparator>
+            <Value>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="ProductAndWorkExistNestedCondition" />
+                  </When>
+                  <Then>0</Then>
+                </Case>
+                <Case>0</Case>
+              </Switch>
+            </Value>
+            <Enabled>
+              <Not>
+                <Condition Name="ProductAndWorkExistNestedCondition" />
+              </Not>
+            </Enabled>
+          </MyObject>
+
+          <MyObject Name="TerminalLabel" Type="Label" Assembly="BaseControls">
+            <Top>30</Top>
+            <Left>5</Left>
+            <Height>20</Height>
+            <Width>80</Width>
+            <TextAlign>MiddleRight</TextAlign>
+            <Text>Терминал:</Text>
+          </MyObject>
+
+          <MyObject Name="TerminalNumericBox" Type="NumericBox" Assembly="BaseControls">
+            <Top>30</Top>
+            <Left>90</Left>
+            <Height>20</Height>
+            <Width>60</Width>
+            <Minimum>0</Minimum>
+            <Maximum>99999999</Maximum>
+            <Increment>100</Increment>
+            <TabIndex>2</TabIndex>
+            <ThousandsSeparator>True</ThousandsSeparator>
+            <Value>
+              <Switch>
+                <Case>
+                  <When>
+                    <Condition Name="ProductAndWorkExistNestedCondition" />
+                  </When>
+                  <Then>0</Then>
+                </Case>
+                <Case>0</Case>
+              </Switch>
+            </Value>
+            <Enabled>
+              <Not>
+                <Condition Name="ProductAndWorkExistNestedCondition" />
+              </Not>
+            </Enabled>
+          </MyObject>
+
+          <MyObject Name="NonCashLabel" Type="Label" Assembly="BaseControls">
+            <Top>60</Top>
+            <Left>5</Left>
+            <Height>20</Height>
+            <Width>80</Width>
+            <TextAlign>MiddleRight</TextAlign>
+            <Text>Безнал:</Text>
+          </MyObject>
+
+          <MyObject Name="NonCashNumericBox" Type="NumericBox" Assembly="BaseControls">
+            <Top>60</Top>
+            <Left>90</Left>
+            <Height>20</Height>
+            <Width>60</Width>
+            <Minimum>0</Minimum>
+            <Maximum>99999999</Maximum>
+            <Increment>100</Increment>
+            <TabIndex>3</TabIndex>
+            <ThousandsSeparator>True</ThousandsSeparator>
+          </MyObject>
+        </MyObject>
+      </MyObject>
+
+      <MyObject Name="WorksGroupBox" Type="GroupBox" Assembly="BaseControls">
+        <Top>270</Top>
+        <Left>5</Left>
+        <Height>235</Height>
+        <Width>845</Width>
+        <TabIndex>2</TabIndex>
+        <Text>Работы</Text>
+
+        <MyObject Name="WorksDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+          <Top>25</Top>
+          <Left>5</Left>
+          <Height>200</Height>
+          <Width>635</Width>
+          <TabStop>False</TabStop>
+          <Change User="True" Source="False" ValueSet="True" />
+          <ColumnHeadersHeight Value="45" />
+          <AllowInsert>False</AllowInsert>
+          <AllowDelete>False</AllowDelete>
+          <RowHeadersVisible Value="False" />
+          <AllowResizeColumns Value="False" />
+          <AllowResizeRows Value="False" />
+          <SourceDataConnection Name="OrderAllWorksPrimaryGetDataConnection" />
+          <Columns>
+            <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Работа</Title>
+              <AutoSizeMode Value="Fill" />
+              <ReadOnly>True</ReadOnly>
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="OrderWorkId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="PriceId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="Type" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="WorkFactor" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+              <Substitution SourceColumn="Type">
+                <Structure Type="Table">
+                  <Row>
+                    <Item>work</Item>
+                    <Item>True</Item>
+                  </Row>
+                  <Row>
+                    <Item>product</Item>
+                    <Item>False</Item>
+                  </Row>
+                </Structure>
+              </Substitution>
+            </Column>
+            <Column Name="ProductFactor" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+              <Substitution SourceColumn="Type">
+                <Structure Type="Table">
+                  <Row>
+                    <Item>work</Item>
+                    <Item>False</Item>
+                  </Row>
+                  <Row>
+                    <Item>product</Item>
+                    <Item>True</Item>
+                  </Row>
+                </Structure>
+              </Substitution>
+            </Column>
+            <Column Name="Quantity" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+              <Title>Кол-во</Title>
+              <Width>60</Width>
+              <Increment Value="1" />
+              <Minimum Value="0" />
+              <Maximum Value="9999999" />
+              <DecimalPlaces Value="1" />
+              <Alignment Value="MiddleRight" />
+              <AllowSort Value="False" />
+            </Column>
+            <Column Name="Price" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Цена</Title>
+              <Width>60</Width>
+              <ReadOnly>True</ReadOnly>
+              <Alignment Value="MiddleRight" />
+              <AllowSort Value="False" />
+              <DataType Type="IntegerDataType" Format="N0" />
+            </Column>
+            <Column Name="Discount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Скидка(%)</Title>
+              <Width>90</Width>
+              <ReadOnly>True</ReadOnly>
+              <Visible>
+                <And>
+                  <Condition Name="PaymentIsCashCondition" />
+                  <Not>
+                    <Condition Name="ClientIsLegalCondition" />
+                  </Not>
+                </And>
+              </Visible>
+            </Column>
+            <Column Name="PriceWithDiscount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Title>Цена со скидкой</Title>
+              <Width>80</Width>
+              <ReadOnly>True</ReadOnly>
+              <Visible>
+                <And>
+                  <Condition Name="PaymentIsCashCondition" />
+                  <Not>
+                    <Condition Name="ClientIsLegalCondition" />
+                  </Not>
+                </And>
+              </Visible>
+            </Column>
+            <Column Name="Summ" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+            <Column Name="SummWithDiscount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+              <Visible>False</Visible>
+            </Column>
+          </Columns>
+        </MyObject>
+
+        <MyObject Name="WorksAddButton" Type="Button" Assembly="BaseControls">
+          <Top>25</Top>
+          <Left>645</Left>
+          <Height>25</Height>
+          <Width>195</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <TabIndex>1</TabIndex>
+          <Text>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="ClientIsLegalCondition" />
+                </When>
+                <Then>   Добавить из их прайса...</Then>
+              </Case>
+              <Case>   Добавить из прайса...</Case>
+            </Switch>
+          </Text>
+          <Enabled>
+            <And>
+              <Or>
+                <And>
+                  <Condition Name="ClientIsLegalCondition" />
+                  <Condition Name="ClientIsNotNullCondition" />
+                </And>
+                <Not>
+                  <Condition Name="ClientIsLegalCondition" />
+                </Not>
+              </Or>
+              <Or>
+                <And>
+                  <Not>
+                    <Condition Name="CarIsTruckCondition" />
+                  </Not>
+                  <Not>
+                    <Condition Name="CarModelIsNullCondition" />
+                  </Not>
+                </And>
+                <Condition Name="CarIsTruckCondition" />
+              </Or>
+            </And>
+          </Enabled>
+          <Commands StopOnError="True">
+            <Command Name="OrderWorkDatabaseTableSaveCommand" />
+            <Command Name="AddWorkFormShowCommand" />
+            <Command Name="AddWorkTruckFormShowCommand" />
+            <Command Name="WorkDataConnectionRefreshCommand" />
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="WorksAddOtherButton" Type="Button" Assembly="BaseControls">
+          <Top>55</Top>
+          <Left>645</Left>
+          <Height>25</Height>
+          <Width>195</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <TabIndex>2</TabIndex>
+          <Text>   Добавить не из прайса...</Text>
+          <Enabled>
+            <And>
+              <Or>
+                <And>
+                  <Condition Name="ClientIsLegalCondition" />
+                  <Condition Name="ClientIsNotNullCondition" />
+                </And>
+                <Not>
+                  <Condition Name="ClientIsLegalCondition" />
+                </Not>
+              </Or>
+              <Or>
+                <And>
+                  <Not>
+                    <Condition Name="CarIsTruckCondition" />
+                  </Not>
+                  <Not>
+                    <Condition Name="CarModelIsNullCondition" />
+                  </Not>
+                </And>
+                <Condition Name="CarIsTruckCondition" />
+              </Or>
+            </And>
+          </Enabled>
+          <Commands StopOnError="True">
+            <Command Name="AddOtherWorkFormShowCommand" />
+            <Command Name="WorkDataConnectionRefreshCommand" />
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="ProductsAddButton" Type="Button" Assembly="BaseControls">
+          <Top>85</Top>
+          <Left>645</Left>
+          <Height>25</Height>
+          <Width>195</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <TabIndex>2</TabIndex>
+          <Text>   Добавить товары...</Text>
+          <Enabled>
+            <And>
+              <Or>
+                <And>
+                  <Condition Name="ClientIsLegalCondition" />
+                  <Condition Name="ClientIsNotNullCondition" />
+                </And>
+                <Not>
+                  <Condition Name="ClientIsLegalCondition" />
+                </Not>
+              </Or>
+              <Or>
+                <And>
+                  <Not>
+                    <Condition Name="CarIsTruckCondition" />
+                  </Not>
+                  <Not>
+                    <Condition Name="CarModelIsNullCondition" />
+                  </Not>
+                </And>
+                <Condition Name="CarIsTruckCondition" />
+              </Or>
+            </And>
+          </Enabled>
+          <Commands StopOnError="True">
+            <Command Name="AddProductFormShowCommand" />
+            <Command Name="WorkDataConnectionRefreshCommand" />
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="WorkDeleteButton" Type="Button" Assembly="BaseControls">
+          <Top>115</Top>
+          <Left>645</Left>
+          <Height>25</Height>
+          <Width>195</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <TabStop>False</TabStop>
+          <Text>   Удалить</Text>
+          <Enabled>
+            <Condition Name="SelectedIndex0GreaterCondition" />
+          </Enabled>
+          <Commands StopOnError="True">
+            <Command Name="DeleteWorkConfirmMessageBoxCommand" />
+            <Command Name="WorkDeleteValueSetCommand" />
+            <Command Name="OrderWorkDatabaseTableSaveCommand" />
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="SummLabel" Type="Label" Assembly="BaseControls">
+          <Top>150</Top>
+          <Left>635</Left>
+          <Height>28</Height>
+          <Width>70</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Сумма:</Text>
+        </MyObject>
+
+        <MyObject Name="SummButton" Type="Button" Assembly="BaseControls">
+          <Top>150</Top>
+          <Left>705</Left>
+          <Height>28</Height>
+          <Width>95</Width>
+          <FlatStyle>Flat</FlatStyle>
+          <FlatBorderSize>1</FlatBorderSize>
+          <TextAlign>MiddleLeft</TextAlign>
+          <TabIndex>3</TabIndex>
+          <Text>Рассчитать</Text>
+          <Commands StopOnError="True">
+            <If>
+              <When>
+                <And>
+                  <Condition Name="CarModelIsNullCondition" />
+                  <Condition Name="CarIsNotTruckCondition" />
+                </And>
+              </When>
+              <Then>
+                <Command Name="CategoryIsEmptyErrorMessageBoxCommand" />
+              </Then>
+              <ElseIf>
+                <When>
+                  <And>
+                    <Condition Name="ClientIsLegalCondition" />
+                    <Condition Name="ClientIsNullCondition" />
+                  </And>
+                </When>
+                <Then>
+                  <Command Name="ClientIsNullErrorMessageBoxCommand" />
+                </Then>
+              </ElseIf>
+              <ElseIf>
+                <When>
+                  <Condition Name="WorksDatabaseTableIsEmptyCondition" />
+                </When>
+                <Then>
+                  <Command Name="WorksTableIsEmptyErrorMessageBoxCommand" />
+                </Then>
+              </ElseIf>
+              <Else>
+                <Command Name="OrderWorkDatabaseTableSaveCommand" />
+                <Command Name="WorksRecountSaveCommand" />
+                <Command Name="WorkDataConnectionRefreshCommand" />
+                <Command Name="NonCashValueSetCommand" />
+              </Else>
+            </If>
+          </Commands>
+        </MyObject>
+
+        <MyObject Name="DiscountLabel" Type="Label" Assembly="BaseControls">
+          <Top>180</Top>
+          <Left>635</Left>
+          <Height>20</Height>
+          <Width>70</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <Text>Скидка:</Text>
+        </MyObject>
+
+        <MyObject Name="DiscountValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>180</Top>
+          <Left>707</Left>
+          <Height>20</Height>
+          <Width>93</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <Text>
+            <String Format="{0}%">
+              <Items>
+                <Item>
+                  <Switch>
+                    <Case>
+                      <When>
+                        <And>
+                          <Condition Name="PaymentIsCashCondition" />
+                          <Not>
+                            <Condition Name="ClientIsLegalCondition" />
+                          </Not>
+                        </And>
+                      </When>
+                      <Then>
+                        <Object Name="DiscountWithCashVariable" />
+                      </Then>
+                    </Case>
+                    <Case>
+                      <DataConnection SourceDataConnection="ClientByIdSecondaryGetDataConnection">
+                        <Fields>
+                          <Field Name="Discount" />
+                        </Fields>
+                      </DataConnection>
+                    </Case>
+                  </Switch>
+                </Item>
+              </Items>
+            </String>
+          </Text>
+          <Visible>
+            <And>
+              <Condition Name="Discount0GreaterCondition" />
+              <Not>
+                <Condition Name="WorksDatabaseTableIsEmptyCondition" />
+              </Not>
+              <Or>
+                <Not>
+                  <Condition Name="CarIsTruckCondition" />
+                </Not>
+                <And>
+                  <Condition Name="CarIsTruckCondition" />
+                  <Condition Name="PaymentIsCashCondition" />
+                </And>
+              </Or>
+            </And>
+          </Visible>
+        </MyObject>
+
+        <MyObject Name="DiscountWithCashVariable" Type="Variable" Assembly="SimpleControls">
+          <Value>
+            <Calculate>
+              <Expression>Round((({0} - {1}) / {0} * 100), 1)</Expression>
+              <Items>
+                <Item>
+                  <Object Name="WorksDatabaseTable">
+                    <Property Name="ColumnSum">
+                      <Parameters>
+                        <Parameter Name="ColumnName">Summ</Parameter>
+                      </Parameters>
+                    </Property>
+                  </Object>
+                </Item>
+                <Item>
+                  <Object Name="ResultVariable" />
+                </Item>
+              </Items>
+            </Calculate>
+          </Value>
+        </MyObject>
+
+        <MyObject Name="ResultSummLabel" Type="Label" Assembly="BaseControls">
+          <Top>205</Top>
+          <Left>635</Left>
+          <Height>20</Height>
+          <Width>70</Width>
+          <TextAlign>MiddleRight</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>Итого:</Text>
+        </MyObject>
+
+        <MyObject Name="ResultSummValueLabel" Type="Label" Assembly="BaseControls">
+          <Top>205</Top>
+          <Left>707</Left>
+          <Height>20</Height>
+          <Width>70</Width>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Text>
+            <Switch>
+              <Case>
+                <When>
+                  <Condition Name="IsCalculatedCondition" />
+                </When>
+                <Then>
+                  <Object Name="ResultVariable" />
+                </Then>
+              </Case>
+              <Case />
+            </Switch>
+          </Text>
+        </MyObject>
+
+      </MyObject>
+
+      <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+        <Top>510</Top>
+        <Left>0</Left>
+        <Height>4</Height>
+        <Width>
+          <Form>
+            <Property Name="Width" />
+          </Form>
+        </Width>
+        <BackColor>ThemeColorSeparatorBold</BackColor>
+      </MyObject>
+
+      <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+        <Top>514</Top>
+        <Left>0</Left>
+        <Height>36</Height>
+        <TabIndex>2</TabIndex>
+        <Width>
+          <Form>
+            <Property Name="Width" />
+          </Form>
+        </Width>
+        <BackColor>ThemeColorHead</BackColor>
+
+        <MyObject Name="ProductAndWorkExistsLabel" Type="Label" Assembly="BaseControls">
+          <Top>0</Top>
+          <Left>0</Left>
+          <Width>120</Width>
+          <Height>36</Height>
+          <Text>Внимание!</Text>
+          <ForeColor>Red</ForeColor>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>OrderTitleFont</FontStyle>
+          <Visible>
+            <And>
+              <Condition Name="ClientIsLegalCondition" />
+              <Condition Name="ProductAndWorkExistNestedCondition" />
+            </And>
+          </Visible>
+        </MyObject>
+
+        <MyObject Name="ProductAndWorkExistsDescriptionLabel" Type="Label" Assembly="BaseControls">
+          <Top>0</Top>
+          <Left>120</Left>
+          <Width>520</Width>
+          <Height>36</Height>
+          <Text>Для юр.лица при наличии в одном заказе товаров и услуг возможен только безналичный способ оплаты.</Text>
+          <ForeColor>Red</ForeColor>
+          <TextAlign>MiddleLeft</TextAlign>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <Visible>
+            <And>
+              <Condition Name="ClientIsLegalCondition" />
+              <Condition Name="ProductAndWorkExistNestedCondition" />
+            </And>
+          </Visible>
+        </MyObject>
+
+        <MyObject Name="SavePrintButton" Type="Button" Assembly="BaseControls">
+          <Top>3</Top>
+          <Left>650</Left>
+          <Height>30</Height>
+          <Width>200</Width>
+          <TabStop>True</TabStop>
+          <Text>Сохранить и напечатать</Text>
+          <FontStyle>TitleBoldFont</FontStyle>
+          <BackColor>Default</BackColor>
+          <Commands StopOnError="True">
+            <Command Name="OrderDataCheckDataConnectionRefreshCommand" />
+            <If>
+              <When>
+                <And>
+                  <Condition Name="CarModelIsNullCondition" />
+                  <Not>
+                    <Condition Name="CarIsTruckCondition" />
+                  </Not>
+                </And>
+              </When>
+              <Then>
+                <Command Name="CarIsNotFilledErrorMessageBoxCommand" />
+              </Then>
+              <ElseIf>
+                <When>
+                  <And>
+                    <Condition Name="CarVendorIsNullCondition" />
+                    <Condition Name="CarIsTruckCondition" />
+                  </And>
+                </When>
+                <Then>
+                  <Command Name="CarIsNotFilledErrorMessageBoxCommand" />
+                </Then>
+              </ElseIf>
+              <ElseIf>
+                <When>
+                  <Not>
+                    <Condition Name="IsCalculatedCondition" />
+                  </Not>
+                </When>
+                <Then>
+                  <Command Name="NotCalculatatedErrorMessageBoxCommand" />
+                </Then>
+              </ElseIf>
+              <ElseIf>
+                <When>
+                  <And>
+                    <Condition Name="ClientIsLegalCondition" />
+                    <Not>
+                      <Condition Name="PaymentAndSummEqualCondition" />
+                    </Not>
+                  </And>
+                </When>
+                <Then>
+                  <Command Name="PaymentAndSummNotEqualErrorMessageBoxCommand" />
+                </Then>
+              </ElseIf>
+              <ElseIf>
+                <When>
+                  <DataConnection SourceDataConnection="OrderDataCheckPrimaryGetDataConnection">
+                    <Fields>
+                      <Field Name="ClientDoesnotExist" />
+                    </Fields>
+                  </DataConnection>
+                </When>
+                <Then>
+                  <Command Name="ClientDoesnotExistErrorMessageBoxCommand" />
+                  <Command Name="ClientDataConnectionRefreshCommand" />
+                </Then>
+              </ElseIf>
+              <ElseIf>
+                <When>
+                  <DataConnection SourceDataConnection="OrderDataCheckPrimaryGetDataConnection">
+                    <Fields>
+                      <Field Name="CarModelDoesnotExist" />
+                    </Fields>
+                  </DataConnection>
+                </When>
+                <Then>
+                  <Command Name="CarModelDoesnotExistErrorMessageBoxCommand" />
+                  <Command Name="CarDataConnectionRefreshCommand" />
+                </Then>
+              </ElseIf>
+              <Else>
+                <Command Name="OrderSaveCommand" />
+                <Command Name="UpdatedValueSetCommand" />
+                <Command Name="OrderExportToRtfCommand" />
+                <Command Name="FormCloseCommand" />
+              </Else>
+            </If>
+          </Commands>
+        </MyObject>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

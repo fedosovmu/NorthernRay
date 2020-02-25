@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+<Form Name="WashSettingForm" Title="Северный луч. Настройки" Width="300" Height="150" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Parameters>
+        <Parameter Name="WashAdminId">
+            <Object Name="WashAdminComboBox" />
+        </Parameter>
+    </Parameters>
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="WashAdminPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="WashAdminSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="WashAdminId" />
+                    <Field Name="Title" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+        
+        <Condition Name="WashAdminComboBoxIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="WashAdminComboBox" />
+                </Item>
+            </Items>
+        </Condition>
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+        
+        <Command Name="ResetWashAdminIdValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="WashAdminId">%NULL%</Parameter>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="ResetWashAdminIdValueSetCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Открытие смены</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>80</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+            
+            <MyObject Name="WashAdminLabel" Type="Label" Assembly="BaseControls">
+                <Top>20</Top>
+                <Left>0</Left>
+                <Height>25</Height>
+                <Width>90</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Фамилия:</Text>
+            </MyObject>
+            
+            <MyObject Name="WashAdminComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>20</Top>
+                <Left>105</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="True" Title="[Не выбрано]"/>
+                <ValueList>
+                    <DataConnection SourceDataConnection="WashAdminPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="WashAdminId"/>
+                            <Field Name="Title"/>
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+            </MyObject>
+
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Plus DataType="DoubleDataType">
+                        <Item>
+                            <Object Name="ContentPanel">
+                                <Property Name="Top" />
+                            </Object>
+                        </Item>
+                        <Item>
+                            <Object Name="ContentPanel">
+                                <Property Name="Height" />
+                            </Object>
+                        </Item>
+                    </Plus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Plus DataType="DoubleDataType">
+                        <Item>
+                            <Object Name="FooterSeparatePanel">
+                                <Property Name="Top" />
+                            </Object>
+                        </Item>
+                        <Item>
+                            <Object Name="FooterSeparatePanel">
+                                <Property Name="Height" />
+                            </Object>
+                        </Item>
+                    </Plus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>95</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Открыть смену</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="FormCloseCommand" />
+                </Commands>
+                <Enabled>
+                    <Not>
+                        <Condition Name="WashAdminComboBoxIsNullCondition" />
+                    </Not>
+                </Enabled>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

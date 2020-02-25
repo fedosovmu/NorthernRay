@@ -1,0 +1,54 @@
+DROP FUNCTION wash.get_income(text);
+
+CREATE OR REPLACE FUNCTION wash.get_income(IN my_order_type text)
+  RETURNS TABLE(work_cash double precision, work_non_cash double precision, work_terminal double precision, product_cash double precision, product_non_cash double precision, product_terminal double precision, order_id integer, shift_id integer) AS
+$BODY$
+DECLARE
+	order_type text = CASE WHEN $1 = 'wash' THEN '' WHEN $1 = 'tire' THEN 'tire_' ELSE 'tire_truck_' END;
+BEGIN
+	RETURN QUERY
+	EXECUTE
+	'
+	SELECT
+	  work_summ * cash AS work_cash,
+	  work_summ * non_cash AS work_non_cash,
+	  work_summ * terminal AS work_terminal,
+	  product_summ * cash AS product_cash,
+	  product_summ * non_cash AS product_non_cash,
+	  product_summ * terminal AS product_terminal,
+	  ' || order_type || 'order_id,
+	  shift_id
+	FROM(
+	  SELECT
+	    CASE WHEN summ = 0 THEN 0 ELSE (summ - product) / summ END AS work_summ,
+	    CASE WHEN summ = 0 THEN 0 ELSE product / summ END AS product_summ,
+	    *
+	  FROM(
+	    SELECT
+	      COALESCE(cash, 0) AS cash,
+	      COALESCE(non_cash, 0) AS non_cash,
+	      COALESCE(terminal, 0) AS terminal,
+	      COALESCE(cash, 0) + COALESCE(non_cash, 0) + COALESCE(terminal, 0) AS summ,
+	      COALESCE(nt.pr, 0) AS product,
+	      OL.' || order_type || 'order_id,
+	      shift_id
+	    FROM
+	      wash.' || order_type || 'order_list OL
+
+	    LEFT JOIN
+	    (
+		SELECT COALESCE(SUM(price * quantity), 0) as pr, ' || order_type || 'order_id FROM wash.' || order_type || 'order_product GROUP BY ' || order_type || 'order_id
+	    ) as nt ON nt.' || order_type || 'order_id = OL.' || order_type || 'order_id
+	    
+	    WHERE
+	      NOT OL.deleted
+	    ) x
+	  ) xx
+	ORDER BY ' || order_type || 'order_id
+	';
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100
+  ROWS 1000;
+ALTER FUNCTION wash.get_income(text) OWNER TO postgres;

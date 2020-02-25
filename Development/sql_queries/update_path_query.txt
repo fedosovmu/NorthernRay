@@ -1,0 +1,32 @@
+UPDATE
+public.workflow_type
+SET
+path=E'D:\\WorkflowTechnology\\Clients\\NorthernRay\\Projects\\1. Wash\\Workflow\\Wash.xml',
+icon_path=E'..\\..\\1. Wash\\Forms\\Images\\Icon.png'
+WHERE
+name = 'Wash';
+
+UPDATE
+wash.form
+SET
+path=name || '.xml';
+
+UPDATE "user" SET user_domain = user_id;
+UPDATE "user" SET user_name = '___' || user_name;
+UPDATE "user" SET user_name = 'user' WHERE user_id = 4;
+UPDATE "user" SET user_name = 'user2' WHERE user_id = 1;
+UPDATE "user" SET user_name = 'user3' WHERE user_id = 5;
+UPDATE "user" SET user_name = 'user4' WHERE user_id = 7;
+UPDATE "user" SET user_name = 'user5' WHERE user_id = 8;
+UPDATE "user" SET user_domain = 'WS01';
+
+
+UPDATE
+wash.email_addressee
+SET
+email_address = NULL;
+
+UPDATE
+wash.email
+SET
+email = NULL;

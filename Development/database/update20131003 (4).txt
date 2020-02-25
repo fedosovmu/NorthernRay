@@ -1,0 +1,51 @@
+ALTER TABLE wash.category
+ADD COLUMN description character varying;
+
+UPDATE
+  wash.category
+SET
+  description = 'А/м малого класса (до класса ВАЗ)'
+WHERE
+  category_key = 'pass1';
+
+UPDATE
+  wash.category
+SET
+  description = 'А/м легковые средние (до класса Волга)'
+WHERE
+  category_key = 'pass2';
+
+  UPDATE
+  wash.category
+SET
+  description = 'Джипы-кроссоверы и легковые универсалы'
+WHERE
+  category_key = 'pass3';
+
+  UPDATE
+  wash.category
+SET
+  description = 'Габаритные легковые и полноразмерные джипы'
+WHERE
+  category_key = 'pass4';
+
+  UPDATE
+  wash.category
+SET
+  description = 'Микроавтобусы/маршрутки'
+WHERE
+  category_key = 'pass5';
+
+  UPDATE
+  wash.category
+SET
+  description = 'А/м газель-тент'
+WHERE
+  category_key = 'pass6';
+
+  UPDATE
+  wash.category
+SET
+  description = 'А/м газель-тент удлин.'
+WHERE
+  category_key = 'pass7';

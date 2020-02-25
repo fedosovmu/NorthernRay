@@ -1,0 +1,285 @@
+ALTER TABLE wash.shift
+ADD COLUMN wash_salary integer;
+
+ALTER TABLE wash.shift
+ADD COLUMN tire_salary integer;
+
+ALTER TABLE wash.setting
+ADD COLUMN setting_key character varying;
+
+UPDATE wash.setting
+SET
+title = title || ' (руб.)',
+setting_key = setting_id
+WHERE setting_id <= 7;
+
+DELETE FROM wash.setting
+WHERE setting_id > 7;
+
+INSERT INTO wash.setting(setting_id, title, setting_value, setting_key)
+VALUES
+(8, 'ВСЕ - 7% (помывок)', 5, 'all7'),
+(9, 'ВСЕ - 10% (помывок)', 5, 'all10'), 
+(10, 'Зарплата на автомойке (%)', 30, 'wsalary'),
+(11, 'Зарплата на шиномонтаже (%)', 40, 'tsalary'),
+(12, 'Минимальная з/п на автомойке (руб.)', 0, 'wminsalary'),
+(13, 'Минимальная з/п на шиномонтаже (руб.)', 400, 'tminsalary');
+
+
+CREATE OR REPLACE FUNCTION wash.count_discount(integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+  cur_category character varying = (
+    SELECT 
+      category_id::character varying
+    FROM 
+      wash.car C
+      INNER JOIN wash.car_model CM ON C.car_model_id = CM.car_model_id
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_client integer = (
+    SELECT
+      client_id
+    FROM
+      wash.car
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_summ integer = (SELECT cash + terminal FROM wash.order_list WHERE order_id = $1);
+  cur_discount smallint = (SELECT discount FROM wash.client WHERE client_id = cur_client);
+  cur_visit_quantity smallint = (SELECT visit_quantity FROM wash.client WHERE client_id = cur_client);
+
+BEGIN
+	IF NOT (SELECT is_person AND is_accumulative FROM wash.client WHERE client_id = cur_client)
+	THEN RETURN -1;
+	END IF;
+	
+	IF 
+		(cur_discount = 0) AND (cur_summ >= (SELECT setting_value FROM wash.setting WHERE setting_key = cur_category))
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 5,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF 
+		(cur_discount = 5) AND (cur_visit_quantity >= (SELECT setting_value FROM wash.setting WHERE setting_key = 'all7') - 1)
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 7,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		(cur_discount = 7) AND (cur_visit_quantity >= (SELECT setting_value FROM wash.setting WHERE setting_key = 'all10') - 1)
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 10,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSE
+		UPDATE
+			wash.client
+		SET
+			visit_quantity = visit_quantity + 1
+		WHERE
+			client_id = cur_client;
+	END IF;
+	RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION wash.cancel_discount(integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+  cur_category character varying = (
+    SELECT 
+      category_id::character varying
+    FROM 
+      wash.car C
+      INNER JOIN wash.car_model CM ON C.car_model_id = CM.car_model_id
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_client integer = (
+    SELECT
+      client_id
+    FROM
+      wash.car
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_summ integer = (SELECT cash + terminal FROM wash.order_list WHERE order_id = $1);
+  cur_discount smallint = (SELECT discount FROM wash.client WHERE client_id = cur_client);
+  cur_visit_quantity smallint = (SELECT visit_quantity FROM wash.client WHERE client_id = cur_client);
+
+BEGIN
+	IF NOT (SELECT is_person AND is_accumulative FROM wash.client WHERE client_id = cur_client)
+	THEN RETURN -1;
+	END IF;
+
+	IF
+		cur_discount = 10 AND cur_visit_quantity = 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 7,
+			visit_quantity = (SELECT setting_value FROM wash.setting WHERE setting_key = 'all10') - 1
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_discount = 7 AND cur_visit_quantity = 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 5,
+			visit_quantity = (SELECT setting_value FROM wash.setting WHERE setting_key = 'all7') - 1
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_discount = 5 AND cur_visit_quantity = 0 AND (cur_summ >= (SELECT setting_value FROM wash.setting WHERE setting_key = cur_category))
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_visit_quantity > 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			visit_quantity = visit_quantity - 1
+		WHERE
+			client_id = cur_client;
+	END IF;
+	RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+UPDATE wash.shift SS
+SET
+   wash_salary = 
+   (SELECT COALESCE(ROUND(SUM(0.3 * (SELECT cash + non_cash + terminal + discount)) / 10) * 10, 0)
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      SUM(ROUND(((cash + non_cash + terminal) / (100.0 - discount_percent) * discount_percent) / 5) * 5) AS discount,
+      shift_id,
+      'wash' AS order_type
+    FROM
+      wash.order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE SS.shift_id = S.shift_id
+  ),
+
+     tire_salary = 
+   (SELECT COALESCE(ROUND(SUM(0.4 * (SELECT cash + non_cash + terminal + discount)) / 10) * 10, 0)
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      0 AS discount,
+      shift_id,
+      'tire' AS order_type
+    FROM
+      wash.tire_order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE SS.shift_id = S.shift_id
+  );
+
+
+CREATE OR REPLACE FUNCTION wash.count_salary(integer, character varying)
+  RETURNS integer AS
+$BODY$
+BEGIN
+IF($2 = 'wash')
+THEN
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'wsalary') * (SELECT cash + non_cash + terminal + discount)) / 10) * 10), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'wminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      SUM(ROUND(((cash + non_cash + terminal) / (100.0 - discount_percent) * discount_percent) / 5) * 5) AS discount,
+      shift_id
+    FROM
+      wash.order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+ELSE
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'tsalary') * (SELECT cash + non_cash + terminal)) / 10) * 10), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'tminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      shift_id
+    FROM
+      wash.tire_order_list
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+END IF;
+RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+ALTER TABLE wash.client
+ADD COLUMN card character varying;

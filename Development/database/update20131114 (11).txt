@@ -1,0 +1,182 @@
+ALTER TABLE wash.client
+ADD COLUMN contract_date timestamp;
+
+ALTER TABLE wash.client
+ADD COLUMN contract_number character varying;
+
+ALTER TABLE wash.client
+ADD COLUMN contact character varying;
+
+ALTER TABLE wash.client
+ADD COLUMN phone character varying;
+
+ALTER TABLE wash.client
+ADD COLUMN email character varying;
+
+ALTER TABLE wash.client
+ADD COLUMN account character varying;
+
+ALTER TABLE wash.client
+ADD COLUMN additional character varying;
+
+
+
+INSERT INTO wash.part(title, part_number, price_type)
+VALUES('ÒÎÂÀÐÛ', 1, 'product');
+
+INSERT INTO wash.category(title, category_key, visible)
+VALUES('Ïðîäóêòû', 'product', True);
+
+
+CREATE SEQUENCE wash.order_product_id_seq;
+
+CREATE TABLE wash.order_product
+(
+  order_product_id integer NOT NULL DEFAULT nextval('wash.order_product_id_seq'::regclass),
+  order_id integer NOT NULL,
+  price_id integer NOT NULL,
+  quantity double precision NOT NULL,
+  price integer NOT NULL,
+  CONSTRAINT pk_order_product_id PRIMARY KEY (order_product_id),
+  CONSTRAINT fk_order_id FOREIGN KEY (order_id)
+      REFERENCES wash.order_list (order_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_price_id FOREIGN KEY (price_id)
+      REFERENCES wash.price (price_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+CREATE SEQUENCE wash.tire_order_product_id_seq;
+
+CREATE TABLE wash.tire_order_product
+(
+  tire_order_product_id integer NOT NULL DEFAULT nextval('wash.tire_order_product_id_seq'::regclass),
+  tire_order_id integer NOT NULL,
+  price_id integer NOT NULL,
+  quantity double precision NOT NULL,
+  price integer NOT NULL,
+  CONSTRAINT pk_tire_order_product_id PRIMARY KEY (tire_order_product_id),
+  CONSTRAINT fk_tire_order_id FOREIGN KEY (tire_order_id)
+      REFERENCES wash.tire_order_list (tire_order_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE,
+  CONSTRAINT fk_price_id FOREIGN KEY (price_id)
+      REFERENCES wash.price (price_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+
+CREATE OR REPLACE FUNCTION wash.count_salary(integer, character varying)
+  RETURNS integer AS
+$BODY$
+BEGIN
+IF($2 = 'wash')
+THEN
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'wsalary') * (SELECT cash + non_cash + terminal + discount - products)) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'wminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      SUM(discount) AS discount,
+      (SELECT COALESCE(SUM(price * quantity), 0) FROM wash.order_product WHERE order_id = OL.order_id) AS products,
+      shift_id
+    FROM
+      wash.order_list OL
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id,
+      order_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+ELSE
+RETURN
+(SELECT 
+  CASE 
+    WHEN salary = 0 THEN 0
+    WHEN salary < min_salary THEN min_salary
+    ELSE salary
+  END
+FROM(
+SELECT
+      COALESCE((SELECT ROUND(SUM((SELECT setting_value::numeric/100 FROM wash.setting WHERE setting_key = 'tsalary') * (SELECT cash + non_cash + terminal - products)) / 5) * 5), 0) AS salary,
+      (SELECT setting_value FROM wash.setting WHERE setting_key = 'tminsalary') AS min_salary
+  FROM(
+    SELECT
+      SUM(cash) AS cash,
+      SUM(non_cash) AS non_cash,
+      SUM(terminal) AS terminal,
+      (SELECT COALESCE(SUM(price * quantity), 0) FROM wash.tire_order_product WHERE tire_order_id = TOL.tire_order_id) AS products,
+      shift_id
+    FROM
+      wash.tire_order_list TOL
+    WHERE
+      NOT deleted
+    GROUP BY
+      shift_id,
+      tire_order_id
+  ) S
+  WHERE
+    S.shift_id = $1) x);
+END IF;
+RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+
+CREATE OR REPLACE FUNCTION wash.get_income(IN my_order_type text)
+  RETURNS TABLE(work_cash double precision, work_non_cash double precision, work_terminal double precision, product_cash double precision, product_non_cash double precision, product_terminal double precision, order_id integer, shift_id integer) AS
+$BODY$
+DECLARE
+	order_type text = CASE WHEN $1 = 'wash' THEN '' ELSE 'tire_' END;
+BEGIN
+	RETURN QUERY
+	EXECUTE 
+	'
+	SELECT
+	  work_summ * cash AS work_cash,
+	  work_summ * non_cash AS work_non_cash,
+	  work_summ * terminal AS work_terminal,
+	  product_summ * cash AS product_cash,
+	  product_summ * non_cash AS product_non_cash,
+	  product_summ * terminal AS product_terminal,
+	  ' || order_type || 'order_id,
+	  shift_id
+	FROM(
+	  SELECT
+	    CASE WHEN summ = 0 THEN 0 ELSE (summ - product) / summ END AS work_summ,
+	    CASE WHEN summ = 0 THEN 0 ELSE product / summ END AS product_summ,
+	    *
+	  FROM(
+	    SELECT
+	      COALESCE(cash, 0) AS cash,
+	      COALESCE(non_cash, 0) AS non_cash,
+	      COALESCE(terminal, 0) AS terminal,
+	      COALESCE(cash, 0) + COALESCE(non_cash, 0) + COALESCE(terminal, 0) AS summ,
+	      (SELECT COALESCE(SUM(price * quantity), 0) FROM wash.' || order_type || 'order_product WHERE ' || order_type || 'order_id = OL.' || order_type || 'order_id) AS product,
+	      ' || order_type || 'order_id,
+	      shift_id
+	    FROM
+	      wash.' || order_type || 'order_list OL
+	    WHERE
+	      NOT OL.deleted
+	    ) x
+	  ) xx
+	ORDER BY ' || order_type || 'order_id
+	';
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;

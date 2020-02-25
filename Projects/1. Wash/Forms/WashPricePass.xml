@@ -1,0 +1,1156 @@
+<?xml version="1.0"?>
+<Form Name="WashPricePassForm" Title="Северный луч. Легковой прайс" Width="950" Height="550" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Parameters>
+        <Parameter Name="ClientId" />
+        <Parameter Name="Title" />
+    </Parameters>
+
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="PricePassPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="PricePassSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="WorkId" />
+                    <Field Name="WorkNumber" />
+                    <Field Name="FullWorkNumber" />
+                    <Field Name="Title" />
+                    <Field Name="PartId" />
+                    <Field Name="DefaultQuantity" />
+                    <Field Name="PriceId1" />
+                    <Field Name="PriceId2" />
+                    <Field Name="PriceId3" />
+                    <Field Name="PriceId4" />
+                    <Field Name="PriceId5" />
+                    <Field Name="PriceId6" />
+                    <Field Name="PriceId7" />
+                    <Field Name="Price1" />
+                    <Field Name="Price2" />
+                    <Field Name="Price3" />
+                    <Field Name="Price4" />
+                    <Field Name="Price5" />
+                    <Field Name="Price6" />
+                    <Field Name="Price7" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId">
+                        <Value>
+                            <Parameter Name="ClientId" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="CategoryDescriptionPrintablePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CategoryDescriptionPrintableSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Description1" />
+                    <Field Name="Description2" />
+                    <Field Name="Description3" />
+                    <Field Name="Description4" />
+                    <Field Name="Description5" />
+                    <Field Name="Description6" />
+                    <Field Name="Description7" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="PricePassPrintablePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="PricePassPrintableSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Number" />
+                    <Field Name="Work" />
+                    <Field Name="Price1" />
+                    <Field Name="Price2" />
+                    <Field Name="Price3" />
+                    <Field Name="Price4" />
+                    <Field Name="Price5" />
+                    <Field Name="Price6" />
+                    <Field Name="Price7" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId">
+                        <Value>
+                            <Parameter Name="ClientId" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="PartPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="PartPassSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="PartId" />
+                    <Field Name="Title" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="PriceCopySetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="ClientId">
+                    <Value>
+                        <Parameter Name="ClientId" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="SourceClientId">
+                    <Value>
+                        <Object Name="PriceClientComboBox" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="PricePassCopyInsertSqlQuery" Type="Insert" />
+            </SqlQueries>
+            <Refresh>
+                <DataConnection Name="PricePassPrimaryGetDataConnection" />
+            </Refresh>
+        </DataConnection>
+
+        <DataConnection Name="PriceDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="ClientId">
+                    <Value>
+                        <Parameter Name="ClientId" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="PricePassFakeDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+            <Refresh>
+                <DataConnection Name="PricePassPrimaryGetDataConnection" />
+            </Refresh>
+        </DataConnection>
+
+        <DataConnection Name="ClientPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="ClientId" />
+                    <Field Name="Title" />
+                </Fields>
+                <Filter Type="Nested">
+                    <And>
+                        <Filter>
+                            <Field NativeName="IsPerson" />
+                            <Value>False</Value>
+                        </Filter>
+                        <Not>
+                            <Filter>
+                                <Field NativeName="ClientId" />
+                                <Value>
+                                    <Parameter Name="ClientId" />
+                                </Value>
+                            </Filter>
+                        </Not>
+                    </And>
+                </Filter>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="PricePassDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="PricePassDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="WorkId">
+                    <Column Name="WorkId" />
+                </Parameter>
+                <Parameter NativeName="WorkNumber">
+                    <Column Name="WorkNumber" />
+                </Parameter>
+                <Parameter NativeName="Title">
+                    <Column Name="Title" />
+                </Parameter>
+                <Parameter NativeName="PartId">
+                    <Column Name="PartId" />
+                </Parameter>
+                <Parameter NativeName="DefaultQuantity">
+                    <Column Name="DefaultQuantity" />
+                </Parameter>
+                <Parameter NativeName="PriceId1">
+                    <Column Name="PriceId1" />
+                </Parameter>
+                <Parameter NativeName="PriceId2">
+                    <Column Name="PriceId2" />
+                </Parameter>
+                <Parameter NativeName="PriceId3">
+                    <Column Name="PriceId3" />
+                </Parameter>
+                <Parameter NativeName="PriceId4">
+                    <Column Name="PriceId4" />
+                </Parameter>
+                <Parameter NativeName="PriceId5">
+                    <Column Name="PriceId5" />
+                </Parameter>
+                <Parameter NativeName="PriceId6">
+                    <Column Name="PriceId6" />
+                </Parameter>
+                <Parameter NativeName="PriceId7">
+                    <Column Name="PriceId7" />
+                </Parameter>
+                <Parameter NativeName="Price1">
+                    <Column Name="Price1" />
+                </Parameter>
+                <Parameter NativeName="Price2">
+                    <Column Name="Price2" />
+                </Parameter>
+                <Parameter NativeName="Price3">
+                    <Column Name="Price3" />
+                </Parameter>
+                <Parameter NativeName="Price4">
+                    <Column Name="Price4" />
+                </Parameter>
+                <Parameter NativeName="Price5">
+                    <Column Name="Price5" />
+                </Parameter>
+                <Parameter NativeName="Price6">
+                    <Column Name="Price6" />
+                </Parameter>
+                <Parameter NativeName="Price7">
+                    <Column Name="Price7" />
+                </Parameter>
+                <Parameter NativeName="ClientId">
+                    <Parameter Name="ClientId" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="PricePassInsertSqlQuery" Type="Insert" />
+                <SqlQuery Name="PricePassUpdateSqlQuery" Type="Update" />
+                <SqlQuery Name="PriceFakeDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="PartFilterIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PartFilterComboBox" />
+                </Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ClientIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="ClientId" />
+                </Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PricePassDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="PriceCopyConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="PriceCopyConfirmMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="PriceDeleteConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="PriceDeleteConfirmMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+        
+        <Condition Name="PricePassDatabaseTableColumnTitleIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PricePassDatabaseTable">
+                        <Property Name="Column">
+                            <Parameters>
+                                <Parameter Name="ColumnName">Title</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+            </Items>
+            <Satisfy MinCount="1" />
+        </Condition>
+        
+        <Condition Name="PricePassDatabaseTableColumnWorkNumberIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PricePassDatabaseTable">
+                        <Property Name="Column">
+                            <Parameters>
+                                <Parameter Name="ColumnName">WorkNumber</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+            </Items>
+            <Satisfy MinCount="1" />
+        </Condition>
+        
+        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="PricePassDatabaseTableColumnTitleIsNullCondition" />
+                    <Condition Name="PricePassDatabaseTableColumnWorkNumberIsNullCondition" />
+                </Or>
+            </ConditionExpression>
+        </Condition>
+        
+        <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Not>
+                    <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                </Not>
+            </ConditionExpression>
+        </Condition>    
+
+        <Condition Name="DeleteWorkConfirmMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="DeleteWorkConfirmMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="PriceSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="PricePassDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="PriceCopySaveCommand" Type="SaveCommand" Assembly="Commands">
+            <Condition Name="PriceCopyConfirmMessageBoxCommandYesEqualCondition" />
+            <DataConnections>
+                <DataConnection Name="PriceCopySetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="PriceDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <Condition Name="PriceDeleteConfirmMessageBoxCommandYesEqualCondition" />
+            <DataConnections>
+                <DataConnection Name="PriceDeleteSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="WashPartFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashPart.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="PriceType">pass</Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="AddRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="PricePassDatabaseTable">
+                <Property Name="AddRow">
+                    <Parameters>
+                        <Parameter Name="ColumnNames">
+                            <Structure Type="List">
+                                <Item>WorkNumber</Item>
+                                <Item>PartId</Item>
+                                <Item>DefaultQuantity</Item>
+                            </Structure>
+                        </Parameter>
+                        <Parameter Name="Values">
+                            <Structure Type="List">
+                                <Item>%NULL%</Item>
+                                <Item>
+                                    <Object Name="PartFilterComboBox" />
+                                </Item>
+                                <Item>1</Item>
+                            </Structure>
+                        </Parameter>
+                        <Parameter Name="SelectAfterAdd">True</Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+
+        <Command Name="DeleteRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Condition Name="DeleteWorkConfirmMessageBoxCommandYesEqualCondition" />
+            <Object Name="PricePassDatabaseTable">
+                <Property Name="DeleteRowsByIndices">
+                    <Parameters>
+                        <Parameter Name="Value">
+                            <Structure Type="List">
+                                <Item>
+                                    <Object Name="PricePassDatabaseTable">
+                                        <Property Name="SelectedRowIndex" />
+                                    </Object>
+                                </Item>
+                            </Structure>
+                        </Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+
+        <Command Name="PartDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="PartPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="PrintablePriceDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="PricePassPrintablePrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="PriceCopyConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Подтверждение действия</Caption>
+            <Text>Все прошлые данные будут удалены. Вы действительно хотите скопировать новый прайс?</Text>
+            <Icon Type="Information" />
+            <Buttons Type="YesNo" />
+        </Command>
+        
+        <Command Name="PriceDeleteConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Подтверждение действия</Caption>
+            <Text>Вы действительно хотите удалить прайс?</Text>
+            <Icon Type="Information" />
+            <Buttons Type="YesNo" />
+        </Command>
+
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rСохранить их перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+        
+        <Command Name="EmptyMandatoryFieldsMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+            <Caption>Предупреждение</Caption>
+            <Text>Одно или несколько полей не заполнены.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+        
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" />
+            <Commands StopOnError="True">
+                <Command Name="PriceSaveCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+    
+        <Command Name="DeleteWorkConfirmMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Подтверждение действия</Caption>
+            <Text>Вы уверены, что хотите удалить работу?</Text>
+            <Icon Type="Information" />
+            <Buttons Type="YesNo" />
+        </Command>
+        
+        <Command Name="PriceExportToRtfCommand" Type="ExportToRtfCommand" Assembly="Commands">
+            <TemplateFileName>Templates\PrintablePassPrice.rtf</TemplateFileName>
+            <Print>False</Print>
+            <Parameters>
+                <Parameter Name="Number">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Number" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Work">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Work" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description1">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description1" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description2">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description2" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description3">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description3" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description4">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description4" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description5">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description5" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description6">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description6" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Description7">
+                    <DataConnection SourceDataConnection="CategoryDescriptionPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Description7" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price1">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price1" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price2">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price2" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price3">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price3" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price4">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price4" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price5">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price5" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price6">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price6" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+                <Parameter Name="Price7">
+                    <DataConnection SourceDataConnection="PricePassPrintablePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Price7" />
+                        </Fields>
+                    </DataConnection>
+                </Parameter>
+            </Parameters>
+        </Command>
+        
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveOnCloseMessageBoxCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                <Command Name="SaveSequentialCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                    <And>
+                        <Condition Name="FormClosingCondition" />
+                        <Not>
+                            <Condition Name="FormChangedCondition" />
+                        </Not>
+                    </And>
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>700</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>
+                    <Switch>
+                        <Case>
+                            <When>
+                              <Not>
+                                  <Condition Name="ClientIsNullCondition"/>
+                              </Not>
+                            </When>
+                            <Then>
+                                <String Format="Легковой прайс организации '{0}'">
+                                    <Items>
+                                        <Item>
+                                            <Parameter Name="Title" />
+                                        </Item>
+                                    </Items>
+                                </String>
+                            </Then>
+                        </Case>
+                        <Case>Легковой прайс</Case>
+                    </Switch>
+                </Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>470</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="FilterLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>0</Left>
+                <Width>65</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Раздел:</Text>
+            </MyObject>
+
+            <MyObject Name="PartFilterComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>70</Left>
+                <Height>25</Height>
+                <Width>300</Width>
+                <NullValue Show="True" Title="[Все]" />
+                <Change User="False"/>
+                <ValueList>
+                    <DataConnection SourceDataConnection="PartPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="PartId" />
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+            </MyObject>
+
+            <MyObject Name="PartButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>380</Left>
+                <Height>25</Height>
+                <Width>40</Width>
+                <Text>...</Text>
+                <Commands StopOnError="True">
+                    <Command Name="WashPartFormShowCommand" />
+                    <Command Name="PartDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="PriceClientComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>450</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <NullValue Show="True" Title="[Общий прайс]" />
+                <Change User="False"/>
+                <Sorted>True</Sorted>
+                <ValueList>
+                    <DataConnection SourceDataConnection="ClientPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="ClientId" />
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+                <Visible>
+                    <Not>
+                        <Condition Name="ClientIsNullCondition" />
+                    </Not>
+                </Visible>
+            </MyObject>
+
+            <MyObject Name="PriceCopyButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>610</Left>
+                <Height>25</Height>
+                <Width>100</Width>
+                <Text>Копировать</Text>
+                <Commands StopOnError="True">
+                    <Command Name="PriceCopyConfirmMessageBoxCommand" />
+                    <Command Name="PriceCopySaveCommand" />
+                </Commands>
+                <Visible>
+                    <Not>
+                        <Condition Name="ClientIsNullCondition" />
+                    </Not>
+                </Visible>
+            </MyObject>
+            
+            <MyObject Name="PriceDeleteButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>715</Left>
+                <Height>25</Height>
+                <Width>100</Width>
+                <Text>Удалить</Text>
+                <Commands StopOnError="True">
+                    <Command Name="PriceDeleteConfirmMessageBoxCommand" />
+                    <Command Name="PriceDeleteSaveCommand" />
+                </Commands>
+                <Visible>
+                    <Not>
+                        <Condition Name="ClientIsNullCondition" />
+                    </Not>
+                </Visible>
+            </MyObject>
+
+            <MyObject Name="PricePassDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Height>430</Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>45</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="Fill" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="PricePassPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="WorkId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PartId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False" FilterNullValue="False">
+                            <Object Name="PartFilterComboBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="WorkNumber" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>№</Title>
+                        <Visible>
+                            <Not>
+                                <Condition Name="PartFilterIsNullCondition" />
+                            </Not>
+                        </Visible>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <Width>10</Width>
+                    </Column>
+                    <Column Name="FullWorkNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>№</Title>
+                        <ReadOnly>True</ReadOnly>
+                        <Visible>
+                            <Condition Name="PartFilterIsNullCondition" />
+                        </Visible>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <Width>10</Width>
+                    </Column>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Работа</Title>
+                        <AllowSort Value="False" />
+                        <Width>100</Width>
+                    </Column>
+                    <Column Name="DefaultQuantity" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кол-во</Title>
+                        <AllowSort Value="False" />
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <DecimalPlaces Value="1" />
+                        <Alignment Value="MiddleRight" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="PriceId1" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId2" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId3" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId4" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId5" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId6" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="PriceId7" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="Price1" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 1</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price2" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 2</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price3" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 3</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price4" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 4</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price5" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 5</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price6" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 6</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                    <Column Name="Price7" Type="DatabaseTableColumnNumericBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Кат. 7</Title>
+                        <Minimum Value="0" />
+                        <Maximum Value="9999999" />
+                        <Increment Value="5" />
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                        <ThousandsSeparator Value="True" />
+                        <Width>15</Width>
+                    </Column>
+                </Columns>
+            </MyObject>
+
+            <MyObject Name="AddButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>35</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>30</Width>
+                <Height>25</Height>
+                <Text>+</Text>
+                <Enabled>
+                    <Not>
+                        <Condition Name="PartFilterIsNullCondition" />
+                    </Not>
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="AddRowValueSetCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="DeleteButton" Type="Button" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>35</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>30</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleCenter</TextAlign>
+                <Text>–</Text>
+                <Enabled>
+                    <Condition Name="SelectedIndex0GreaterCondition" />
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="DeleteWorkConfirmMessageBoxCommand" />
+                    <Command Name="DeleteRowValueSetCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>510</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>514</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+            
+            <MyObject Name="PrintButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>540</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Напечатать</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                    <If>
+                        <When>
+                            <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" />
+                        </When>
+                        <Then>
+                            <Command Name="PriceSaveCommand" />
+                            <Command Name="PrintablePriceDataConnectionRefreshCommand" />
+                            <Command Name="PriceExportToRtfCommand"/>
+                        </Then>
+                    </If>
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>745</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

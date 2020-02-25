@@ -1,0 +1,78 @@
+CREATE OR REPLACE FUNCTION wash.source_car(my_car_id integer)
+  RETURNS integer AS
+$BODY$
+      SELECT
+        car_id
+      FROM (
+        SELECT
+          C1.car_id,
+          row_number() OVER (PARTITION BY C1.car_model_id, C1.car_number, C1.client_id ORDER BY C1.car_id) AS rank
+        FROM
+          wash.car C1,
+          wash.car C2
+        WHERE
+          C2.car_id = $1
+          AND C1.car_model_id = C2.car_model_id
+          AND COALESCE(C1.car_number, '') = COALESCE(C2.car_number, '')
+          AND COALESCE(C1.client_id, -1) = COALESCE(C2.client_id, -1)
+          AND NOT C1.deleted
+        GROUP BY
+          C1.car_id,
+          C1.car_model_id, 
+          C1.car_number, 
+          C1.client_id
+      ) x
+      WHERE rank = 1
+$BODY$
+  LANGUAGE 'sql' VOLATILE;
+
+UPDATE
+  wash.order_list
+SET
+  car_id = wash.source_car(car_id);
+
+UPDATE
+  wash.tire_order_list
+SET
+  car_id = wash.source_car(car_id);
+
+DELETE FROM
+  wash.car
+WHERE
+  car_id != wash.source_car(car_id);
+
+
+DROP FUNCTION wash.source_car(my_car_id integer);
+
+
+
+CREATE OR REPLACE FUNCTION wash.insert_car(my_car_model_id integer, my_car_number text, my_client_id bigint)
+  RETURNS integer AS
+$BODY$
+DECLARE
+      car integer = (
+        SELECT 
+          car_id
+        FROM
+          wash.car
+        WHERE
+          car_model_id = $1
+          AND COALESCE(car_number, '') = COALESCE($2, '')
+          AND COALESCE(client_id, -1) = COALESCE($3, -1)
+          AND NOT deleted
+      );
+BEGIN
+      IF car ISNULL
+      THEN
+        INSERT INTO
+          wash.car(car_model_id, car_number, client_id)
+        VALUES
+          ($1, $2, $3)
+        RETURNING
+          car_id INTO car;
+      END IF;
+
+      RETURN car;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE;

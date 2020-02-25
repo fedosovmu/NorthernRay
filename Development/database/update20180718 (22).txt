@@ -1,0 +1,59 @@
+INSERT INTO wash.setting(
+  title, setting_value, setting_key)
+VALUES 
+  ('Скидка за наличку на услуги автомойки (%)', 0, 'cash_work_wash'),
+  ('Скидка за наличку на товары автомойки (%)', 0, 'cash_product_wash'),
+  ('Скидка за наличку на услуги шиномонтажа (%)', 0, 'cash_work_tire'),
+  ('Скидка за наличку на товары шиномонтажа (%)', 0, 'cash_product_tire');
+
+CREATE OR REPLACE FUNCTION wash.get_discount_value_by_key(
+  in_key character varying
+)
+RETURNS integer AS
+$BODY$
+DECLARE
+BEGIN
+  RETURN(
+    SELECT setting_value
+    FROM wash.setting
+    WHERE setting_key ilike in_key
+  );
+END;
+$BODY$
+  LANGUAGE plpgsql;
+
+ALTER TABLE wash.order_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_order_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_truck_order_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+
+ALTER TABLE wash.order_product
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_order_product
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_truck_order_product
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+  
+
+ALTER TABLE wash.order_other_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_order_other_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+ALTER TABLE wash.tire_truck_order_other_work
+  ADD COLUMN discount integer NOT NULL DEFAULT 0;
+
+
+ALTER TABLE wash.tire_order_list
+  ADD COLUMN discount integer;
+ALTER TABLE wash.tire_truck_order_list
+  ADD COLUMN discount integer;
+

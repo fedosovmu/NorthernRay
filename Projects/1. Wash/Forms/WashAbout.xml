@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<Form Name="WashAboutForm" Title="О программе" Width="280" Height="180" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" BackColor="White" MinimizeBox="False" MaximizeBox="False">
+    
+    <Appearance>
+        <Colors>
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+            
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+            
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+            
+            <Color Name="ThemeColorHead" Red="0" Green="52" Blue="103" Alpha="255" />
+            
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+            
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+            
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="255" Alpha="255" />
+            
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+        <FontStyles>
+            
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="12" Bold="True" />
+            
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="8" />
+            
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="8" Bold="True" />
+        </FontStyles>
+    </Appearance>
+    
+    <DataConnections/>
+
+    <Conditions>
+        <Condition Name="LogoPanelClickCondition" Type="ClickCondition" Assembly="Conditions">
+            <Object Name="LogoPanel" />
+        </Condition>
+        
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+    </Conditions>
+    
+
+    <Commands>
+        <Command Name="WorkflowSystemsLinkApplicationRunCommand" Type="ApplicationRunCommand" Assembly="Commands">
+            <Application>
+            </Application>
+            <Arguments>http://www.workflowsystems.ru</Arguments>
+        </Command>
+        
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+    </Commands>
+    
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="LogoPanelClickCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="WorkflowSystemsLinkApplicationRunCommand" />
+            </Commands>
+        </Execution>
+        
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+    
+
+    <Checkings/>
+    
+
+    <MyObjects>
+        <MyObject Name="LogoPanel" Type="Panel" Assembly="BaseControls">
+            <Top>7</Top>
+            <Left>0</Left>
+            <Height>152</Height>
+            <Width>280</Width>
+            <BackgroundImage>Images\DevLogo.png</BackgroundImage>
+            <BackgroundImageLayout>Center</BackgroundImageLayout>
+        </MyObject>
+        <MyObject Name="ContactsLinkLabel" Type="LinkLabel" Assembly="BaseControls">
+            <Top>160</Top>
+            <Left>0</Left>
+            <Width>280</Width>
+            <TextAlign>MiddleRight</TextAlign>
+            <Link>http://www.workflowsystems.ru/contacts</Link>
+            <Text>http://www.workflowsystems.ru/contacts</Text>
+        </MyObject>
+    </MyObjects>
+</Form>

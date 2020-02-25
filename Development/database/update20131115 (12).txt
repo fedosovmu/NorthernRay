@@ -1,0 +1,5 @@
+ALTER TABLE wash.deposit_type
+ADD COLUMN deleted boolean NOT NULL DEFAULT False;
+
+ALTER TABLE wash.withdrawal_type
+ADD COLUMN deleted boolean NOT NULL DEFAULT False;

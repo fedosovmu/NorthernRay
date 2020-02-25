@@ -1,0 +1,556 @@
+<?xml version="1.0"?>
+<Form Name="WashDivideCashForm" Title="Северный луч. Разделить сумму" Width="415" Height="250" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+    <Parameters>
+        <Parameter Name="CashId" />
+        <Parameter Name="Type" />
+    </Parameters>
+    
+    
+    <Checkings>
+        <Checking>
+            <Object Name="SourceSummTextBox"/>
+            <ConditionExpression>
+                <Condition Name="SourceSumm0EqualCondition" />
+            </ConditionExpression>
+            <AsteriskHint>Сумма должна быть больше нуля</AsteriskHint>
+        </Checking>
+        
+        <Checking>
+            <Object Name="NewSummNumericBox"/>
+            <ConditionExpression>
+                <Condition Name="NewSumm0EqualCondition" />
+            </ConditionExpression>
+            <AsteriskHint>Сумма должна быть больше нуля</AsteriskHint>
+        </Checking>
+    </Checkings>
+    
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CashItemPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashItemSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashTypeId" />
+                    <Field Name="Summ" />
+                    <Field Name="Comments" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="CashId">
+                        <Value>
+                            <Parameter Name="CashId" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="Type">
+                        <Value>
+                            <Parameter Name="Type" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CashTypePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashTypeSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashTypeId" />
+                    <Field Name="Title" />
+                    <Field Name="Deleted" />
+                    <Field Name="Type" />
+                </Fields>
+                <Filter Type="Nested">
+                    <And>
+                        <Filter>
+                            <Field NativeName="Type" />
+                            <Value>
+                                <Parameter Name="Type" />
+                            </Value>
+                        </Filter>
+                        <Or>
+                            <Filter>
+                                <Field NativeName="Deleted" />
+                                <Value>False</Value>
+                            </Filter>
+                            <Filter>
+                                <Field NativeName="CashTypeId" />
+                                <Value>
+                                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="CashTypeId" />
+                                        </Fields>
+                                    </DataConnection>
+                                </Value>
+                            </Filter>
+                        </Or>
+                    </And>
+                </Filter>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="DivideSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="Type">
+                    <Value>
+                        <Parameter Name="Type" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="CashId">
+                    <Value>
+                        <Parameter Name="CashId" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="CashTypeId">
+                    <Value>
+                        <Object Name="NewType" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Summ">
+                    <Value>
+                        <Object Name="NewSummNumericBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Comments">
+                    <Value>
+                        <Object Name="NewComments" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CashDivideUpdateSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+
+        <Condition Type="EqualCondition" Name="SourceSumm0EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="SourceSummTextBox" />
+                </Item>
+                <Item>0</Item>
+            </Items>
+        </Condition>
+
+        <Condition Type="EqualCondition" Name="NewSumm0EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="NewSummNumericBox" />
+                </Item>
+                <Item>0</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SourceSumm0EqualCondition" />
+                    <Condition Name="NewSumm0EqualCondition" />
+                </Or>
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Not>
+                    <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                </Not>
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="CloseOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="CloseOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="DivideCashSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="DivideSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rСохранить их перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands StopOnError="True">
+                <Command Name="DivideCashSaveCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+
+        <Command Name="CloseOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Закрытие</Caption>
+            <Text>При закрытии все несохраненные изменения будут утеряны.\rВы уверены, что хотите закрыть форму?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNo" />
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Not>
+                        <Condition Name="FormChangedCondition" />
+                    </Not>
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <If>
+                    <When>
+                        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="CloseOnCloseMessageBoxCommand" />
+                    </Then>
+                    <Else>
+                        <Command Name="SaveOnCloseMessageBoxCommand" />
+                    </Else>
+                </If>
+                <If>
+                    <When>
+                        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="SaveSequentialCommand" />
+                    </Then>
+                    <ElseIf>
+                        <When>
+                            <Or>
+                                <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                                <Condition Name="CloseOnCloseMessageBoxCommandYesEqualCondition" />
+                            </Or>
+                        </When>
+                        <Then>
+                            <Command Name="FormCloseCommand" />
+                        </Then>
+                    </ElseIf>
+                </If>
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Разделение</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>165</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Type="GroupBox" Name="SourceRecord" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Width>200</Width>
+                <Height>155</Height>
+                <Text>Исходная запись</Text>
+
+                <MyObject Type="TextBox" Name="SourceSummTextBox" Assembly="BaseControls">
+                    <Top>25</Top>
+                    <Left>5</Left>
+                    <Width>100</Width>
+                    <ReadOnly>True</ReadOnly>
+                    <Text>
+                        <Calculate>
+                            <Expression>{0} - {1}</Expression>
+                            <Items>
+                                <Item>
+                                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="Summ" />
+                                        </Fields>
+                                    </DataConnection>
+                                </Item>
+                                <Item>
+                                    <Object Name="NewSummNumericBox" />
+                                </Item>
+                            </Items>
+                        </Calculate>
+                    </Text>
+                </MyObject>
+
+                <MyObject Type="ComboBox" Name="SourceType" Assembly="BaseControls">
+                    <Top>55</Top>
+                    <Left>5</Left>
+                    <Width>150</Width>
+                    <Enabled>False</Enabled>
+                    <Value>
+                        <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="CashTypeId" />
+                            </Fields>
+                        </DataConnection>
+                    </Value>
+                    <ValueList>
+                        <DataConnection SourceDataConnection="CashTypePrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="CashTypeId" />
+                                <Field Name="Title" />
+                            </Fields>
+                        </DataConnection>
+                    </ValueList>
+                </MyObject>
+
+                <MyObject Type="TextBox" Name="SourceComments" Assembly="BaseControls">
+                    <Top>85</Top>
+                    <Left>5</Left>
+                    <Width>190</Width>
+                    <Height>65</Height>
+                    <Multiline>True</Multiline>
+                    <ReadOnly>True</ReadOnly>
+                    <Text>
+                        <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Comments" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+            </MyObject>
+
+            <MyObject Type="GroupBox" Name="NewRecord" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>210</Left>
+                <Width>200</Width>
+                <Height>155</Height>
+                <Text>Новая запись</Text>
+
+                <MyObject Type="NumericBox" Name="NewSummNumericBox" Assembly="BaseControls">
+                    <Top>25</Top>
+                    <Left>5</Left>
+                    <Width>100</Width>
+                    <Minimum>0</Minimum>
+                    <Increment>100</Increment>
+                    <Maximum>
+                        <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Summ" />
+                            </Fields>
+                        </DataConnection>
+                    </Maximum>
+                    <ThousandsSeparator>True</ThousandsSeparator>
+                </MyObject>
+
+                <MyObject Type="ComboBox" Name="NewType" Assembly="BaseControls">
+                    <Top>55</Top>
+                    <Left>5</Left>
+                    <Width>150</Width>
+                    <Value>
+                        <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="CashTypeId" />
+                            </Fields>
+                        </DataConnection>
+                    </Value>
+                    <ValueList>
+                        <DataConnection SourceDataConnection="CashTypePrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="CashTypeId" />
+                                <Field Name="Title" />
+                            </Fields>
+                        </DataConnection>
+                    </ValueList>
+                </MyObject>
+
+                <MyObject Type="TextBox" Name="NewComments" Assembly="BaseControls">
+                    <Top>85</Top>
+                    <Left>5</Left>
+                    <Width>190</Width>
+                    <Multiline>True</Multiline>
+                    <Height>65</Height>
+                </MyObject>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>210</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>214</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>210</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Enabled>
+                    <Not>
+                        <Or>
+                            <Condition Name="SourceSumm0EqualCondition" />
+                            <Condition Name="NewSumm0EqualCondition" />
+                        </Or>
+                    </Not>
+                </Enabled>
+                <Commands StopOnError="True">
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

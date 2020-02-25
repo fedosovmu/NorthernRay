@@ -1,0 +1,148 @@
+ALTER TABLE wash.withdrawal
+DROP CONSTRAINT fk_withdraw_type_id;
+
+
+DELETE FROM wash.withdrawal_type;
+
+
+ALTER SEQUENCE wash.withdrawal_type_id_seq
+RESTART WITH 1;
+
+
+INSERT INTO wash.withdrawal_type(title)
+VALUES
+('Инкассация'),
+('Доплата мойщикам (ночные)'),
+('Доплата шиномонтаж (до min)'),
+('Хоз. нужды'),
+('Недостачи'),
+('Другое'),
+('З/п администраторам'),
+('З/п электрику'),
+('З/п уборщику');
+
+
+ALTER TABLE wash.withdrawal
+ADD CONSTRAINT fk_withdraw_type_id FOREIGN KEY (withdrawal_type_id)
+      REFERENCES wash.withdrawal_type (withdrawal_type_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+INSERT INTO wash.category(title, category_key)
+VALUES
+('К 09', 'tire9'),
+('К 10', 'tire10'),
+('К 11', 'tire11'),
+('К 12', 'tire12'),
+('К 13', 'tire13'),
+('К 14', 'tire14'),
+('К 15', 'tire15');
+
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire9'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire10'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire11'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire12'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire13'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire14'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+INSERT INTO
+wash.price(work_id, category_id, price, client_id, deleted)
+SELECT
+work_id,
+(SELECT category_id FROM wash.category WHERE category_key = 'tire15'),
+0,
+NULL,
+False
+FROM wash.work
+WHERE part_id = (SELECT part_id FROM wash.part WHERE price_type = 'tire');
+
+
+ALTER TABLE
+wash.category
+ADD COLUMN visible boolean DEFAULT True;
+
+
+UPDATE
+wash.withdrawal
+SET withdrawal_type_id = 6
+WHERE withdrawal_type_id = 3;
+
+UPDATE wash.withdrawal
+SET withdrawal_type_id = 8
+WHERE withdrawal_type_id = 1;
+
+UPDATE wash.withdrawal
+SET withdrawal_type_id = 1
+WHERE withdrawal_type_id = 2;
+
+UPDATE wash.withdrawal
+SET withdrawal_type_id = 2
+WHERE withdrawal_type_id = 5;
+
+UPDATE wash.withdrawal
+SET withdrawal_type_id = 5
+WHERE withdrawal_type_id = 4;
+
+UPDATE wash.withdrawal
+SET withdrawal_type_id = 4
+WHERE withdrawal_type_id = 8;

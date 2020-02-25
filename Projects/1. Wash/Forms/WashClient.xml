@@ -1,0 +1,711 @@
+<?xml version="1.0"?>
+<Form Name="WashClientForm" Title="Северный луч. Список клиентов" Width="1000" Height="900" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Parameters>
+        <Parameter Name="CurrentUserIsWashAdmin" />
+    </Parameters>
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="ClientPageCountPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientPageCountSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Count" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="SearchTitle" RefreshQuery="False">
+                        <Value>
+                            <Object Name="SearchTextBox" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="ClientType">
+                        <Value> 
+                            <Object Name="ClientType" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="ClientPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientMainSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="ClientId" />
+                    <Field Name="Title" />
+                    <Field Name="ClientType" />
+                    <Field Name="Cars" />
+                    <Field Name="Discount" />
+                    <Field Name="DiscountType" />
+                    <Field Name="VisitQuantity" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="SearchTitle" RefreshQuery="False">
+                        <Value>
+                            <Object Name="SearchTextBox" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="OffsetPage">
+                        <Value>
+                            <Object Name="PageVariable" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="ClientType">
+                        <Value>
+                            <Object Name="ClientType" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="IsClientAllowDeletePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="IsClientAllowDeleteSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Allow" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId" RefreshQuery="False">
+                        <Value>
+                            <Object Name="ClientsDatabaseTable">
+                                <Property Name="SelectedRowCellValueByColumnName">
+                                    <Parameters>
+                                        <Parameter Name="ColumnName">ClientId</Parameter>
+                                    </Parameters>
+                                </Property>
+                            </Object>
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="ClientDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="ClientId">
+                    <Value>
+                        <Object Name="ClientsDatabaseTable">
+                            <Property Name="SelectedRowCellValueByColumnName">
+                                <Parameters>
+                                    <Parameter Name="ColumnName">ClientId</Parameter>
+                                </Parameters>
+                            </Property>
+                        </Object>
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="ClientDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+            <Refresh>
+                <DataConnection Name="ClientPageCountPrimaryGetDataConnection" />
+                <DataConnection Name="ClientPrimaryGetDataConnection" />
+            </Refresh>
+        </DataConnection>
+
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="ClientsDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="ClientsDatabaseTable" />
+        </Condition>
+
+        <Condition Name="ClientAddItemUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Command Name="ClientAddItemFormShowCommand" Parameter="Updated" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ClientEditItemUpdatedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Command Name="ClientEditItemFormShowCommand" Parameter="Updated" />
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="NeedUpdateNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="ClientAddItemUpdatedCondition" />
+                    <Condition Name="ClientEditItemUpdatedCondition" />
+                </Or>
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="EnterKeyPressCondition" Type="KeyPressCondition" Assembly="Conditions">
+            <Object Name="SearchTextBox" />
+            <Key Code="13" />
+        </Condition>
+
+        <Condition Name="ClientIsLegalCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ClientsDatabaseTable" ObjectType="DatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">ClientType</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+                <Item>Юр. лицо</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="PageMinCondition" Type="NotLessCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PageTextBox" />
+                </Item>
+                <Item>1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="PageMaxCondition" Type="NotGreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PageTextBox" />
+                </Item>
+                <Item>
+                    <DataConnection SourceDataConnection="ClientPageCountPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Count" />
+                        </Fields>
+                    </DataConnection>
+                </Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="PageTextBoxPageVariableNotEqualCondition" Type="NotEqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="PageTextBox" />
+                </Item>
+                <Item>
+                    <Object Name="PageVariable" />
+                </Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="PageTextBoxKeyPressCondition" Type="KeyPressCondition" Assembly="Conditions">
+            <Object Name="PageTextBox" />
+            <Key Code="13" />
+        </Condition>
+
+        <Condition Name="ClientTypeChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ClientType" />
+                </Item>
+            </Items>
+        </Condition>
+    </Conditions>
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="ClientAddItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashClientItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="ClientId">-1</Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="ClientEditItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashClientItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="ClientId">
+                    <Object Name="ClientsDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">ClientId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="ClientDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <Condition Name="NeedUpdateNestedCondition" />
+            <DataConnections>
+                <DataConnection Name="ClientPageCountPrimaryGetDataConnection" />
+                <DataConnection Name="ClientPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ClientForceDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientPageCountPrimaryGetDataConnection" />
+                <DataConnection Name="ClientPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="IsClientAllowDeleteDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="IsClientAllowDeletePrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ClientDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientDeleteSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ErrorDeletingClientMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Предупреждение</Caption>
+            <Text>Невозможно удалить клиента, у которого есть заказы в архиве.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+
+        <Command Name="PageValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="PageVariable">
+                <Object Name="PageTextBox" />
+            </Object>
+        </Command>
+
+        <Command Name="PageVariableClearValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="PageVariable">1</Object>
+        </Command>
+
+        <Command Name="PageTextBoxClearValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="PageTextBox">1</Object>
+        </Command>
+
+        <Command Name="PageClearSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands>
+                <Command Name="PageVariableClearValueSetCommand" />
+                <Command Name="PageTextBoxClearValueSetCommand" />
+            </Commands>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="ClientsDatabaseTableCellDoubleClickCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="ClientEditItemFormShowCommand" />
+                <Command Name="ClientDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="EnterKeyPressCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="ClientForceDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="PageMinCondition" />
+                    <Condition Name="PageMaxCondition" />
+                    <Condition Name="PageTextBoxKeyPressCondition" />
+                    <Condition Name="PageTextBoxPageVariableNotEqualCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="PageValueSetCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="EnterKeyPressCondition" />
+                    <Condition Name="ClientTypeChangedCondition" />
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="PageClearSequentialCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="PageVariable" Type="Variable" Assembly="SimpleControls" ChangeForm="False">
+            <Value>1</Value>
+        </MyObject>
+
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Список клиентов</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>855</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="SearchLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Height>25</Height>
+                <Width>55</Width>
+                <TextAlign>Middleright</TextAlign>
+                <Text>Поиск:</Text>
+            </MyObject>
+
+            <MyObject Name="SearchTextBox" Type="TextBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>60</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+            </MyObject>
+
+            <MyObject Name="SearchButton" Type="Button" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>220</Left>
+                <Width>60</Width>
+                <Height>25</Height>
+                <Text>Найти</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ClientForceDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Type="ComboBox" Name="ClientType" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>750</Left>
+                <Width>90</Width>
+                <NullValue Show="True" Title="[Все]" />
+                <ValueList>
+                    <Structure Type="Table">
+                        <Row>
+                            <Item>Физ. лицо</Item>
+                        </Row>
+                        <Row>
+                            <Item>Юр. лицо</Item>
+                        </Row>
+                    </Structure>
+                </ValueList>
+            </MyObject>
+
+            <MyObject Name="ClientsDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Height>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>35</Item>
+                        </Minus>
+                    </Formula>
+                </Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>165</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowUpdate>False</AllowUpdate>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeRowsMode Value="AllCells" />
+                <AutoSizeColumnsMode Value="AllCells" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="ClientPrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="ClientId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Клиент</Title>
+                        <AutoSizeMode Value="Fill" />
+                        <WrapMode Value="True" />
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="Cars" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Машины</Title>
+                        <WrapMode Value="True" />
+                        <AutoSizeMode Value="Fill" />
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="Discount" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Скидка</Title>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="DiscountType" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Тип скидки</Title>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="VisitQuantity" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Посещений</Title>
+                        <Alignment Value="MiddleRight" />
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="ClientType" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title>Тип</Title>
+                        <Filter AutoFill="False" FilterNullValue="False">
+                            <Object Name="ClientType" />
+                        </Filter>
+                        <AllowSort Value="False" />
+                    </Column>
+                </Columns>
+            </MyObject>
+
+            <MyObject Name="AddClientButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>845</Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Добавить...</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ClientAddItemFormShowCommand" />
+                    <Command Name="ClientDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="EditClientButton" Type="Button" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>845</Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Редактировать...</Text>
+                <Commands StopOnError="True">
+                    <Command Name="ClientEditItemFormShowCommand" />
+                    <Command Name="ClientDataConnectionRefreshCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="DeleteClientButton" Type="Button" Assembly="BaseControls">
+                <Top>95</Top>
+                <Left>845</Left>
+                <Width>150</Width>
+                <Height>25</Height>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>   Удалить</Text>
+                <Commands StopOnError="True">
+                    <Command Name="IsClientAllowDeleteDataConnectionRefreshCommand" />
+                    <If>
+                        <When>
+                            <DataConnection SourceDataConnection="IsClientAllowDeletePrimaryGetDataConnection">
+                                <Fields>
+                                    <Field Name="Allow" />
+                                </Fields>
+                            </DataConnection>
+                        </When>
+                        <Then>
+                            <Command Name="ClientDeleteSaveCommand" />
+                        </Then>
+                        <Else>
+                            <Command Name="ErrorDeletingClientMessageBoxCommand" />
+                        </Else>
+                    </If>
+                </Commands>
+                <Enabled>
+                    <Not>
+                        <And>
+                            <Condition Name="ClientIsLegalCondition" />
+                            <Parameter Name="CurrentUserIsWashAdmin" />
+                        </And>
+                    </Not>
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="PageTextBox" Type="NumericBox" Assembly="BaseControls" ChangeForm="False">
+                <Top>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>25</Item>
+                        </Minus>
+                    </Formula>
+                </Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>155</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>50</Width>
+                <Value>1</Value>
+                <Increment>1</Increment>
+                <Minimum>1</Minimum>
+                <Maximum>
+                    <DataConnection SourceDataConnection="ClientPageCountPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Count" />
+                        </Fields>
+                    </DataConnection>
+                </Maximum>
+            </MyObject>
+
+            <MyObject Name="PageDelimiterLabel" Type="Label" Assembly="BaseControls">
+                <Top>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                            <Item>23</Item>
+                        </Minus>
+                    </Formula>
+                </Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>100</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>100</Width>
+                <Text>
+                    <String Format="из {0}">
+                        <Items>
+                            <Item>
+                                <DataConnection SourceDataConnection="ClientPageCountPrimaryGetDataConnection">
+                                    <Fields>
+                                        <Field Name="Count" />
+                                    </Fields>
+                                </DataConnection>
+                            </Item>
+                        </Items>
+                    </String>
+                </Text>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

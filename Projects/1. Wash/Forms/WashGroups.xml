@@ -1,0 +1,884 @@
+<?xml version="1.0"?>
+<Form Name="WashGroups" Title="Группы пользователей" Width="942" Height="589" StartPosition="CenterScreen" StatusBar="True" FontStyle="TitleFont" ForeColor="Black">
+  <!--параметры-->
+  <Parameters>
+    <!--признак изменения формы-->
+    <Parameter Name="Updated">False</Parameter>
+  </Parameters>
+
+  <!--визуальные настройки-->
+  <Appearance>
+    <!--цвета-->
+    <Colors>
+      <!--красный-->
+      <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+      
+      <!--черный-->
+      <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+      
+      <!--белый-->
+      <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+      
+      <!--цвет темы: заголовок-->
+      <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+      
+      <!--цвет темы: основные разделители-->
+      <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+      
+      <!--цвет темы: внутренние разделители-->
+      <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+      
+      <!--цвет темы: фон-->
+      <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+      
+      <!--серый 200-->
+      <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+    </Colors>
+    <!--шрифты-->
+    <FontStyles>
+      <!--шрифт заголовка: жирный Tahoma 12-->
+      <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="12" Bold="True" />
+
+      <!--основной шрифт: Tahoma 8-->
+      <FontStyle Name="TitleFont" Font="Tahoma" Size="8" />
+
+      <!--основной жирный шрифт: жирный Tahoma 8-->
+      <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="8" Bold="True" />
+    </FontStyles>
+  </Appearance>
+
+  <!--соединения с данными-->
+  <DataConnections>
+    <!--элементы таблиц "Группы" и "Группы групп"-->
+    <DataConnection Name="GroupRelationPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQueries>
+        <SqlQuery Name="Group" NativeName="GroupSelectSqlQuery" Type="Select">
+          <Workflow Name="Wash" />
+          <Fields>
+            <Field Name="GroupId" NativeName="GroupId" />
+            <Field Name="Title" NativeName="Title" />
+          </Fields>
+        </SqlQuery>
+        <SqlQuery Name="GroupGroup" NativeName="GroupGroupSelectSqlQuery" Type="Select">
+          <Workflow Name="Wash" />
+          <Fields>
+            <Field Name="GroupGroupId" NativeName="GroupGroupId" />
+            <Field Name="ChildGroupId" NativeName="ChildGroupId" />
+            <Field Name="ParentGroupId" NativeName="ParentGroupId" />
+          </Fields>
+        </SqlQuery>
+      </SqlQueries>
+    </DataConnection>
+    
+    <!--элементы таблицы "Пользователи групп"-->
+    <DataConnection Name="UserGroupPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="UserGroupSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="UserGroupId" NativeName="UserGroupId" />
+          <Field Name="UserId" NativeName="UserId" />
+          <Field Name="GroupId" NativeName="GroupId" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+    
+    <!--элементы таблицы "Пользователи"-->
+    <DataConnection Name="UserPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+      <SqlQuery Name="UserSelectSqlQuery" Type="Select">
+        <Workflow Name="Wash" />
+        <Fields>
+          <Field Name="UserId" NativeName="UserId" />
+          <Field Name="UserFullName" NativeName="UserFullName" />
+        </Fields>
+      </SqlQuery>
+    </DataConnection>
+    
+    <!--сохранение дерева "Каталог групп"-->
+    <DataConnection Name="GroupDatabaseTreeSetDataConnection" Type="DatabaseTreeSetDataConnection" Assembly="ComplexDataConnections">
+      <Workflow Name="Wash" />
+      <Tree Name="GroupDatabaseTree" />
+      <NativeNames ItemId="GroupId" ItemTitle="Title" ParentItemId="ParentGroupId" />
+      <SqlQueries>
+        <SqlQuery Name="GroupGroupInsertSqlQuery" Type="Insert" />
+        <SqlQuery Name="GroupUpdateSqlQuery" Type="Update" />
+        <SqlQuery Name="GroupGroupUpdateSqlQuery" Type="Transfer" />
+        <SqlQuery Name="GroupGroupDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+    </DataConnection>
+    
+    <!--сохранение таблицы "Пользователи"-->
+    <DataConnection Name="UserGroupDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+      <Workflow Name="Wash" />
+      <DatabaseTable Name="UserDatabaseTable" />
+      <Parameters>
+        <Parameter NativeName="UserGroupId">
+          <Column Name="UserGroupId" />
+        </Parameter>
+        <Parameter NativeName="UserId">
+          <Column Name="UserId" />
+        </Parameter>
+        <Parameter NativeName="GroupId">
+          <Column Name="GroupId" />
+        </Parameter>
+      </Parameters>
+      <SqlQueries>
+        <SqlQuery Name="UserGroupInsertSqlQuery" Type="Insert" />
+        <SqlQuery Name="UserGroupUpdateSqlQuery" Type="Update" />
+        <SqlQuery Name="UserGroupDeleteSqlQuery" Type="Delete" />
+      </SqlQueries>
+    </DataConnection>
+  </DataConnections>
+
+  <!--условия-->
+  <Conditions>
+    <!--сравнение свойства формы "Изменена" со значением "True"-->
+    <Condition Name="FormChangedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Form>
+            <Property Name="FormChanged" />
+          </Form>
+        </Item>
+        <Item>True</Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение результата диалогового окна вопроса о сохранени данных при закрытии со значением "Yes"-->
+    <Condition Name="SaveOnCloseMessageBoxCommandYesMessageBoxResultChangedCondition" Type="MessageBoxResultChangedCondition" Assembly="Conditions">
+      <MessageBoxCommand Name="SaveOnCloseMessageBoxCommand" />
+      <Result Type="Yes" />
+    </Condition>
+    
+    <!--сравнение результата диалогового окна вопроса о сохранени данных при закрытии со значением "No"-->
+    <Condition Name="SaveOnCloseMessageBoxCommandNoMessageBoxResultChangedCondition" Type="MessageBoxResultChangedCondition" Assembly="Conditions">
+      <MessageBoxCommand Name="SaveOnCloseMessageBoxCommand" />
+      <Result Type="No" />
+    </Condition>
+    
+    <!--сравнение значения дерева "Каталог групп" базы данных с невыбранным-->
+    <Condition Name="GroupDatabaseTreeIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="GroupDatabaseTree">
+            <Property Name="SelectedItemId" />
+          </Object>
+        </Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение значения поля "Группа" с пустым-->
+    <Condition Name="GroupTextBoxEmptyEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="GroupTextBox" />
+        </Item>
+        <Item>
+        </Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение значения поля "Группа назначения" с пустым-->
+    <Condition Name="DestinationGroupTextBoxEmptyEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="DestinationGroupTextBox" />
+        </Item>
+        <Item>
+        </Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение признака "Новый" элемента, выделенного в дереве "Каталог групп" базы данных, со значением "True"-->
+    <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="GroupDatabaseTree">
+            <Property Name="ItemAdded">
+              <Object Name="GroupDatabaseTree">
+                <Property Name="SelectedItemId" />
+              </Object>
+            </Property>
+          </Object>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+    
+    <!--сравнение признака родительского отношения одного элемента к другому в дереве "Каталог групп" базы данных со значением "True"-->
+    <Condition Name="GroupDatabaseTreeItemsParentialRelationTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="GroupDatabaseTree">
+            <Property Name="ItemsParentalRelation">
+              <Parameters>
+                <Parameter Name="PossibleParentItemId">
+                  <Object Name="GroupDatabaseTree">
+                    <Property Name="SelectedItemId" />
+                  </Object>
+                </Parameter>
+                <Parameter Name="PossibleChildItemId">
+                  <Object Name="DestinationGroupIdVariable" />
+                </Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+    
+    <!--сравнение значения столбца "Идентификатор элемента" выделенной строки таблицы "Состав группы" базы данных с невыбранным-->
+    <Condition Name="UserDatabaseTableSelectedRowCellValueByColumnNameUserIdIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="UserDatabaseTable">
+            <Property Name="SelectedRowCellValueByColumnName">
+              <Parameters>
+                <Parameter Name="ColumnName">UserId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение значения поля "Новый пользователь" с невыбранным-->
+    <Condition Name="UserAddComboBoxIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="UserAddComboBox" />
+        </Item>
+      </Items>
+    </Condition>
+    
+    <!--сравнение значения признака наличния значения поля "Новый пользователь" в столбце "UserId" таблицы "Состав группы" базы данных-->
+    <Condition Name="UserAddComboBoxUserDatabaseTableColumnUserIdEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <Items>
+        <Item>
+          <Object Name="UserAddComboBox" />
+        </Item>
+        <Item>
+          <Object Name="UserDatabaseTable">
+            <Property Name="Column">
+              <Parameters>
+                <Parameter Name="ColumnName">UserId</Parameter>
+              </Parameters>
+            </Property>
+          </Object>
+        </Item>
+      </Items>
+      <Comparison Type="Outer" />
+      <Satisfy MinCount="1" />
+    </Condition>
+    
+    <!--сравнение значения параметра "Обновлена" команды открытия модального окна "Пользователи" со значением "True"-->
+    <Condition Name="UsersFormUpdatedTrueEqualCondition" Type="EqualCondition" Assembly="Conditions">
+      <AlwaysChange Value="True" />
+      <Items>
+        <Item>
+          <Command Name="UsersFormShowCommand" Parameter="Updated" />
+        </Item>
+        <Item>True</Item>
+      </Items>
+      <DataType Type="BooleanDataType" />
+    </Condition>
+    
+    
+    <!--условие, определяющее момент закрытия формы-->
+    <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+  </Conditions>
+
+  <!--команды-->
+  <Commands>
+    <!--команда вывоза диалогового окна для вопроса о сохранении данных формы при закрытии-->
+    <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+      <Caption>Сохранение</Caption>
+      <Text>Форма содержит несохраненные данные.\rВы хотите их сохранить?</Text>
+      <Icon Type="Question" />
+      <Buttons Type="YesNoCancel" />
+    </Command>
+    
+    <!--команда обновления таблицы "Пользователи"-->
+    <Command Name="UserDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="UserPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+    
+    <!--команда обновления всех загружающих первичных соединений с данными-->
+    <Command Name="AllPrimaryGetDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="GroupRelationPrimaryGetDataConnection" />
+        <DataConnection Name="UserGroupPrimaryGetDataConnection" />
+        <DataConnection Name="UserPrimaryGetDataConnection" />
+      </DataConnections>
+    </Command>
+    
+    <!--команда добавления новой группы в выделенную в дереве каталогов группу-->
+    <Command Name="GroupInsertValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="GroupDatabaseTree">
+        <Property Name="InsertItemIntoSelectedNode">
+          <Object Name="GroupTextBox" />
+        </Property>
+      </Object>
+    </Command>
+    
+    <!--команда изменения названия выделенной в дереве каталогов группы-->
+    <Command Name="GroupUpdateValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="GroupDatabaseTree">
+        <Property Name="UpdateSelectedItemTitle">
+          <Object Name="GroupTextBox" />
+        </Property>
+      </Object>
+    </Command>
+    
+    <!--команда удаления выделенной в дереве каталогов группы-->
+    <Command Name="GroupDeleteValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="GroupDatabaseTree">
+        <Property Name="DeleteSelectedItem" />
+      </Object>
+    </Command>
+    
+    <!--команда переноса выделенной в дереве каталогов группы в указанную-->
+    <Command Name="GroupTransferValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="GroupDatabaseTree">
+        <Property Name="TransferSelectedItem">
+          <Object Name="DestinationGroupIdVariable" />
+        </Property>
+      </Object>
+    </Command>
+    
+    <!--команда выбора выделенной в дереве каталогов группы в качестве группы назначения-->
+    <Command Name="DestinationGroupValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="DestinationGroupIdVariable">
+        <Object Name="GroupDatabaseTree">
+          <Property Name="SelectedItemId" />
+        </Object>
+      </Object>
+    </Command>
+    
+    <!--команда добавления нового элемента в таблицу "Состав группы"-->
+    <Command Name="UserAddValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="UserDatabaseTable">
+        <Property Name="AddRow">
+          <Parameters>
+            <Parameter Name="SelectAfterAdd">True</Parameter>
+            <Parameter Name="ColumnNames">
+              <Structure Type="List">
+                <Item>UserId</Item>
+              </Structure>
+            </Parameter>
+            <Parameter Name="Values">
+              <Structure Type="List">
+                <Item>
+                  <Object Name="UserAddComboBox" />
+                </Item>
+              </Structure>
+            </Parameter>
+          </Parameters>
+        </Property>
+      </Object>
+    </Command>
+    
+    <!--команда удаления выделенного элемента из таблицы "Состав группы"-->
+    <Command Name="UserDeleteValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Object Name="UserDatabaseTable">
+        <Property Name="DeleteRowsByIndices">
+          <Object Name="UserDatabaseTable">
+            <Property Name="SelectedRowsIndices" />
+          </Object>
+        </Property>
+      </Object>
+    </Command>
+    
+    <!--команда открытия модального окна "Управление пользователями"-->
+    <Command Name="UsersFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+      <Xml Type="Path">WashUsers.xml</Xml>
+      <Show Type="Modal" />
+    </Command>
+    
+    <!--команда сохранения формы-->
+    <Command Name="FormSaveCommand" Type="SaveCommand" Assembly="Commands">
+      <DataConnections>
+        <DataConnection Name="GroupDatabaseTreeSetDataConnection" />
+        <DataConnection Name="UserGroupDatabaseTableSetDataConnection" />
+      </DataConnections>
+    </Command>
+    
+    <!--изменения значения параметра Updated на TRUE-->
+    <Command Name="UpdatedTrueValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+      <Parameter Name="Updated">True</Parameter>
+    </Command>
+    
+    <!--сборная команда сохранения формы-->
+    <Command Name="FormSaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+      <StopOnError>True</StopOnError>
+      <Commands>
+        <Command Name="FormSaveCommand" />
+        <Command Name="UpdatedTrueValueSetCommand" />
+        <Command Name="AllPrimaryGetDataConnectionRefreshCommand" />
+      </Commands>
+    </Command>
+    
+    <!--команда закрытия формы-->
+    <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+  </Commands>
+
+  <!--выполнение действий-->
+  <Executions>
+    <!--обновление таблицы "Пользователи"-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="UsersFormUpdatedTrueEqualCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="UserDataConnectionRefreshCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--вызов диалогового окна вопроса о сохранении данных формы при закрытии-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Condition Name="FormChangedTrueEqualCondition" />
+        </And>
+      </ConditionExpression>
+      <Commands>
+        <Command Name="SaveOnCloseMessageBoxCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--сохранение данных формы с последующим закрытием-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="SaveOnCloseMessageBoxCommandYesMessageBoxResultChangedCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="FormSaveCommand" />
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--закрытие формы при отсутствии изменений-->
+    <Execution>
+      <ConditionExpression>
+        <And>
+          <Condition Name="FormClosingCondition" />
+          <Not>
+            <Condition Name="FormChangedTrueEqualCondition" />
+          </Not>
+        </And>
+      </ConditionExpression>
+      <Commands>
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+    
+    <!--закрытие формы при отсутствии сохранения-->
+    <Execution>
+      <ConditionExpression>
+        <Condition Name="SaveOnCloseMessageBoxCommandNoMessageBoxResultChangedCondition" />
+      </ConditionExpression>
+      <Commands>
+        <Command Name="FormCloseCommand" />
+      </Commands>
+    </Execution>
+  </Executions>
+
+  <!--основные объекты формы-->
+  <MyObjects>
+    <!--переменная "Идентификатор группы назначения"-->
+    <MyObject Name="DestinationGroupIdVariable" Type="Variable" Assembly="SimpleControls" ChangeForm="False" />
+    
+    <!--панель заголовка формы-->
+    <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+      <Top>0</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>1212</Width>
+      <BackColor>ThemeColorHead</BackColor>
+
+      <!--заголовок формы-->
+      <MyObject Name="TitleLabel" Type="Label" Assembly="BaseControls">
+        <Top>6</Top>
+        <Left>10</Left>
+        <Height>27</Height>
+        <Width>1202</Width>
+        <FontStyle>HeadTitleFont</FontStyle>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>Группы пользователей</Text>
+      </MyObject>
+    </MyObject>
+
+    <!--панель разделитель 1-->
+    <MyObject Name="SeparatePanel1" Type="Panel" Assembly="BaseControls">
+      <Top>40</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>942</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <!--панель содержания-->
+    <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+      <Top>44</Top>
+      <Left>0</Left>
+      <Height>500</Height>
+      <Width>942</Width>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <!--дерево базы данных "Каталог групп": содержимое-->
+      <MyObject Name="GroupDatabaseTree" Type="DatabaseTree" Assembly="ComplexControls">
+        <Top>5</Top>
+        <Left>5</Left>
+        <Height>395</Height>
+        <Width>395</Width>
+        <TabIndex>1</TabIndex>
+        <Change User="False" Source="False" ValueSet="True" />
+        <BackColor>ThemeColorBack</BackColor>
+        <BorderStyle>FixedSingle</BorderStyle>
+        <Sorted>True</Sorted>
+        <Items>
+          <DataConnection SourceDataConnection="GroupRelationPrimaryGetDataConnection">
+            <SourceQuery Name="Group">
+              <Fields>
+                <Field Name="GroupId" />
+                <Field Name="Title" />
+              </Fields>
+            </SourceQuery>
+            <SourceQuery Name="GroupGroup">
+              <Fields>
+                <Field Name="ChildGroupId" />
+                <Field Name="ParentGroupId" />
+              </Fields>
+            </SourceQuery>
+          </DataConnection>
+        </Items>
+      </MyObject>
+
+      <!--поле "Группа": содержимое-->
+      <MyObject Name="GroupTextBox" Type="TextBox" Assembly="BaseControls" ChangeForm="False">
+        <Top>410</Top>
+        <Left>5</Left>
+        <Width>395</Width>
+        <TabIndex>2</TabIndex>
+        <Text>
+          <Object Name="GroupDatabaseTree">
+            <Property Name="SelectedItemTitle" />
+          </Object>
+        </Text>
+        <Enabled>
+          <Not>
+            <Condition Name="GroupDatabaseTreeIsNullCondition" />
+          </Not>
+        </Enabled>
+        <Hint>Текущая группа</Hint>
+      </MyObject>
+
+      <!--кнопка "Добавить группу": добавление новой группы в дерево базы данных "Каталог групп"-->
+      <MyObject Name="GroupInsertButton" Type="Button" Assembly="BaseControls">
+        <Top>440</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>95</Width>
+        <TabIndex>3</TabIndex>
+        <Text>Добавить</Text>
+        <Commands>
+          <Command Name="GroupInsertValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="GroupDatabaseTreeIsNullCondition" />
+              <Condition Name="GroupTextBoxEmptyEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Добавление новой группы с указанным именем в группу, выделенную в каталоге</Hint>
+      </MyObject>
+
+      <!--кнопка "Изменить группу": изменение группы, выделенной в дереве базы данных "Каталог групп"-->
+      <MyObject Name="GroupUpdateButton" Type="Button" Assembly="BaseControls">
+        <Top>440</Top>
+        <Left>105</Left>
+        <Height>25</Height>
+        <Width>95</Width>
+        <TabIndex>4</TabIndex>
+        <Text>Изменить</Text>
+        <Commands>
+          <Command Name="GroupUpdateValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="GroupDatabaseTreeIsNullCondition" />
+              <Condition Name="GroupTextBoxEmptyEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Изменение имени группы, выделенной в каталоге, на указанное</Hint>
+      </MyObject>
+
+      <!--кнопка "Удалить группу": удаление группы, выделенной в дереве базы данных "Каталог групп"-->
+      <MyObject Name="GroupDeleteButton" Type="Button" Assembly="BaseControls">
+        <Top>440</Top>
+        <Left>205</Left>
+        <Height>25</Height>
+        <Width>95</Width>
+        <TabIndex>5</TabIndex>
+        <Text>Удалить</Text>
+        <Commands>
+          <Command Name="GroupDeleteValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Condition Name="GroupDatabaseTreeIsNullCondition" />
+          </Not>
+        </Enabled>
+        <Hint>Удаление группы, выделенной в каталоге, не содержащей ни одного пользователя в своем составе</Hint>
+      </MyObject>
+
+      <!--кнопка "Перенести группу": перенос группы, выделенной в дереве базы данных "Каталог групп", в указанную в поле "Группа назначения" группу-->
+      <MyObject Name="GroupTransferButton" Type="Button" Assembly="BaseControls">
+        <Top>440</Top>
+        <Left>305</Left>
+        <Height>25</Height>
+        <Width>95</Width>
+        <TabIndex>6</TabIndex>
+        <Text>Перенести</Text>
+        <Commands>
+          <Command Name="GroupTransferValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="GroupDatabaseTreeIsNullCondition" />
+              <Condition Name="DestinationGroupTextBoxEmptyEqualCondition" />
+              <Condition Name="GroupDatabaseTreeItemsParentialRelationTrueEqualCondition" />
+              <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Перенос группы, выделенной в каталоге, в группу назначения</Hint>
+      </MyObject>
+
+      <!--кнопка "Выбрать группу назначения": выбор группы, выделенной в дереве базы данных "Каталог групп", в качестве группы назначения-->
+      <MyObject Name="DestinationGroupButton" Type="Button" Assembly="BaseControls">
+        <Top>470</Top>
+        <Left>5</Left>
+        <Height>25</Height>
+        <Width>295</Width>
+        <TabIndex>7</TabIndex>
+        <Text>Выбрать группу назначения</Text>
+        <Commands>
+          <Command Name="DestinationGroupValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="GroupDatabaseTreeIsNullCondition" />
+              <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Выбор группы, выделенной в дереве базы данных "Каталог групп", в качестве группы назначения</Hint>
+      </MyObject>
+
+      <!--поле "Группа назначения": содержимое-->
+      <MyObject Name="DestinationGroupTextBox" Type="TextBox" Assembly="BaseControls" ChangeForm="False">
+        <Top>473</Top>
+        <Left>305</Left>
+        <Width>630</Width>
+        <TabIndex>8</TabIndex>
+        <ReadOnly>True</ReadOnly>
+        <Text>
+          <Object Name="GroupDatabaseTree">
+            <Property Name="ItemTitleByItemId">
+              <Object Name="DestinationGroupIdVariable" />
+            </Property>
+          </Object>
+        </Text>
+        <Hint>Выберите группу, выделенную в каталоге, как группу назначения, нажав на кнопку "Выбрать группу назначения"</Hint>
+      </MyObject>
+
+      <!--таблица базы данных "Состав группы": содержимое-->
+      <MyObject Name="UserDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+        <Top>5</Top>
+        <Left>410</Left>
+        <Height>458</Height>
+        <Width>320</Width>
+        <TabIndex>9</TabIndex>
+        <Change User="True" Source="False" ValueSet="True" />
+        <BackgroundColor Value="Gray200" />
+        <RowHeadersVisible Value="False" />
+        <ColumnHeadersHeight Value="22" />
+        <RowHeight Value="18" />
+        <AllowInsert>False</AllowInsert>
+        <AllowUpdate>False</AllowUpdate>
+        <AllowDelete>False</AllowDelete>
+        <AllowResizeColumns Value="False" />
+        <AllowResizeRows Value="False" />
+        <SourceDataConnection Name="UserGroupPrimaryGetDataConnection" />
+        <Columns>
+          <Column Name="UserGroupId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="UserId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+          </Column>
+          <Column Name="GroupId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Visible>False</Visible>
+            <Filter>
+              <Object Name="GroupDatabaseTree">
+                <Property Name="SelectedItemId" />
+              </Object>
+            </Filter>
+          </Column>
+          <Column Name="UserFullName" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+            <Title>Пользователь</Title>
+            <Width>300</Width>
+            <ReadOnly>True</ReadOnly>
+            <Sorting>
+              <SortOrder Type="Asc" />
+              <ColumnOrder Order="1" />
+            </Sorting>
+            <Substitution SourceColumn="UserId">
+              <DataConnection SourceDataConnection="UserPrimaryGetDataConnection">
+                <Fields>
+                  <Field Name="UserId" />
+                  <Field Name="UserFullName" />
+                </Fields>
+              </DataConnection>
+            </Substitution>
+          </Column>
+        </Columns>
+        <Enabled>
+          <Not>
+            <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" />
+          </Not>
+        </Enabled>
+        <Hint>Состав группы пользователей, выделенной в дереве базы данных "Каталог групп"</Hint>
+      </MyObject>
+
+      <!--кнопка "Пользователи...": вызов модального окна "Полдьзователи"-->
+      <MyObject Name="UserManagementButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>735</Left>
+        <Height>25</Height>
+        <Width>200</Width>
+        <TabIndex>10</TabIndex>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Пользователи...</Text>
+        <Commands>
+          <Command Name="UsersFormShowCommand" />
+        </Commands>
+        <Hint>Открытие формы для управления пользователями</Hint>
+      </MyObject>
+
+      <!--кнопка "Добавить пользователя": добавление пользователя, выбранного в поле "Новый пользователь", в таблицу "Состав группы"-->
+      <MyObject Name="UserAddButton" Type="Button" Assembly="BaseControls">
+        <Top>55</Top>
+        <Left>735</Left>
+        <Height>25</Height>
+        <Width>200</Width>
+        <TabIndex>11</TabIndex>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Добавить</Text>
+        <Commands>
+          <Command Name="UserAddValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="GroupDatabaseTreeIsNullCondition" />
+              <Condition Name="UserAddComboBoxIsNullCondition" />
+              <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" />
+              <Condition Name="UserAddComboBoxUserDatabaseTableColumnUserIdEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Добавление выбранного пользователя в таблицу</Hint>
+      </MyObject>
+
+      <!--поле "Новый пользователь": содержимое-->
+      <MyObject Name="UserAddComboBox" Type="ComboBox" Assembly="BaseControls" ChangeForm="False">
+        <Top>85</Top>
+        <Left>735</Left>
+        <Width>200</Width>
+        <TabIndex>12</TabIndex>
+        <EnterText>True</EnterText>
+        <AutoCompleteMode>SuggestAppend</AutoCompleteMode>
+        <AutoCompleteSource>ListItems</AutoCompleteSource>
+        <NullValue Show="True" Title="[не выбрано]" />
+        <Sorted>True</Sorted>
+        <ValueList>
+          <DataConnection SourceDataConnection="UserPrimaryGetDataConnection">
+            <Fields>
+              <Field Name="UserId" />
+              <Field Name="UserFullName" />
+            </Fields>
+          </DataConnection>
+        </ValueList>
+        <Hint>Выберите пользователя из списка или, если в списке такового нет,\rто добавьте его самостоятельно по кнопке "Пользователи..." сверху</Hint>
+      </MyObject>
+
+      <!--кнопка "Удалить пользователя": удаление пользователя, выделенного в таблице "Состав группы"-->
+      <MyObject Name="UserDeleteButton" Type="Button" Assembly="BaseControls">
+        <Top>115</Top>
+        <Left>735</Left>
+        <Height>25</Height>
+        <Width>200</Width>
+        <TabIndex>13</TabIndex>
+        <TextAlign>MiddleLeft</TextAlign>
+        <Text>   Удалить</Text>
+        <Commands>
+          <Command Name="UserDeleteValueSetCommand" />
+        </Commands>
+        <Enabled>
+          <Not>
+            <Or>
+              <Condition Name="UserDatabaseTableSelectedRowCellValueByColumnNameUserIdIsNullCondition" />
+              <Condition Name="GroupDatabaseTreeSelectedItemAddedTrueEqualCondition" />
+            </Or>
+          </Not>
+        </Enabled>
+        <Hint>Удаление пользователя, выделенного в таблице</Hint>
+      </MyObject>
+    </MyObject>
+
+    <!-- панель разделитель 2 -->
+    <MyObject Name="SeparatePanel2" Type="Panel" Assembly="BaseControls">
+      <Top>544</Top>
+      <Left>0</Left>
+      <Height>4</Height>
+      <Width>942</Width>
+      <BackColor>ThemeColorSeparatorBold</BackColor>
+    </MyObject>
+
+    <!-- панель управления -->
+    <MyObject Name="ManagementPanel" Type="Panel" Assembly="BaseControls">
+      <Top>548</Top>
+      <Left>0</Left>
+      <Height>40</Height>
+      <Width>1212</Width>
+      <BackColor>ThemeColorBack</BackColor>
+
+      <!--кнопка "Сохранить": сохранение изменений на форме-->
+      <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+        <Top>5</Top>
+        <Left>735</Left>
+        <Height>30</Height>
+        <Width>200</Width>
+        <TabIndex>15</TabIndex>
+        <FontStyle>TitleBoldFont</FontStyle>
+        <Text>Сохранить</Text>
+        <Commands>
+          <Command Name="FormSaveSequentialCommand" />
+        </Commands>
+      </MyObject>
+    </MyObject>
+  </MyObjects>
+</Form>

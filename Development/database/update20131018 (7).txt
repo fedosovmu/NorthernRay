@@ -1,0 +1,3 @@
+UPDATE wash.car
+SET
+car_number = UPPER(car_number);

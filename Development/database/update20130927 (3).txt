@@ -1,0 +1,306 @@
+ALTER TABLE wash.category
+ADD COLUMN category_key character varying;
+
+UPDATE wash.category
+SET category_key = 'pass1'
+WHERE category_id = 1;
+
+UPDATE wash.category
+SET category_key = 'pass2'
+WHERE category_id = 2;
+
+UPDATE wash.category
+SET category_key = 'pass3'
+WHERE category_id = 3;
+
+UPDATE wash.category
+SET category_key = 'pass4'
+WHERE category_id = 4;
+
+UPDATE wash.category
+SET category_key = 'pass5'
+WHERE category_id = 5;
+
+UPDATE wash.category
+SET category_key = 'pass6'
+WHERE category_id = 6;
+
+UPDATE wash.category
+SET category_key = 'truck'
+WHERE category_id = 7;
+
+UPDATE wash.category
+SET category_key = 'truck_spec'
+WHERE category_id = 8;
+
+UPDATE wash.category
+SET category_key = 'tire1'
+WHERE category_id = 9;
+
+UPDATE wash.category
+SET category_key = 'tire2'
+WHERE category_id = 10;
+
+UPDATE wash.category
+SET category_key = 'tire3'
+WHERE category_id = 11;
+
+UPDATE wash.category
+SET category_key = 'tire4'
+WHERE category_id = 12;
+
+UPDATE wash.category
+SET category_key = 'tire5'
+WHERE category_id = 13;
+
+UPDATE wash.category
+SET category_key = 'tire6'
+WHERE category_id = 14;
+
+UPDATE wash.category
+SET category_key = 'tire7'
+WHERE category_id = 15;
+
+UPDATE wash.category
+SET category_key = 'tire8'
+WHERE category_id = 16;
+
+INSERT INTO wash.category(title, category_key)
+VALUES ('À≈√ Œ¬€≈ 7', 'pass7');
+
+INSERT INTO wash.price(work_id, category_id, price, client_id, deleted)
+SELECT 
+  work_id,
+  (SELECT category_id FROM wash.category WHERE category_key = 'pass7'),
+  price,
+  client_id,
+  deleted
+FROM
+  wash.price
+WHERE
+  category_id = 6;
+
+UPDATE wash.setting
+SET setting_key = 'pass' || setting_key
+WHERE setting_id <= 7;
+
+UPDATE wash.setting
+SET 
+title = 'À≈√ Œ¬€≈ 7 - 5% (Û·.)',
+setting_value = 480
+WHERE setting_id = 7;
+
+INSERT INTO wash.setting(title, setting_value, setting_key)
+VALUES
+('√–”«Œ¬€≈ - 5% (Û·.)', 0, 'truck');
+
+UPDATE wash.setting
+SET title = '—ÍË‰Í‡ ' || title
+WHERE 
+setting_key LIKE 'all%'
+OR setting_key LIKE 'pass%'
+OR setting_key LIKE 'truck';
+
+
+CREATE OR REPLACE FUNCTION wash.refresh_work(integer, new_category_id integer, new_client_id integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	tmp_id integer;
+	tmp_work_id integer;
+	tmp_price record;
+BEGIN
+	FOR tmp_id IN SELECT order_work_id FROM wash.order_work WHERE order_id = $1 LOOP
+		SELECT 
+			work_id 
+		INTO 
+			tmp_work_id
+		FROM
+			wash.order_work OW
+			INNER JOIN wash.price P ON P.price_id = OW.price_id
+		WHERE
+			order_work_id = tmp_id;
+		
+		SELECT 
+			P.price_id,
+			P.price
+		INTO 
+			tmp_price
+		FROM 
+			wash.price P
+		WHERE
+			work_id = tmp_work_id
+			AND category_id = new_category_id
+			AND (((new_client_id ISNULL OR (SELECT COUNT(*) FROM wash.price WHERE client_id = new_client_id AND category_id = new_category_id) = 0) AND client_id ISNULL)
+			OR (new_client_id IS NOT NULL AND client_id = new_client_id));
+		
+		IF tmp_price.price_id IS NOT NULL
+		THEN
+			UPDATE
+				wash.order_work
+			SET
+				price_id = tmp_price.price_id,
+				price = tmp_price.price
+			WHERE
+				order_work_id = tmp_id
+				AND (SELECT category_id FROM wash.price WHERE tmp_price.price_id = price_id) != (SELECT category_id FROM wash.category WHERE category_key = 'truck_spec')
+				AND new_category_id != (SELECT category_id FROM wash.category WHERE category_key = 'truck');
+		ELSE
+			DELETE FROM
+				wash.order_work
+			WHERE
+				order_work_id = tmp_id;
+		END IF;
+	END LOOP;
+	
+	RETURN 0;
+        END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION wash.cancel_discount(integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+  cur_category_key character varying = (
+    SELECT 
+      category_key::character varying
+    FROM 
+      wash.car C
+      INNER JOIN wash.car_model CM ON C.car_model_id = CM.car_model_id
+      INNER JOIN wash.category Ca ON Ca.category_id = CM.category_id
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_client integer = (
+    SELECT
+      client_id
+    FROM
+      wash.car
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_summ integer = (SELECT cash + terminal FROM wash.order_list WHERE order_id = $1);
+  cur_discount smallint = (SELECT discount FROM wash.client WHERE client_id = cur_client);
+  cur_visit_quantity smallint = (SELECT visit_quantity FROM wash.client WHERE client_id = cur_client);
+
+BEGIN
+	IF NOT (SELECT is_person AND is_accumulative FROM wash.client WHERE client_id = cur_client)
+	THEN RETURN -1;
+	END IF;
+
+	IF
+		cur_discount = 10 AND cur_visit_quantity = 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 7,
+			visit_quantity = (SELECT setting_value FROM wash.setting WHERE setting_key = 'all10') - 1
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_discount = 7 AND cur_visit_quantity = 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 5,
+			visit_quantity = (SELECT setting_value FROM wash.setting WHERE setting_key = 'all7') - 1
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_discount = 5 AND cur_visit_quantity = 0 AND (cur_summ >= (SELECT setting_value FROM wash.setting WHERE setting_key = cur_category_key))
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		cur_visit_quantity > 0
+	THEN
+		UPDATE
+			wash.client
+		SET
+			visit_quantity = visit_quantity - 1
+		WHERE
+			client_id = cur_client;
+	END IF;
+	RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION wash.count_discount(integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+cur_category_key character varying = (
+    SELECT 
+      category_key::character varying
+    FROM 
+      wash.car C
+      INNER JOIN wash.car_model CM ON C.car_model_id = CM.car_model_id
+      INNER JOIN wash.category Ca ON Ca.category_id = CM.category_id
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_client integer = (
+    SELECT
+      client_id
+    FROM
+      wash.car
+    WHERE
+      car_id = (SELECT car_id FROM wash.order_list WHERE order_id = $1));
+  cur_summ integer = (SELECT cash + terminal FROM wash.order_list WHERE order_id = $1);
+  cur_discount smallint = (SELECT discount FROM wash.client WHERE client_id = cur_client);
+  cur_visit_quantity smallint = (SELECT visit_quantity FROM wash.client WHERE client_id = cur_client);
+
+BEGIN
+	IF NOT (SELECT is_person AND is_accumulative FROM wash.client WHERE client_id = cur_client)
+	THEN RETURN -1;
+	END IF;
+	
+	IF 
+		(cur_discount = 0) AND (cur_summ >= (SELECT setting_value FROM wash.setting WHERE setting_key = cur_category_key))
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 5,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF 
+		(cur_discount = 5) AND (cur_visit_quantity >= (SELECT setting_value FROM wash.setting WHERE setting_key = 'all7') - 1)
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 7,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSEIF
+		(cur_discount = 7) AND (cur_visit_quantity >= (SELECT setting_value FROM wash.setting WHERE setting_key = 'all10') - 1)
+	THEN
+		UPDATE
+			wash.client
+		SET
+			discount = 10,
+			visit_quantity = 0
+		WHERE
+			client_id = cur_client;
+	ELSE
+		UPDATE
+			wash.client
+		SET
+			visit_quantity = visit_quantity + 1
+		WHERE
+			client_id = cur_client;
+	END IF;
+	RETURN 0;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE

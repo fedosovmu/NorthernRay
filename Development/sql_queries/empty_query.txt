@@ -1,0 +1,56 @@
+UPDATE wash.admin
+SET title = 'Администратор' || admin_id;
+
+UPDATE wash.client
+SET title = 'Клиент' || client_id;
+
+UPDATE wash.car
+SET car_number = car_id;
+
+UPDATE wash.order_work
+SET price = order_work_id;
+
+UPDATE wash.tire_order_work
+SET price = tire_order_work_id;
+
+UPDATE wash.price
+SET price = price_id;
+
+UPDATE wash.order_other_work
+SET title = 'Другая работа' || order_other_work_id;
+
+UPDATE wash.tire_order_other_work
+SET title = 'Другая работа' || tire_order_other_work_id;
+
+UPDATE wash.setting
+SET title = 'Настройка' || setting_id;
+
+UPDATE wash.deposit
+SET 
+summ = deposit_type_id,
+comments = 'Комментарий' || deposit_id;
+
+UPDATE wash.withdrawal
+SET 
+summ = withdrawal_type_id,
+comments = 'Комментарий' || withdrawal_id;
+
+UPDATE wash.order_list
+SET
+cash = order_id,
+non_cash = order_id,
+terminal = order_id,
+comments = 'Комментарий' || order_id;
+
+UPDATE wash.tire_order_list
+SET
+cash = tire_order_id,
+non_cash = tire_order_id,
+terminal = tire_order_id,
+comments = 'Комментарий' || tire_order_id;
+
+UPDATE wash.shift
+SET 
+rest_summ = shift_id,
+wash_salary = shift_id,
+tire_salary = shift_id;

@@ -1,0 +1,1910 @@
+<?xml version="1.0"?>
+<Form Name="WashClientForm" Title="Северный луч. Клиент" Width="450" Height="425" HorizontalAlign="Center" Top="100" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+    <Parameters>
+        <Parameter Name="Updated">False</Parameter>
+        <Parameter Name="ClientType" />
+        <Parameter Name="ClientId" />
+    </Parameters>
+
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <Checkings>
+        <Checking>
+            <Object Name="TitleTextBox" />
+            <ConditionExpression>
+                <Condition Name="TitleIsEmptyCondition" />
+            </ConditionExpression>
+            <AsteriskHint>Выберите фамилию клиента или название организации</AsteriskHint>
+        </Checking>
+    </Checkings>
+
+
+    <DataConnections>
+        <DataConnection Name="PermissionsPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="PermissionsSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CurrentUserIsInWashAdminGroup" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="ClientInsertGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientInsertSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="ClientId" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="IsNewRecord">
+                        <Value>
+                            <Condition Name="IsNewRecordCondition" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="ClientItemPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientItemSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Title" />
+                    <Field Name="IsPerson" />
+                    <Field Name="Discount" />
+                    <Field Name="Card" />
+                    <Field Name="IsAccumulative" />
+                    <Field Name="VisitQuantity" />
+                    <Field Name="ContractDate" />
+                    <Field Name="ContractNumber" />
+                    <Field Name="Contact" />
+                    <Field Name="Phone" />
+                    <Field Name="Account" />
+                    <Field Name="Additional" />
+                    <Field Name="INN" />
+                    <Field Name="Prefix" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId">
+                        <Value>
+                            <Parameter Name="ClientId" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="ClientCarPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientCarSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CarId" />
+                    <Field Name="Vendor" />
+                    <Field Name="Model" />
+                    <Field Name="CarNumber" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId">
+                        <Value>
+                            <Switch>
+                                <Case>
+                                    <When>
+                                        <Condition Name="IsNewRecordCondition" />
+                                    </When>
+                                    <Then>
+                                        <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                            <Fields>
+                                                <Field Name="ClientId" />
+                                            </Fields>
+                                        </DataConnection>
+                                    </Then>
+                                </Case>
+                                <Case>
+                                    <Parameter Name="ClientId" />
+                                </Case>
+                            </Switch>
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CarsDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="CarsDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="CarId">
+                    <Column Name="CarId" />
+                </Parameter>
+                <Parameter NativeName="CarModelId">
+                    <Column Name="Model" />
+                </Parameter>
+                <Parameter NativeName="CarNumber">
+                    <Column Name="CarNumber" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CarFakeDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+            <Refresh>
+                <DataConnection Name="ClientCarPrimaryGetDataConnection" />
+            </Refresh>
+        </DataConnection>
+
+        <DataConnection Name="ClientUpdateSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="ClientId">
+                    <Value>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="IsExistingRecordCondition" />
+                                </When>
+                                <Then>
+                                    <Parameter Name="ClientId" />
+                                </Then>
+                            </Case>
+                            <Case>
+                                <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                    <Fields>
+                                        <Field Name="ClientId" />
+                                    </Fields>
+                                </DataConnection>
+                            </Case>
+                        </Switch>
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Title">
+                    <Value>
+                        <Object Name="TitleTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="IsPerson">
+                    <Value>
+                        <Object Name="ClientTypeRadioButtonBlock" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Discount">
+                    <Value>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="ClientIsLegalCondition" />
+                                </When>
+                                <Then>
+                                    <Object Name="LegalDiscountNumericBox"/>
+                                </Then>
+                            </Case>
+                            <Case>
+                                <When>
+                                    <Condition Name="DiscountIsConstantCondition" />
+                                </When>
+                                <Then>
+                                    <Object Name="DiscountNumericBox" />
+                                </Then>
+                            </Case>
+                            <Case>
+                                <Object Name="DiscountComboBox" />
+                            </Case>
+                        </Switch>
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Card">
+                    <Value>
+                        <Object Name="CardTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="INN">
+                    <Value>
+                        <Object Name="INNTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Prefix">
+                    <Value>
+                        <Object Name="PrefixTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="IsAccumulative">
+                    <Value>
+                        <Object Name="DiscountTypeRadioButtonBlock" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="VisitQuantity">
+                    <Value>
+                        <Object Name="VisitQuantityNumericBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="ContractDate">
+                    <Value>
+                        <Object Name="ContractDateTimePicker" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="ContractNumber">
+                    <Value>
+                        <Object Name="ContractNumberTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Contact">
+                    <Value>
+                        <Object Name="ContactTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Phone">
+                    <Value>
+                        <Object Name="PhoneTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Account">
+                    <Value>
+                        <Object Name="AccountTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Additional">
+                    <Value>
+                        <Object Name="AdditionalTextBox" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="ClientUpdateSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+
+        <DataConnection Name="ClientDeleteSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="ClientId">
+                    <Value>
+                        <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                            <Fields>
+                                <Field Name="ClientId" />
+                            </Fields>
+                        </DataConnection>
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="ClientDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+        </DataConnection>
+        
+        <DataConnection Name="ClientEmailPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="ClientEmailSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="EmailId" />
+                    <Field Name="Email" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="ClientId">
+                        <Value>
+                            <Switch>
+                                <Case>
+                                    <When>
+                                        <Condition Name="IsNewRecordCondition" />
+                                    </When>
+                                    <Then>
+                                        <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                            <Fields>
+                                                <Field Name="ClientId" />
+                                            </Fields>
+                                        </DataConnection>
+                                    </Then>
+                                </Case>
+                                <Case>
+                                    <Parameter Name="ClientId" />
+                                </Case>
+                            </Switch>
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+        
+        <DataConnection Name="EmailDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="EmailDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="EmailId">
+                    <Column Name="EmailId" />
+                </Parameter>
+                <Parameter NativeName="ClientId">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsNewRecordCondition" />
+                            </When>
+                            <Then>
+                                <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                    <Fields>
+                                        <Field Name="ClientId" />
+                                    </Fields>
+                                </DataConnection>
+                            </Then>
+                        </Case>
+                        <Case>
+                            <Parameter Name="ClientId" />
+                        </Case>
+                    </Switch>
+                </Parameter>
+                <Parameter NativeName="Email">
+                    <Column Name="Email" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="EmailInsertSqlQuery" Type="Insert" />
+                <SqlQuery Name="EmailUpdateSqlQuery" Type="Update" />
+                <SqlQuery Name="EmailDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+            <Refresh>
+                <DataConnection Name="ClientEmailPrimaryGetDataConnection" />
+            </Refresh>
+        </DataConnection>
+        
+        <DataConnection Name="SettingsPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="SettingsSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="Prefix" />
+                </Fields>
+            </SqlQuery>
+        </DataConnection>
+        
+
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="ClientIsLegalCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ClientTypeRadioButtonBlock" />
+                </Item>
+                <Item>False</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="DiscountIsConstantCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="DiscountTypeRadioButtonBlock" />
+                </Item>
+                <Item>False</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsNewRecordCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="ClientId" />
+                </Item>
+                <Item>-1</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsExistingRecordCondition" Type="NotEqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="ClientId" />
+                </Item>
+                <Item>-1</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CarsDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+        
+        <Condition Name="SelectedEmailIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="EmailDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+        
+        <Condition Name="TitleIsEmptyCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="TitleTextBox" />
+                </Item>
+                <Item />
+            </Items>
+        </Condition>
+
+        <Condition Name="CarsDatabaseTableCellDoubleClickCondition" Type="CellDoubleClickCondition" Assembly="Conditions">
+            <Table Name="CarsDatabaseTable" />
+        </Condition>
+
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Condition Name="TitleIsEmptyCondition" />
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Not>
+                    <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                </Not>
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="CurrentUserIsWashAdminCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <DataConnection SourceDataConnection="PermissionsPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CurrentUserIsInWashAdminGroup" />
+                        </Fields>
+                    </DataConnection>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ClientTypeChangedCondition" Type="ChangedCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="ClientTypeRadioButtonBlock" />
+                </Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="FormLoadedCondition" Type="FormLoadedCondition" Assembly="Conditions" />
+
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="CarSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CarsDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="CarAddItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCarItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="ClientId">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsNewRecordCondition" />
+                            </When>
+                            <Then>
+                                <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                    <Fields>
+                                        <Field Name="ClientId" />
+                                    </Fields>
+                                </DataConnection>
+                            </Then>
+                        </Case>
+                        <Case>
+                            <Parameter Name="ClientId" />
+                        </Case>
+                    </Switch>
+                </Parameter>
+                <Parameter Name="CarId">-1</Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="CarEditItemFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashCarItem.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="CarId">
+                    <Object Name="CarsDatabaseTable">
+                        <Property Name="SelectedRowCellValueByColumnName">
+                            <Parameters>
+                                <Parameter Name="ColumnName">CarId</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="CarDeleteValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="CarsDatabaseTable">
+                <Property Name="DeleteRowsByIndices">
+                    <Parameters>
+                        <Parameter Name="Value">
+                            <Structure Type="List">
+                                <Item>
+                                    <Object Name="CarsDatabaseTable">
+                                        <Property Name="SelectedRowIndex" />
+                                    </Object>
+                                </Item>
+                            </Structure>
+                        </Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+
+        <Command Name="ClientUpdateSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientUpdateSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="ClientDeleteSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientDeleteSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="PricePassFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashPricePass.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="ClientId">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsExistingRecordCondition" />
+                            </When>
+                            <Then>
+                                <Parameter Name="ClientId" />
+                            </Then>
+                        </Case>
+                        <Case>
+                            <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                <Fields>
+                                    <Field Name="ClientId" />
+                                </Fields>
+                            </DataConnection>
+                        </Case>
+                    </Switch>
+                </Parameter>
+                <Parameter Name="Title">
+                    <Object Name="TitleTextBox" />
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="PriceTruckFormShowCommand" Type="FormShowCommand" Assembly="Commands">
+            <Xml Type="Path">WashPriceTruck.xml</Xml>
+            <Show Type="Modal" />
+            <Parameters>
+                <Parameter Name="ClientId">
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsExistingRecordCondition" />
+                            </When>
+                            <Then>
+                                <Parameter Name="ClientId" />
+                            </Then>
+                        </Case>
+                        <Case>
+                            <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                                <Fields>
+                                    <Field Name="ClientId" />
+                                </Fields>
+                            </DataConnection>
+                        </Case>
+                    </Switch>
+                </Parameter>
+                <Parameter Name="Title">
+                    <Object Name="TitleTextBox" />
+                </Parameter>
+            </Parameters>
+        </Command>
+
+        <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="Updated">True</Parameter>
+        </Command>
+
+        <Command Name="ClientIdValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="ClientId">
+                <DataConnection SourceDataConnection="ClientInsertGetDataConnection">
+                    <Fields>
+                        <Field Name="ClientId" />
+                    </Fields>
+                </DataConnection>
+            </Parameter>
+        </Command>
+
+        <Command Name="ClientTypeValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="ClientType">
+                <Switch>
+                    <Case>
+                        <When>
+                            <Condition Name="ClientIsLegalCondition" />
+                        </When>
+                        <Then>legal</Then>
+                    </Case>
+                    <Case>phys</Case>
+                </Switch>
+            </Parameter>
+        </Command>
+
+        <Command Name="CarDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientCarPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="EmailDataConnectionRefreshCommand" Type="DataConnectionRefreshCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="ClientEmailPrimaryGetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rСохранить их перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands StopOnError="True">
+                <Command Name="ClientUpdateSaveCommand" />
+                <Command Name="CarSaveCommand" />
+                <Command Name="EmailSaveCommand"/>
+                <Command Name="UpdatedValueSetCommand" />
+                <Command Name="ClientTypeValueSetCommand" />
+                <Command Name="ClientIdValueSetCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+
+        <Command Name="EmptyMandatoryFieldsMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Предупреждение</Caption>
+            <Text>Одно или несколько полей не заполнены.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+
+        <Command Name="LegalHeightValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Form>
+                <Property Name="Height">875</Property>
+            </Form>
+        </Command>
+
+        <Command Name="PhysicalHeightValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Form>
+                <Property Name="Height">425</Property>
+            </Form>
+        </Command>
+        
+        <Command Name="EmailSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="EmailDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+        
+        <Command Name="EmailAddItemCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="EmailDatabaseTable" ObjectType="DatabaseTable">
+                <Property Name="AddRow">
+                    <Parameters>
+                        <Parameter Name="SelectAfterAdd">True</Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+        
+        <Command Name="EmailDeleteValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="EmailDatabaseTable">
+                <Property Name="DeleteRowsByIndices">
+                    <Parameters>
+                        <Parameter Name="Value">
+                            <Structure Type="List">
+                                <Item>
+                                    <Object Name="EmailDatabaseTable">
+                                        <Property Name="SelectedRowIndex" />
+                                    </Object>
+                                </Item>
+                            </Structure>
+                        </Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveOnCloseMessageBoxCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <If>
+                    <When>
+                        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                    </Then>
+                    <Else>
+                        <Command Name="SaveSequentialCommand" />
+                    </Else>
+                </If>
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                    <And>
+                        <Condition Name="FormClosingCondition" />
+                        <Not>
+                            <Condition Name="FormChangedCondition" />
+                        </Not>
+                    </And>
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="ClientDeleteSaveCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="CarsDatabaseTableCellDoubleClickCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="CarEditItemFormShowCommand" />
+                <Command Name="CarDataConnectionRefreshCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="ClientTypeChangedCondition" />
+            </ConditionExpression>
+            <Commands>
+                <If>
+                    <When>
+                        <Condition Name="ClientIsLegalCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="LegalHeightValueSetCommand" />
+                    </Then>
+                    <Else>
+                        <Command Name="PhysicalHeightValueSetCommand" />
+                    </Else>
+                </If>
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormLoadedCondition" />
+            </ConditionExpression>
+            <Commands>
+                <If>
+                    <When>
+                        <Condition Name="ClientIsLegalCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="LegalHeightValueSetCommand" />
+                    </Then>
+                </If>
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <AutoScroll>False</AutoScroll>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Клиент</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+            <AutoScroll>False</AutoScroll>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>80</Item>
+                    </Minus>
+                </Formula>
+            </Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <AutoScroll>False</AutoScroll>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="ClientGroupBox" Type="GroupBox" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>5</Left>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Form>
+                                    <Property Name="Width" />
+                                </Form>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <Height>160</Height>
+                <Text>Общие сведения</Text>
+
+                <MyObject Name="ClientTypeLabel" Type="Label" Assembly="BaseControls">
+                    <Top>20</Top>
+                    <Left>5</Left>
+                    <Height>25</Height>
+                    <Width>160</Width>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Тип:</Text>
+                </MyObject>
+
+                <MyObject Name="ClientTypeRadioButtonBlock" Type="RadioButtonBlock" Assembly="BaseControls">
+                    <Top>20</Top>
+                    <Left>170</Left>
+                    <Height>20</Height>
+                    <Width>260</Width>
+                    <TabIndex>7</TabIndex>
+                    <Options>
+                        <Option Name="PhysicalRadioButton">
+                            <Top>0</Top>
+                            <Left>0</Left>
+                            <Width>130</Width>
+                            <Text>Физ. лицо</Text>
+                            <Value>True</Value>
+                        </Option>
+                        <Option Name="LegalRadioButton">
+                            <Top>0</Top>
+                            <Left>130</Left>
+                            <Width>130</Width>
+                            <Text>Юр. лицо</Text>
+                            <Value>False</Value>
+                        </Option>
+                    </Options>
+                    <Value>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="IsNewRecordCondition" />
+                                </When>
+                                <Then>True</Then>
+                            </Case>
+                            <Case>
+                                <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                    <Fields>
+                                        <Field Name="IsPerson" />
+                                    </Fields>
+                                </DataConnection>
+                            </Case>
+                        </Switch>
+                    </Value>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                </MyObject>
+
+                <MyObject Name="TitleLabel" Type="Label" Assembly="BaseControls">
+                    <Top>45</Top>
+                    <Left>5</Left>
+                    <Height>25</Height>
+                    <Width>160</Width>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="ClientIsLegalCondition" />
+                                </When>
+                                <Then>Наименование:</Then>
+                            </Case>
+                            <Case>Фамилия И.О.:</Case>
+                        </Switch>
+                    </Text>
+                </MyObject>
+
+                <MyObject Name="TitleTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>45</Top>
+                    <Left>170</Left>
+                    <Height>25</Height>
+                    <Width>150</Width>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Title" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                    <Enabled>
+                        <Not>
+                            <And>
+                                <Condition Name="ClientIsLegalCondition" />
+                                <Condition Name="CurrentUserIsWashAdminCondition" />
+                            </And>
+                        </Not>
+                    </Enabled>
+                </MyObject>
+
+                <MyObject Name="DiscountPanel" Type="Panel" Assembly="BaseControls">
+                    <Top>70</Top>
+                    <Left>5</Left>
+                    <Width>
+                        <Formula>
+                            <Minus DataType="DoubleDataType">
+                                <Item>
+                                    <Object Name="ClientGroupBox">
+                                        <Property Name="Width" />
+                                    </Object>
+                                </Item>
+                                <Item>10</Item>
+                            </Minus>
+                        </Formula>
+                    </Width>
+                    <AutoScroll>False</AutoScroll>
+                    <Height>85</Height>
+                    <Visible>
+                        <Not>
+                            <Condition Name="ClientIsLegalCondition" />
+                        </Not>
+                    </Visible>
+
+                    <MyObject Name="DiscountTypeLabel" Type="Label" Assembly="BaseControls">
+                        <Top>0</Top>
+                        <Left>0</Left>
+                        <Height>25</Height>
+                        <Width>160</Width>
+                        <TextAlign>MiddleRight</TextAlign>
+                        <Text>Тип скидки:</Text>
+                    </MyObject>
+
+                    <MyObject Name="DiscountTypeRadioButtonBlock" Type="RadioButtonBlock" Assembly="BaseControls">
+                        <Top>0</Top>
+                        <Left>165</Left>
+                        <Height>20</Height>
+                        <Width>260</Width>
+                        <TabIndex>7</TabIndex>
+                        <Options>
+                            <Option Name="AccumulativeRadioButton">
+                                <Top>0</Top>
+                                <Left>0</Left>
+                                <Width>130</Width>
+                                <Text>Накопительная</Text>
+                                <Value>True</Value>
+                            </Option>
+                            <Option Name="ConstantRadioButton">
+                                <Top>0</Top>
+                                <Left>130</Left>
+                                <Width>130</Width>
+                                <Text>Фиксированная</Text>
+                                <Value>False</Value>
+                            </Option>
+                        </Options>
+                        <Value>
+                            <Switch>
+                                <Case>
+                                    <When>
+                                        <Condition Name="IsNewRecordCondition" />
+                                    </When>
+                                    <Then>True</Then>
+                                </Case>
+                                <Case>
+                                    <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="IsAccumulative" />
+                                        </Fields>
+                                    </DataConnection>
+                                </Case>
+                            </Switch>
+                        </Value>
+                    </MyObject>
+
+                    <MyObject Name="DiscountLabel" Type="Label" Assembly="BaseControls">
+                        <Top>25</Top>
+                        <Left>0</Left>
+                        <Height>25</Height>
+                        <Width>160</Width>
+                        <TextAlign>MiddleRight</TextAlign>
+                        <Text>Скидка (%):</Text>
+                    </MyObject>
+
+                    <MyObject Name="DiscountComboBox" Type="ComboBox" Assembly="BaseControls">
+                        <Top>25</Top>
+                        <Left>165</Left>
+                        <Height>25</Height>
+                        <Width>75</Width>
+                        <NullValue Show="True" Title="0" />
+                        <ValueList>
+                            <Structure Type="Table">
+                                <Row>
+                                    <Item>5</Item>
+                                </Row>
+                                <Row>
+                                    <Item>7</Item>
+                                </Row>
+                                <Row>
+                                    <Item>10</Item>
+                                </Row>
+                            </Structure>
+                        </ValueList>
+                        <Value>
+                            <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                <Fields>
+                                    <Field Name="Discount" />
+                                </Fields>
+                            </DataConnection>
+                        </Value>
+                        <Visible>
+                            <Not>
+                                <Condition Name="DiscountIsConstantCondition" />
+                            </Not>
+                        </Visible>
+                    </MyObject>
+
+                    <MyObject Name="DiscountNumericBox" Type="NumericBox" Assembly="BaseControls">
+                        <Top>25</Top>
+                        <Left>165</Left>
+                        <Height>25</Height>
+                        <Width>75</Width>
+                        <Increment>1</Increment>
+                        <Maximum>100</Maximum>
+                        <Minimum>0</Minimum>
+                        <Value>
+                            <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                <Fields>
+                                    <Field Name="Discount" />
+                                </Fields>
+                            </DataConnection>
+                        </Value>
+                        <Visible>
+                            <Condition Name="DiscountIsConstantCondition" />
+                        </Visible>
+                    </MyObject>
+
+                    <MyObject Name="CardLabel" Type="Label" Assembly="BaseControls">
+                        <Top>25</Top>
+                        <Left>245</Left>
+                        <Height>25</Height>
+                        <Width>80</Width>
+                        <TextAlign>MiddleRight</TextAlign>
+                        <Text>№ карты:</Text>
+                    </MyObject>
+
+                    <MyObject Name="CardTextBox" Type="TextBox" Assembly="BaseControls">
+                        <Top>25</Top>
+                        <Left>330</Left>
+                        <Height>25</Height>
+                        <Width>80</Width>
+                        <Text>
+                            <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                <Fields>
+                                    <Field Name="Card" />
+                                </Fields>
+                            </DataConnection>
+                        </Text>
+                        <Enabled>
+                            <Not>
+                                <Condition Name="DiscountIsConstantCondition" />
+                            </Not>
+                        </Enabled>
+                    </MyObject>
+
+                    <MyObject Name="VisitQuantityLabel" Type="Label" Assembly="BaseControls">
+                        <Top>55</Top>
+                        <Left>0</Left>
+                        <Height>25</Height>
+                        <Width>160</Width>
+                        <TextAlign>MiddleRight</TextAlign>
+                        <Text>Посещений по скидке:</Text>
+                    </MyObject>
+
+                    <MyObject Name="VisitQuantityNumericBox" Type="NumericBox" Assembly="BaseControls">
+                        <Top>55</Top>
+                        <Left>165</Left>
+                        <Height>25</Height>
+                        <Width>75</Width>
+                        <Minimum>0</Minimum>
+                        <Maximum>9999999</Maximum>
+                        <Value>
+                            <Switch>
+                                <Case>
+                                    <When>
+                                        <Or>
+                                            <Condition Name="IsNewRecordCondition" />
+                                        </Or>
+                                    </When>
+                                    <Then>0</Then>
+                                </Case>
+                                <Case>
+                                    <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="VisitQuantity" />
+                                        </Fields>
+                                    </DataConnection>
+                                </Case>
+                            </Switch>
+                        </Value>
+                        <Enabled>
+                            <Not>
+                                <Condition Name="DiscountIsConstantCondition" />
+                            </Not>
+                        </Enabled>
+                    </MyObject>
+                </MyObject>
+
+                <MyObject Name="PriceListsPanel" Type="Panel" Assembly="BaseControls">
+                    <Top>70</Top>
+                    <Left>5</Left>
+                    <Width>
+                        <Formula>
+                            <Minus DataType="DoubleDataType">
+                                <Item>
+                                    <Object Name="ClientGroupBox">
+                                        <Property Name="Width" />
+                                    </Object>
+                                </Item>
+                                <Item>10</Item>
+                            </Minus>
+                        </Formula>
+                    </Width>
+                    <Height>75</Height>
+                    <AutoScroll>False</AutoScroll>
+                    <Visible>
+                        <Condition Name="ClientIsLegalCondition" />
+                    </Visible>
+
+                    <MyObject Name="PriceListsLabel" Type="Label" Assembly="BaseControls">
+                        <Top>0</Top>
+                        <Left>0</Left>
+                        <Width>160</Width>
+                        <Height>25</Height>
+                        <TextAlign>MiddleRight</TextAlign>
+                        <Text>Прайсы организации:</Text>
+                    </MyObject>
+
+                    <MyObject Name="PricePassButton" Type="Button" Assembly="BaseControls">
+                        <Top>5</Top>
+                        <Left>165</Left>
+                        <Height>25</Height>
+                        <Width>130</Width>
+                        <Text>Легковой</Text>
+                        <Commands StopOnError="True">
+                            <Command Name="PricePassFormShowCommand" />
+                        </Commands>
+                        <Enabled>
+                            <Not>
+                                <Condition Name="CurrentUserIsWashAdminCondition" />
+                            </Not>
+                        </Enabled>
+                    </MyObject>
+
+                    <MyObject Name="PriceTruckButton" Type="Button" Assembly="BaseControls">
+                        <Top>35</Top>
+                        <Left>165</Left>
+                        <Height>25</Height>
+                        <Width>130</Width>
+                        <Text>Грузовой</Text>
+                        <Commands StopOnError="True">
+                            <Command Name="PriceTruckFormShowCommand" />
+                        </Commands>
+                        <Enabled>
+                            <Not>
+                                <Condition Name="CurrentUserIsWashAdminCondition" />
+                            </Not>
+                        </Enabled>
+                    </MyObject>
+
+                </MyObject>
+            </MyObject>
+
+            <MyObject Name="ExtendedProfileGroupBox" Type="GroupBox" Assembly="BaseControls">
+                <Top>
+                    <Formula>
+                        <Plus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ClientGroupBox" ObjectType="GroupBox">
+                                    <Property Name="Top" />
+                                </Object>
+                            </Item>
+                            <Item>
+                                <Object Name="ClientGroupBox" ObjectType="GroupBox">
+                                    <Property Name="Height" />
+                                </Object>
+                            </Item>
+                        </Plus>
+                    </Formula>
+                </Top>
+                <Left>5</Left>
+                <Height>450</Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Form>
+                                    <Property Name="Width" />
+                                </Form>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <Visible>
+                    <Condition Name="ClientIsLegalCondition" />
+                </Visible>
+                <Text>Расширенный профайл</Text>
+
+                <MyObject Name="ContractDateLabel" Type="Label" Assembly="BaseControls">
+                    <Top>20</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Дата договора:</Text>
+                </MyObject>
+
+                <MyObject Name="ContractDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                    <Top>20</Top>
+                    <Left>170</Left>
+                    <Height>25</Height>
+                    <Width>150</Width>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Value>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="ContractDate" />
+                            </Fields>
+                        </DataConnection>
+                    </Value>
+                </MyObject>
+
+                <MyObject Name="ContractNumberLabel" Type="Label" Assembly="BaseControls">
+                    <Top>50</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Номер договора:</Text>
+                </MyObject>
+
+                <MyObject Name="ContractNumberTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>50</Top>
+                    <Left>170</Left>
+                    <Height>25</Height>
+                    <Width>100</Width>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="ContractNumber" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+                
+                <MyObject Name="INNLabel" Type="Label" Assembly="BaseControls">
+                    <Top>80</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>ИНН:</Text>
+                </MyObject>
+                
+                <MyObject Name="INNTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>80</Top>
+                    <Left>170</Left>
+                    <Width>265</Width>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="INN" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+                
+                <MyObject Name="DiscontLabel" Type="Label" Assembly="BaseControls">
+                    <Top>110</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Скидка:</Text>
+                </MyObject>
+                
+                <MyObject Name="LegalDiscountNumericBox" Type="NumericBox" Assembly="BaseControls">
+                    <Top>110</Top>
+                    <Left>170</Left>
+                    <Width>265</Width>
+                    <Maximum>100</Maximum>
+                    <Minimum>0</Minimum>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Value>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="IsNewRecordCondition"/>
+                                </When>
+                                <Then>0</Then>
+                            </Case>
+                            <Case>
+                                <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                    <Fields>
+                                        <Field Name="Discount" />
+                                    </Fields>
+                                </DataConnection>
+                            </Case>
+                        </Switch>
+                    </Value>
+                </MyObject>
+                
+                <MyObject Name="PrefixLabel" Type="Label" Assembly="BaseControls">
+                    <Top>140</Top>
+                    <Left>5</Left>
+                    <Width>170</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleLeft</TextAlign>
+                    <Text>Префикс номера счета:</Text>
+                    <Hint>Например, для клиента с префиксом "099" номер счета (за апрель 2014 года) будет иметь вид "С099/14/04"</Hint>
+                </MyObject>
+                
+                <MyObject Name="PrefixTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>140</Top>
+                    <Left>170</Left>
+                    <Width>265</Width>
+                    <MaxLength>5</MaxLength>
+                    <AllowedSymbols>1234567890</AllowedSymbols>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <Switch>
+                            <Case>
+                                <When>
+                                    <Condition Name="IsNewRecordCondition"/>
+                                </When>
+                                <Then>
+                                    <DataConnection SourceDataConnection="SettingsPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="Prefix"/>
+                                        </Fields>
+                                    </DataConnection>
+                                </Then>
+                            </Case>
+                            <Case>
+                                <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                                    <Fields>
+                                        <Field Name="Prefix" />
+                                    </Fields>
+                                </DataConnection>
+                            </Case>
+                        </Switch>
+                    </Text>
+                    <Hint>Например, для клиента с префиксом "099" номер счета (за апрель 2014 года) будет иметь вид "С099/14/04"</Hint>
+                </MyObject>
+                
+                <MyObject Name="ContactLabel" Type="Label" Assembly="BaseControls">
+                    <Top>170</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Контакты:</Text>
+                </MyObject>
+
+                <MyObject Name="ContactTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>170</Top>
+                    <Left>170</Left>
+                    <Height>45</Height>
+                    <Width>265</Width>
+                    <Multiline>True</Multiline>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Contact" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+
+                <MyObject Name="PhoneLabel" Type="Label" Assembly="BaseControls">
+                    <Top>220</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Телефоны:</Text>
+                </MyObject>
+
+                <MyObject Name="PhoneTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>220</Top>
+                    <Left>170</Left>
+                    <Height>45</Height>
+                    <Width>265</Width>
+                    <Multiline>True</Multiline>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Phone" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+
+                <MyObject Name="AccountLabel" Type="Label" Assembly="BaseControls">
+                    <Top>270</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Передача счетов:</Text>
+                </MyObject>
+
+                <MyObject Name="AccountTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>270</Top>
+                    <Left>170</Left>
+                    <Height>25</Height>
+                    <Width>265</Width>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Account" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+
+                <MyObject Name="AdditionalLabel" Type="Label" Assembly="BaseControls">
+                    <Top>300</Top>
+                    <Left>5</Left>
+                    <Width>160</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleRight</TextAlign>
+                    <Text>Доп. информация:</Text>
+                </MyObject>
+
+                <MyObject Name="AdditionalTextBox" Type="TextBox" Assembly="BaseControls">
+                    <Top>300</Top>
+                    <Left>170</Left>
+                    <Height>45</Height>
+                    <Width>265</Width>
+                    <Multiline>True</Multiline>
+                    <Enabled>
+                        <Not>
+                            <Condition Name="CurrentUserIsWashAdminCondition" />
+                        </Not>
+                    </Enabled>
+                    <Text>
+                        <DataConnection SourceDataConnection="ClientItemPrimaryGetDataConnection">
+                            <Fields>
+                                <Field Name="Additional" />
+                            </Fields>
+                        </DataConnection>
+                    </Text>
+                </MyObject>
+                
+                <MyObject Name="EmailDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                    <Top>350</Top>
+                    <Left>5</Left>
+                    <Height>90</Height>
+                    <Width>
+                        <Formula>
+                            <Minus DataType="DoubleDataType">
+                                <Item>
+                                    <Object Name="ContentPanel">
+                                        <Property Name="Width" />
+                                    </Object>
+                                </Item>
+                                <Item>55</Item>
+                            </Minus>
+                        </Formula>
+                    </Width>
+                    <ColumnHeadersHeight Value="25" />
+                    <AllowInsert>False</AllowInsert>
+                    <AllowUpdate>True</AllowUpdate>
+                    <AllowDelete>True</AllowDelete>
+                    <AutoSizeRowsMode Value="AllCells" />
+                    <AutoSizeColumnsMode Value="Fill" />
+                    <RowHeadersVisible Value="False" />
+                    <AllowResizeColumns Value="False" />
+                    <AllowResizeRows Value="False" />
+                    <SourceDataConnection Name="ClientEmailPrimaryGetDataConnection" />
+                    <Columns>
+                        <Column Name="EmailId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Visible>False</Visible>
+                        </Column>
+                        <Column Name="Email" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Title>Email</Title>
+                            <Width>100</Width>
+                            <AllowSort Value="False" />
+                        </Column>
+                    </Columns>
+                </MyObject>
+                
+                <MyObject Name="AddEmailButton" Type="Button" Assembly="BaseControls">
+                    <Top>350</Top>
+                    <Left>405</Left>
+                    <Width>30</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleCenter</TextAlign>
+                    <Text>+</Text>
+                    <Commands >
+                        <Command Name="EmailAddItemCommand" />
+                    </Commands>
+                </MyObject>
+                
+                <MyObject Name="DeleteEmailButton" Type="Button" Assembly="BaseControls">
+                    <Top>380</Top>
+                    <Left>405</Left>
+                    <Width>30</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleCenter</TextAlign>
+                    <Text>–</Text>
+                    <Commands >
+                        <Command Name="EmailDeleteValueSetCommand" />
+                    </Commands>
+                    <Enabled>
+                        <Condition Name="SelectedEmailIndex0GreaterCondition" />
+                    </Enabled>
+                </MyObject>
+
+            </MyObject>
+
+            <MyObject Name="ClientCarGroupBox" Type="GroupBox" Assembly="BaseControls">
+                <Top>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="FooterSeparatePanel" ObjectType="Panel">
+                                    <Property Name="Top" />
+                                </Object>
+                            </Item>
+                            <Item>225</Item>
+                        </Minus>
+                    </Formula>
+                </Top>
+                <Left>5</Left>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Form>
+                                    <Property Name="Width" />
+                                </Form>
+                            </Item>
+                            <Item>10</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <Height>180</Height>
+                <Text>Автомобили</Text>
+
+                <MyObject Name="CarsDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                    <Top>20</Top>
+                    <Left>5</Left>
+                    <Height>150</Height>
+                    <Width>
+                        <Formula>
+                            <Minus DataType="DoubleDataType">
+                                <Item>
+                                    <Object Name="ContentPanel">
+                                        <Property Name="Width" />
+                                    </Object>
+                                </Item>
+                                <Item>55</Item>
+                            </Minus>
+                        </Formula>
+                    </Width>
+                    <ColumnHeadersHeight Value="25" />
+                    <AllowInsert>False</AllowInsert>
+                    <AllowUpdate>False</AllowUpdate>
+                    <AllowDelete>False</AllowDelete>
+                    <AutoSizeRowsMode Value="AllCells" />
+                    <AutoSizeColumnsMode Value="Fill" />
+                    <RowHeadersVisible Value="False" />
+                    <AllowResizeColumns Value="False" />
+                    <AllowResizeRows Value="False" />
+                    <SourceDataConnection Name="ClientCarPrimaryGetDataConnection" />
+                    <Columns>
+                        <Column Name="CarId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Visible>False</Visible>
+                        </Column>
+                        <Column Name="Vendor" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Title>Марка</Title>
+                            <Width>100</Width>
+                            <AllowSort Value="False" />
+                        </Column>
+                        <Column Name="Model" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Title>Модель</Title>
+                            <Width>100</Width>
+                            <AllowSort Value="False" />
+                        </Column>
+                        <Column Name="CarNumber" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                            <Title>Рег. номер</Title>
+                            <Width>66</Width>
+                            <AllowSort Value="False" />
+                        </Column>
+                    </Columns>
+                </MyObject>
+
+                <MyObject Name="AddCarButton" Type="Button" Assembly="BaseControls">
+                    <Top>20</Top>
+                    <Left>405</Left>
+                    <Width>30</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleCenter</TextAlign>
+                    <Text>+</Text>
+                    <Commands StopOnError="True">
+                        <Command Name="CarAddItemFormShowCommand" />
+                        <Command Name="CarDataConnectionRefreshCommand" />
+                    </Commands>
+                </MyObject>
+
+                <MyObject Name="DeleteCarButton" Type="Button" Assembly="BaseControls">
+                    <Top>50</Top>
+                    <Left>405</Left>
+                    <Width>30</Width>
+                    <Height>25</Height>
+                    <TextAlign>MiddleCenter</TextAlign>
+                    <Text>–</Text>
+                    <Commands StopOnError="True">
+                        <Command Name="CarDeleteValueSetCommand" />
+                    </Commands>
+                    <Enabled>
+                        <Condition Name="SelectedIndex0GreaterCondition" />
+                    </Enabled>
+                </MyObject>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>40</Item>
+                    </Minus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <AutoScroll>False</AutoScroll>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>36</Item>
+                    </Minus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <AutoScroll>False</AutoScroll>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>245</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="ClientUpdateSaveCommand" />
+                    <Command Name="CarSaveCommand" />
+                    <Command Name="EmailSaveCommand"/>
+                    <Command Name="UpdatedValueSetCommand" />
+                    <Command Name="ClientTypeValueSetCommand" />
+                    <Command Name="ClientIdValueSetCommand" />
+                    <Command Name="FormCloseCommand" />
+                </Commands>
+                <Enabled>
+                    <Not>
+                        <Condition Name="TitleIsEmptyCondition" />
+                    </Not>
+                </Enabled>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

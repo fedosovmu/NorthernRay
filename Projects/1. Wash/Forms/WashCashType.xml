@@ -1,0 +1,544 @@
+<?xml version="1.0"?>
+<Form Name="WashCashTypeForm" Title="Северный луч. Типы операций по кассе" Width="300" Height="320" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True">
+
+    <Parameters>
+        <Parameter Name="Updated">False</Parameter>
+    </Parameters>
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CashTypePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashTypeSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashTypeId" />
+                    <Field Name="Title" />
+                    <Field Name="Type" />
+                    <Field Name="Deleted" />
+                    <Field Name="AllowDelete" />
+                </Fields>
+                <Filter>
+                    <Field NativeName="Deleted" />
+                    <Value>False</Value>
+                </Filter>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CashTypeDatabaseTableSetDataConnection" Type="DatabaseTableSetDataConnection" Assembly="ComplexDataConnections">
+            <Workflow Name="Wash" />
+            <DatabaseTable Name="CashTypesDatabaseTable" />
+            <Parameters>
+                <Parameter NativeName="CashTypeId">
+                    <Column Name="CashTypeId" />
+                </Parameter>
+                <Parameter NativeName="Title">
+                    <Column Name="Title" />
+                </Parameter>
+                <Parameter NativeName="Type">
+                    <Column Name="Type" />
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CashTypeInsertSqlQuery" Type="Insert" />
+                <SqlQuery Name="CashTypeUpdateSqlQuery" Type="Update" />
+                <SqlQuery Name="CashTypeFakeDeleteSqlQuery" Type="Delete" />
+            </SqlQueries>
+        </DataConnection>
+
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Name="SelectedIndex0GreaterCondition" Type="GreaterCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CashTypesDatabaseTable">
+                        <Property Name="SelectedRowIndex" />
+                    </Object>
+                </Item>
+                <Item>-1</Item>
+            </Items>
+            <DataType Type="IntegerDataType" />
+        </Condition>
+
+        <Condition Name="FormChangedCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Form>
+                        <Property Name="FormChanged" />
+                    </Form>
+                </Item>
+                <Item>True</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="SaveOnCloseMessageBoxCommand" />
+                </Item>
+                <Item>No</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="ConfirmDeleteMessageBoxCommandYesEqualCondition" Type="EqualCondition" Assembly="Conditions">
+            <AlwaysChange Value="True" />
+            <Items>
+                <Item>
+                    <Command Name="ConfirmDeleteMessageBoxCommand" />
+                </Item>
+                <Item>Yes</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="CashTypesDatabaseTableColumnTitleIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CashTypesDatabaseTable">
+                        <Property Name="Column">
+                            <Parameters>
+                                <Parameter Name="ColumnName">Title</Parameter>
+                            </Parameters>
+                        </Property>
+                    </Object>
+                </Item>
+            </Items>
+            <Satisfy MinCount="1" />
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="CashTypesDatabaseTableColumnTitleIsNullCondition" />
+                </Or>
+            </ConditionExpression>
+        </Condition>
+
+        <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" Type="NestedCondition" Assembly="Conditions">
+            <ConditionExpression>
+                <Not>
+                    <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+                </Not>
+            </ConditionExpression>
+        </Condition>
+
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="CashTypeSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CashTypeDatabaseTableSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="AddRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="CashTypesDatabaseTable">
+                <Property Name="AddRow">
+                    <Parameters>
+                        <Parameter Name="ColumnNames">
+                            <Structure Type="List">
+                                <Item>Type</Item>
+                                <Item>AllowDelete</Item>
+                            </Structure>
+                        </Parameter>
+                        <Parameter Name="Values">
+                            <Structure Type="List">
+                                <Item>
+                                    <Object Name="CashTypeComboBox" />
+                                </Item>
+                                <Item>True</Item>
+                            </Structure>
+                        </Parameter>
+                        <Parameter Name="SelectAfterAdd">True</Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+
+        <Command Name="DeleteRowValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Object Name="CashTypesDatabaseTable">
+                <Property Name="DeleteRowsByIndices">
+                    <Parameters>
+                        <Parameter Name="Value">
+                            <Structure Type="List">
+                                <Item>
+                                    <Object Name="CashTypesDatabaseTable">
+                                        <Property Name="SelectedRowIndex" />
+                                    </Object>
+                                </Item>
+                            </Structure>
+                        </Parameter>
+                    </Parameters>
+                </Property>
+            </Object>
+        </Command>
+
+        <Command Name="SaveOnCloseMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Форма содержит несохраненные изменения.\rСохранить их перед закрытием?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNoCancel" />
+        </Command>
+
+        <Command Name="ConfirmDeleteMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Сохранение</Caption>
+            <Text>Вы действительно хотите удалить запись?</Text>
+            <Icon Type="Question" />
+            <Buttons Type="YesNo" />
+        </Command>
+
+        <Command Name="ErrorOnDeleteMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Caption>Предупреждение</Caption>
+            <Text>Невозможно удалить тип, который является системным.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+
+        <Command Name="EmptyMandatoryFieldsMessageBoxCommand" Type="MessageBoxCommand" Assembly="Commands">
+            <Condition Name="MandatoryFieldsAreEmptyNestedCondition" />
+            <Caption>Предупреждение</Caption>
+            <Text>Одно или несколько полей не заполнены.</Text>
+            <Icon Type="Warning" />
+            <Buttons Type="Ok" />
+        </Command>
+
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Condition Name="MandatoryFieldsAreNotEmptyNestedCondition" />
+            <Commands StopOnError="True">
+                <Command Name="CashTypeSaveCommand" />
+                <Command Name="UpdatedValueSetCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+
+        <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="Updated">True</Parameter>
+        </Command>
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <And>
+                    <Condition Name="FormClosingCondition" />
+                    <Condition Name="FormChangedCondition" />
+                </And>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="SaveOnCloseMessageBoxCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="SaveOnCloseMessageBoxCommandYesEqualCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                <Command Name="SaveSequentialCommand" />
+            </Commands>
+        </Execution>
+
+        <Execution>
+            <ConditionExpression>
+                <Or>
+                    <Condition Name="SaveOnCloseMessageBoxCommandNoEqualCondition" />
+                    <And>
+                        <Condition Name="FormClosingCondition" />
+                        <Not>
+                            <Condition Name="FormChangedCondition" />
+                        </Not>
+                    </And>
+                </Or>
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>Типы операций по кассе</Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>240</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="Label" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Width>120</Width>
+                <Text>Тип операций:</Text>
+            </MyObject>
+
+            <MyObject Name="CashTypeComboBox" Type="ComboBox" Assembly="BaseControls" ChangeForm="False">
+                <Top>5</Top>
+                <Left>130</Left>
+                <Height>25</Height>
+                <Width>150</Width>
+                <ValueList>
+                    <Structure Type="Table">
+                        <Row>
+                            <Item>deposit</Item>
+                            <Item>Внесения в кассу</Item>
+                        </Row>
+                        <Row>
+                            <Item>withdrawal</Item>
+                            <Item>Снятия из кассы</Item>
+                        </Row>
+                    </Structure>
+                </ValueList>
+                <Value>withdrawal</Value>
+            </MyObject>
+
+            <MyObject Name="CashTypesDatabaseTable" Type="DatabaseTable" Assembly="ComplexControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Height>200</Height>
+                <Width>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>45</Item>
+                        </Minus>
+                    </Formula>
+                </Width>
+                <ColumnHeadersHeight Value="25" />
+                <AllowInsert>False</AllowInsert>
+                <AllowDelete>False</AllowDelete>
+                <AutoSizeColumnsMode Value="Fill" />
+                <RowHeadersVisible Value="False" />
+                <AllowResizeColumns Value="False" />
+                <AllowResizeRows Value="False" />
+                <SourceDataConnection Name="CashTypePrimaryGetDataConnection" />
+                <Columns>
+                    <Column Name="CashTypeId" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                    <Column Name="Type" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                        <Filter AutoFill="False">
+                            <Object Name="CashTypeComboBox" />
+                        </Filter>
+                    </Column>
+                    <Column Name="Title" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Title> </Title>
+                        <AllowSort Value="False" />
+                    </Column>
+                    <Column Name="AllowDelete" Type="DatabaseTableColumnTextBox" Assembly="DatabaseTableColumnControls">
+                        <Visible>False</Visible>
+                    </Column>
+                </Columns>
+            </MyObject>
+
+            <MyObject Name="AddButton" Type="Button" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>35</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>30</Width>
+                <Height>25</Height>
+                <Text>+</Text>
+                <Commands StopOnError="True">
+                    <Command Name="AddRowValueSetCommand" />
+                </Commands>
+            </MyObject>
+
+            <MyObject Name="DeleteButton" Type="Button" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>
+                    <Formula>
+                        <Minus DataType="DoubleDataType">
+                            <Item>
+                                <Object Name="ContentPanel">
+                                    <Property Name="Width" />
+                                </Object>
+                            </Item>
+                            <Item>35</Item>
+                        </Minus>
+                    </Formula>
+                </Left>
+                <Width>30</Width>
+                <Height>25</Height>
+                <Text>–</Text>
+                <Commands StopOnError="True">
+                    <If>
+                        <When>
+                            <Object Name="CashTypesDatabaseTable" ObjectType="DatabaseTable">
+                                <Property Name="SelectedRowCellValueByColumnName">
+                                    <Parameters>
+                                        <Parameter Name="ColumnName">AllowDelete</Parameter>
+                                    </Parameters>
+                                </Property>
+                            </Object>
+                        </When>
+                        <Then>
+                            <Command Name="ConfirmDeleteMessageBoxCommand" />
+                        </Then>
+                        <Else>
+                            <Command Name="ErrorOnDeleteMessageBoxCommand" />
+                        </Else>
+                    </If>
+                    <If>
+                        <When>
+                            <Condition Name="ConfirmDeleteMessageBoxCommandYesEqualCondition" />
+                        </When>
+                        <Then>
+                            <Command Name="DeleteRowValueSetCommand" />
+                        </Then>
+                    </If>
+                </Commands>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>280</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>284</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>95</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Commands StopOnError="True">
+                    <Command Name="EmptyMandatoryFieldsMessageBoxCommand" />
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

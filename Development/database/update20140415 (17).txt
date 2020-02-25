@@ -1,0 +1,72 @@
+﻿ALTER TABLE wash.client ADD COLUMN inn character varying;
+ALTER TABLE wash.client ADD COLUMN prefix character varying;
+
+CREATE SEQUENCE wash.email_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+CREATE TABLE wash.email
+(
+  email_id integer NOT NULL DEFAULT nextval('wash.email_id_seq'::regclass),
+  email character varying,
+  client_id integer NOT NULL,
+  CONSTRAINT pk_email_id PRIMARY KEY (email_id),
+  CONSTRAINT fk_email_client_id FOREIGN KEY (client_id)
+      REFERENCES wash.client (client_id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+CREATE SEQUENCE wash.email_send_setting_id_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+
+CREATE TABLE wash.email_send_setting
+(
+  email_send_setting_id smallint NOT NULL DEFAULT nextval('wash.email_send_setting_id_seq'::regclass),
+  server_address character varying NOT NULL,
+  email_address character varying NOT NULL,
+  email_password character varying NOT NULL,  
+  subject character varying,
+  "text" character varying,
+  CONSTRAINT pk_email_send_setting_id PRIMARY KEY (email_send_setting_id)
+)
+WITH (
+  OIDS=FALSE
+);
+
+INSERT INTO wash.email_send_setting
+(server_address,email_address,email_password)
+VALUES(' ',' ',' ');
+
+ALTER TABLE wash.email_send_setting ADD COLUMN server_port character varying;
+
+
+ALTER TABLE wash.client ADD COLUMN confirm_discount boolean;
+ALTER TABLE wash.client ADD COLUMN choise boolean;
+ALTER TABLE wash.client ADD COLUMN report_date timestamp without time zone;
+
+ALTER TABLE wash.email_send_setting ADD COLUMN "header" character varying;
+
+UPDATE
+wash.email_send_setting
+SET 
+	server_address = 'smtp.yandex.ru',
+	email_address = author_email_address,
+	subject = E'Счёт и отчёт',
+	"text" =  E'Доброго времени суток! Это автоматическое письмо, отвечать на него не нужно. Счёт на оплату и подробный отчёт находятся во вложении.',
+	email_password = author_email_password,
+	server_port = '25',
+	"header" = E'Автомоечный комплекс СЕВЕРНЫЙ ЛУЧ'
+FROM wash.email_setting WHERE email_setting_name='ShiftReport';
+
+ALTER TABLE wash.client DROP COLUMN confirm_discount;
+ALTER TABLE wash.client ADD COLUMN confirmed_discount double precision;

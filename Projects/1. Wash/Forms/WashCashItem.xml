@@ -1,0 +1,579 @@
+<?xml version="1.0"?>
+<Form Name="WashCashItemForm" Title="Северный луч. Операции по кассе" Width="300" Height="270" StartPosition="CenterScreen" FontStyle="TitleFont" ForeColor="Black" StatusBar="True" AsteriskFontStyle="HeadTitleFont" AsteriskForeColor="Red">
+
+    <Parameters>
+        <Parameter Name="Mode" />
+        <Parameter Name="Type" />
+        <Parameter Name="CashId" />
+        <Parameter Name="ShiftId" />
+        <Parameter Name="Updated">False</Parameter>
+    </Parameters>
+
+
+    <Checkings>
+        <Checking>
+            <Object Name="CashTypeComboBox" />
+            <ConditionExpression>
+                <Condition Name="CashTypeIsNullCondition" />
+            </ConditionExpression>
+        </Checking>
+    </Checkings>
+
+
+    <Appearance>
+        <Colors>
+            <Color Name="Default" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Orange" Red="240" Green="240" Blue="0" Alpha="255" />
+
+            <Color Name="Red" Red="255" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="Black" Red="0" Green="0" Blue="0" Alpha="255" />
+
+            <Color Name="White" Red="255" Green="255" Blue="255" Alpha="255" />
+
+            <Color Name="ThemeColorHead" Red="180" Green="180" Blue="180" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorBold" Red="70" Green="120" Blue="170" Alpha="255" />
+
+            <Color Name="ThemeColorSeparatorThin" Red="160" Green="160" Blue="160" Alpha="255" />
+
+            <Color Name="ThemeColorBack" Red="240" Green="240" Blue="240" Alpha="255" />
+
+            <Color Name="Gray200" Red="200" Green="200" Blue="200" Alpha="255" />
+        </Colors>
+
+        <FontStyles>
+            <FontStyle Name="HeadTitleFont" Font="Tahoma" Size="16" Bold="True" />
+
+            <FontStyle Name="OrderTitleFont" Font="Tahoma" Size="14" Bold="True" />
+
+            <FontStyle Name="TitleFont" Font="Tahoma" Size="10" />
+
+            <FontStyle Name="TitleBoldFont" Font="Tahoma" Size="10" Bold="True" />
+        </FontStyles>
+    </Appearance>
+
+
+    <DataConnections>
+        <DataConnection Name="CashItemPrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashItemSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashId" />
+                    <Field Name="CashTypeId" />
+                    <Field Name="CashDate" />
+                    <Field Name="Summ" />
+                    <Field Name="Comments" />
+                </Fields>
+                <Parameters>
+                    <Parameter NativeName="CashId">
+                        <Value>
+                            <Parameter Name="CashId" />
+                        </Value>
+                    </Parameter>
+                    <Parameter NativeName="Type">
+                        <Value>
+                            <Parameter Name="Type" />
+                        </Value>
+                    </Parameter>
+                </Parameters>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CashTypePrimaryGetDataConnection" Type="PrimaryGetDataConnection" Assembly="DataConnections">
+            <SqlQuery Name="CashTypeSelectSqlQuery" Type="Select">
+                <Workflow Name="Wash" />
+                <Fields>
+                    <Field Name="CashTypeId" />
+                    <Field Name="Title" />
+                    <Field Name="Deleted" />
+                    <Field Name="Type" />
+                </Fields>
+                <Filter Type="Nested">
+                    <And>
+                        <Filter>
+                            <Field NativeName="Type" />
+                            <Value>
+                                <Parameter Name="Type" />
+                            </Value>
+                        </Filter>
+                        <Or>
+                            <Filter>
+                                <Field NativeName="Deleted" />
+                                <Value>False</Value>
+                            </Filter>
+                            <Filter>
+                                <Field NativeName="CashTypeId" />
+                                <Value>
+                                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                                        <Fields>
+                                            <Field Name="CashTypeId" />
+                                        </Fields>
+                                    </DataConnection>
+                                </Value>
+                            </Filter>
+                        </Or>
+                    </And>
+                </Filter>
+            </SqlQuery>
+        </DataConnection>
+
+        <DataConnection Name="CashSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="Type">
+                    <Value>
+                        <Parameter Name="Type" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="CashTypeId">
+                    <Value>
+                        <Object Name="CashTypeComboBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Summ">
+                    <Value>
+                        <Object Name="SummNumericBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Comments">
+                    <Value>
+                        <Object Name="CommentsTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="ShiftId">
+                    <Value>
+                        <Parameter Name="ShiftId" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CashInsertSqlQuery" Type="Insert" />
+            </SqlQueries>
+        </DataConnection>
+
+        <DataConnection Name="CashUpdateSetDataConnection" Type="SetDataConnection" Assembly="DataConnections">
+            <Workflow Name="Wash" />
+            <Parameters>
+                <Parameter NativeName="CashId">
+                    <Value>
+                        <Parameter Name="CashId" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Type">
+                    <Value>
+                        <Parameter Name="Type" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="CashTypeId">
+                    <Value>
+                        <Object Name="CashTypeComboBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Summ">
+                    <Value>
+                        <Object Name="SummNumericBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="Comments">
+                    <Value>
+                        <Object Name="CommentsTextBox" />
+                    </Value>
+                </Parameter>
+                <Parameter NativeName="ShiftId">
+                    <Value>
+                        <Parameter Name="ShiftId" />
+                    </Value>
+                </Parameter>
+            </Parameters>
+            <SqlQueries>
+                <SqlQuery Name="CashUpdateSqlQuery" Type="Update" />
+            </SqlQueries>
+        </DataConnection>
+    </DataConnections>
+
+
+    <Conditions>
+        <Condition Name="FormClosingCondition" Type="FormClosingCondition" Assembly="Conditions" />
+
+        <Condition Type="EqualCondition" Name="IsDepositCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Type" />
+                </Item>
+                <Item>deposit</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsAddModeCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Mode" />
+                </Item>
+                <Item>add</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsEditModeCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Mode" />
+                </Item>
+                <Item>edit</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsArchiveModeCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Mode" />
+                </Item>
+                <Item>archive</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="IsViewModeCondition" Type="EqualCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Parameter Name="Mode" />
+                </Item>
+                <Item>view</Item>
+            </Items>
+        </Condition>
+
+        <Condition Name="CashTypeIsNullCondition" Type="IsNullCondition" Assembly="Conditions">
+            <Items>
+                <Item>
+                    <Object Name="CashTypeComboBox" />
+                </Item>
+            </Items>
+        </Condition>
+
+    </Conditions>
+
+
+    <Commands>
+        <Command Name="FormCloseCommand" Type="FormCloseCommand" Assembly="Commands" />
+
+        <Command Name="CashSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CashSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="CashUpdateSaveCommand" Type="SaveCommand" Assembly="Commands">
+            <DataConnections>
+                <DataConnection Name="CashUpdateSetDataConnection" />
+            </DataConnections>
+        </Command>
+
+        <Command Name="UpdatedValueSetCommand" Type="ValueSetCommand" Assembly="Commands">
+            <Parameter Name="Updated">True</Parameter>
+        </Command>
+
+        <Command Name="SaveSequentialCommand" Type="SequentialCommand" Assembly="Commands">
+            <Commands>
+                <If>
+                    <When>
+                        <Condition Name="IsAddModeCondition" />
+                    </When>
+                    <Then>
+                        <Command Name="CashSaveCommand" />
+                    </Then>
+                    <Else>
+                        <Command Name="CashUpdateSaveCommand" />
+                    </Else>
+                </If>
+                <Command Name="UpdatedValueSetCommand" />
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Command>
+
+    </Commands>
+
+
+    <Executions>
+        <Execution>
+            <ConditionExpression>
+                <Condition Name="FormClosingCondition" />
+            </ConditionExpression>
+            <Commands StopOnError="True">
+                <Command Name="FormCloseCommand" />
+            </Commands>
+        </Execution>
+    </Executions>
+
+
+    <MyObjects>
+        <MyObject Name="HeadPanel" Type="Panel" Assembly="BaseControls">
+            <Top>0</Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>3</TabIndex>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="HeaderLabel" Type="Label" Assembly="BaseControls">
+                <Top>0</Top>
+                <Left>10</Left>
+                <Height>
+                    <Object Name="HeadPanel">
+                        <Property Name="Height" />
+                    </Object>
+                </Height>
+                <Width>280</Width>
+                <FontStyle>OrderTitleFont</FontStyle>
+                <TextAlign>MiddleLeft</TextAlign>
+                <Text>
+                    <Switch>
+                        <Case>
+                            <When>
+                                <Condition Name="IsDepositCondition" />
+                            </When>
+                            <Then>Внесение в кассу</Then>
+                        </Case>
+                        <Case>Снятие из кассы</Case>
+                    </Switch>
+                </Text>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="HeaderSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>36</Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="ContentPanel" Type="Panel" Assembly="BaseControls">
+            <Top>40</Top>
+            <Left>0</Left>
+            <Height>190</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <TabIndex>1</TabIndex>
+            <BackColor>ThemeColorBack</BackColor>
+
+            <MyObject Name="SummLabel" Type="Label" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>5</Left>
+                <Width>110</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Сумма:</Text>
+            </MyObject>
+
+            <MyObject Name="SummNumericBox" Type="NumericBox" Assembly="BaseControls">
+                <Top>5</Top>
+                <Left>120</Left>
+                <Width>100</Width>
+                <Value>
+                    <Calculate>
+                        <Expression>if({0} > 0, {0}, 0)</Expression>
+                        <Items>
+                            <Item>
+                                <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                                    <Fields>
+                                        <Field Name="Summ" />
+                                    </Fields>
+                                </DataConnection>
+                            </Item>
+                        </Items>
+                    </Calculate>
+                </Value>
+                <Increment>100</Increment>
+                <Minimum>0</Minimum>
+                <Maximum>99999999</Maximum>
+                <Enabled>
+                    <Or>
+                        <Condition Name="IsAddModeCondition" />
+                        <Condition Name="IsEditModeCondition" />
+                    </Or>
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="TypeLabel" Type="Label" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>5</Left>
+                <Width>110</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Тип операции:</Text>
+            </MyObject>
+
+            <MyObject Name="CashTypeComboBox" Type="ComboBox" Assembly="BaseControls">
+                <Top>35</Top>
+                <Left>120</Left>
+                <Width>150</Width>
+                <NullValue Show="True" Title="[Не выбрано]" />
+                <Value>
+                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CashTypeId" />
+                        </Fields>
+                    </DataConnection>
+                </Value>
+                <ValueList>
+                    <DataConnection SourceDataConnection="CashTypePrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CashTypeId" />
+                            <Field Name="Title" />
+                        </Fields>
+                    </DataConnection>
+                </ValueList>
+                <Enabled>
+                    <Not>
+                        <Condition Name="IsViewModeCondition" />
+                    </Not>
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="CommentsLabel" Type="Label" Assembly="BaseControls">
+                <Top>65</Top>
+                <Left>5</Left>
+                <Width>110</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Комментарий:</Text>
+            </MyObject>
+
+            <MyObject Name="CommentsTextBox" Type="TextBox" Assembly="BaseControls">
+                <Top>90</Top>
+                <Left>20</Left>
+                <Width>270</Width>
+                <Height>65</Height>
+                <Multiline>True</Multiline>
+                <Text>
+                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="Comments" />
+                        </Fields>
+                    </DataConnection>
+                </Text>
+                <Enabled>
+                    <Or>
+                        <Condition Name="IsAddModeCondition" />
+                        <Condition Name="IsEditModeCondition" />
+                    </Or>
+                </Enabled>
+            </MyObject>
+
+            <MyObject Name="DateLabel" Type="Label" Assembly="BaseControls">
+                <Top>160</Top>
+                <Left>5</Left>
+                <Width>110</Width>
+                <TextAlign>MiddleRight</TextAlign>
+                <Text>Дата и время:</Text>
+                <Visible>
+                    <Not>
+                        <Condition Name="IsAddModeCondition" />
+                    </Not>
+                </Visible>
+            </MyObject>
+
+            <MyObject Name="DateDateTimePicker" Type="DateTimePicker" Assembly="BaseControls">
+                <Top>160</Top>
+                <Left>120</Left>
+                <Width>150</Width>
+                <Enabled>False</Enabled>
+                <NullValue Show="False" />
+                <Format>dd MMM yyyy HH:mm</Format>
+                <Value>
+                    <DataConnection SourceDataConnection="CashItemPrimaryGetDataConnection">
+                        <Fields>
+                            <Field Name="CashDate" />
+                        </Fields>
+                    </DataConnection>
+                </Value>
+                <Visible>
+                    <Not>
+                        <Condition Name="IsAddModeCondition" />
+                    </Not>
+                </Visible>
+            </MyObject>
+        </MyObject>
+
+        <MyObject Name="FooterSeparatePanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>40</Item>
+                    </Minus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>4</Height>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <AutoScroll>False</AutoScroll>
+            <BackColor>ThemeColorSeparatorBold</BackColor>
+        </MyObject>
+
+        <MyObject Name="FootPanel" Type="Panel" Assembly="BaseControls">
+            <Top>
+                <Formula>
+                    <Minus DataType="DoubleDataType">
+                        <Item>
+                            <Form>
+                                <Property Name="Height" />
+                            </Form>
+                        </Item>
+                        <Item>36</Item>
+                    </Minus>
+                </Formula>
+            </Top>
+            <Left>0</Left>
+            <Height>36</Height>
+            <TabIndex>2</TabIndex>
+            <AutoScroll>False</AutoScroll>
+            <Width>
+                <Form>
+                    <Property Name="Width" />
+                </Form>
+            </Width>
+            <BackColor>ThemeColorHead</BackColor>
+
+            <MyObject Name="SaveButton" Type="Button" Assembly="BaseControls">
+                <Top>3</Top>
+                <Left>95</Left>
+                <Height>30</Height>
+                <Width>200</Width>
+                <TabStop>True</TabStop>
+                <Text>Сохранить</Text>
+                <FontStyle>TitleBoldFont</FontStyle>
+                <BackColor>Default</BackColor>
+                <Enabled>
+                    <And>
+                        <Not>
+                            <Condition Name="IsViewModeCondition" />
+                        </Not>
+                        <Not>
+                            <Condition Name="CashTypeIsNullCondition" />
+                        </Not>
+                    </And>
+                </Enabled>
+                <Commands>
+                    <Command Name="SaveSequentialCommand" />
+                </Commands>
+            </MyObject>
+        </MyObject>
+    </MyObjects>
+</Form>

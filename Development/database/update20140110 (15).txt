@@ -1,0 +1,31 @@
+CREATE OR REPLACE FUNCTION wash.insert_car(my_car_model_id integer, my_car_number text, my_client_id bigint)
+  RETURNS integer AS
+$BODY$
+DECLARE
+      car integer = (
+        SELECT 
+          car_id
+        FROM
+          wash.car
+        WHERE
+          car_model_id = $1
+          AND COALESCE(car_number, '') = COALESCE($2, '')
+          AND client_id = $3
+          AND NOT deleted
+        LIMIT 1
+      );
+BEGIN
+      IF car ISNULL
+      THEN
+        INSERT INTO
+          wash.car(car_model_id, car_number, client_id)
+        VALUES
+          ($1, $2, $3)
+        RETURNING
+          car_id INTO car;
+      END IF;
+
+      RETURN car;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;

@@ -1,0 +1,103 @@
+CREATE OR REPLACE FUNCTION wash.refresh_work(integer, new_category_id integer, new_client_id integer)
+  RETURNS integer AS
+$BODY$
+DECLARE
+	tmp_id integer;
+	tmp_work_id integer;
+	tmp_price record;
+BEGIN
+	FOR tmp_id IN SELECT order_work_id FROM wash.order_work WHERE order_id = $1 LOOP
+		SELECT 
+			work_id 
+		INTO 
+			tmp_work_id
+		FROM
+			wash.order_work OW
+			INNER JOIN wash.price P ON P.price_id = OW.price_id
+		WHERE
+			order_work_id = tmp_id;
+		
+		SELECT 
+			P.price_id,
+			P.price,
+			W.deleted
+		INTO 
+			tmp_price
+		FROM 
+			wash.price P
+			INNER JOIN wash.work W ON W.work_id = P.work_id
+		WHERE
+			P.work_id = tmp_work_id
+			AND category_id = new_category_id
+			AND (((new_client_id ISNULL OR (SELECT COUNT(*) FROM wash.price INNER JOIN wash.work ON work.work_id = price.work_id WHERE client_id = new_client_id AND category_id = new_category_id AND NOT deleted) = 0) AND client_id ISNULL)
+			OR (new_client_id IS NOT NULL AND client_id = new_client_id));
+		
+		IF tmp_price.price_id IS NOT NULL AND NOT tmp_price.deleted
+		THEN
+			UPDATE
+				wash.order_work
+			SET
+				price_id = tmp_price.price_id,
+				price = tmp_price.price
+			WHERE
+				order_work_id = tmp_id
+				AND (SELECT category_id FROM wash.price WHERE tmp_price.price_id = price_id) != (SELECT category_id FROM wash.category WHERE category_key = 'truck_spec')
+				AND new_category_id != (SELECT category_id FROM wash.category WHERE category_key = 'truck');
+		ELSE
+			DELETE FROM
+				wash.order_work
+			WHERE
+				order_work_id = tmp_id;
+		END IF;
+	END LOOP;
+	
+	RETURN 0;
+        END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+
+CREATE OR REPLACE FUNCTION wash.insert_car(my_car_model_id integer, my_car_number text, my_client_id bigint)
+  RETURNS integer AS
+$BODY$
+DECLARE
+      car integer = (
+        SELECT 
+          car_id
+        FROM
+          wash.car
+        WHERE
+          car_model_id = $1
+          AND COALESCE(car_number, '') = COALESCE($2, '')
+          AND client_id = $3
+          AND NOT deleted
+      );
+BEGIN
+      IF car ISNULL
+      THEN
+        INSERT INTO
+          wash.car(car_model_id, car_number, client_id)
+        VALUES
+          ($1, $2, $3)
+        RETURNING
+          car_id INTO car;
+      END IF;
+
+      RETURN car;
+END;
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE;
+
+
+UPDATE
+  wash.order_list
+SET
+  car_id = 3507
+WHERE
+  car_id = 6815;
+
+DELETE FROM
+  wash.car
+WHERE
+  car_id = 6815;
